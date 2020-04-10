@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="8dp"
+        tools:context=".CurrencyRatesActivity">
+
+        <TextView
+            android:id="@+id/currency_base"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/change_base_currency"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Change base currency"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/change_rates"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <Button
+            android:id="@+id/change_rates"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Change rates"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/change_base_currency"
+            app:layout_constraintTop_toTopOf="@+id/change_base_currency" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/currency_rates_recycleview"
+            android:layout_width="match_parent"
+            android:layout_height="456dp"
+            app:layout_constraintBottom_toTopOf="@+id/change_base_currency"
+            app:layout_constraintTop_toBottomOf="@+id/currency_base"
+            tools:layout_editor_absoluteX="8dp" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>
