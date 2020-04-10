@@ -35,10 +35,8 @@ class RatesListAdapter(dataSet: List<CurrencyRateDto>) :
         binding.apply {
             currencyCode.text = item.currency.name
             currencyName.setText(item.currency.resName)
-            currencyRate.text = item.rateToEUR.toString()
-            if (item.currency.resFlag != null) {
-                currencyFlag.setBackgroundResource(item.currency.resFlag)
-            }
+            currencyRate.text = item.rateToBaseCurrency.toString()
+            currencyFlag.setBackgroundResource(item.currency.resFlag)
         }
     }
 }

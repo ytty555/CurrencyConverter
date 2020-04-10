@@ -34,8 +34,6 @@ class CurrencyRatesViewModel : ViewModel() {
 
     fun changeRates() {
         Log.i(TAG, "changeRates()")
-        for (rate in _rates.value!!) {
-            rate.rateToEUR = rate.rateToEUR * 2
-        }
+        TODO()
     }
 }
