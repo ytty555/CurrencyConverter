@@ -1,46 +1,78 @@
 package ru.okcode.currencyconverter.model.db
 
 import androidx.room.*
-import java.util.*
 
-@Entity
-data class RateList(
+private const val COLUMN_ID = "id"
+private const val COLUMN_RATES_DATE = "rates_date"
+private const val COLUMN_RATE_TO_EURO = "rate_to_euro"
+private const val COLUMN_CURRENCY_CODE = "currency_code"
+private const val COLUMN_CURRENCY_FULL_NAME_RES = "currency_name_resource"
+private const val COLUMN_CURRENCY_FLAG_RES = "currency_flag_resource"
+
+@Entity(tableName = "rates_list_table")
+data class RatesListEntity(
     @PrimaryKey(autoGenerate = true)
-    val ratesId: Long,
+    @ColumnInfo(name = COLUMN_ID)
+    val id: Long = 0L,
 
-    @ColumnInfo(name = "rates_date")
-    var ratesDate: Date
+    @ColumnInfo(name = COLUMN_RATES_DATE)
+    var ratesDate: Long = System.currentTimeMillis()
 )
 
-@Entity
+@Entity(
+    tableName = "rate_table",
+    foreignKeys = arrayOf(
+        ForeignKey(
+            entity = CurrencyEntity::class,
+            parentColumns = arrayOf(COLUMN_CURRENCY_CODE),
+            childColumns = arrayOf(COLUMN_CURRENCY_CODE),
+            onDelete = ForeignKey.CASCADE
+        )
+    ),
+    indices = [Index(value = [COLUMN_CURRENCY_CODE])]
+)
+data class RateEntity(
+    @PrimaryKey(autoGenerate = false)
+    @ColumnInfo(name = COLUMN_CURRENCY_CODE)
+    val currencyCode: String,
+
+    @ColumnInfo(name = COLUMN_RATE_TO_EURO)
+    var rateToEuro: Double,
+
+    val hostRatesList: Long
+
+)
+
+@Entity(tableName = "currency_table")
+data class CurrencyEntity(
+    @PrimaryKey(autoGenerate = false)
+    @ColumnInfo(name = COLUMN_CURRENCY_CODE)
+    val currencyCode: String,
+
+    @ColumnInfo(name = COLUMN_CURRENCY_FLAG_RES)
+    val flagRes: Int,
+
+    @ColumnInfo(name = COLUMN_CURRENCY_FULL_NAME_RES)
+    val fullNameRes: Int
+)
+
 data class CurrencyRate(
-    @PrimaryKey(autoGenerate = true)
-    val rateId: Long,
-
-    @Embedded
-    val currency: Currency,
-
-    @ColumnInfo(name = "rate_to_euro")
-    var RateToEuro: Double,
-
-    val hostRateList: Long
-)
-
-@Entity
-data class Currency(
-    @PrimaryKey(autoGenerate = true)
-    val currencyId: Long,
-
-    @ColumnInfo(name = "short_name")
-    val shortName: String,
-
-    @ColumnInfo(name = "flag_and_name_id")
-    val flagAndNameId: Long
+    @Embedded val currency: CurrencyEntity,
+    @Relation(
+        parentColumn = COLUMN_CURRENCY_CODE,
+        entityColumn = COLUMN_CURRENCY_CODE
+    )
+    val rate: RateEntity
 
 )
 
-@Entity
-data class FlagAndName(
-    @PrimaryKey(autoGenerate = true)
-    val flagAndNameId: Long
-)
+//data class CurrencyRatesList(
+//    @Embedded val ratesList: RatesList,
+//    @Relation(
+//        entity = CurrencyRate::class,
+//        parentColumn = "ratesId",
+//        entityColumn = "hostRatesList"
+//    )
+//    val currencyRates: List<CurrencyRate>
+//)
+
