@@ -1,35 +1,45 @@
 package ru.okcode.currencyconverter.model.db
 
 import androidx.room.*
+import java.util.*
 
-private const val COLUMN_ID = "id"
 private const val COLUMN_RATES_DATE = "rates_date"
 private const val COLUMN_RATE_TO_EURO = "rate_to_euro"
 private const val COLUMN_CURRENCY_CODE = "currency_code"
 private const val COLUMN_CURRENCY_FULL_NAME_RES = "currency_name_resource"
 private const val COLUMN_CURRENCY_FLAG_RES = "currency_flag_resource"
+private const val COLUMN_OPERATION_ID = "operation_id"
 
-@Entity(tableName = "rates_list_table")
-data class RatesListEntity(
+@Entity(tableName = "operation_table")
+data class OperationEntity(
     @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name = COLUMN_ID)
+    @ColumnInfo(name = COLUMN_OPERATION_ID)
     val id: Long = 0L,
 
     @ColumnInfo(name = COLUMN_RATES_DATE)
-    var ratesDate: Long = System.currentTimeMillis()
+    var ratesDate: Date
 )
 
 @Entity(
     tableName = "rate_table",
-    foreignKeys = arrayOf(
+    foreignKeys = [
         ForeignKey(
             entity = CurrencyEntity::class,
-            parentColumns = arrayOf(COLUMN_CURRENCY_CODE),
-            childColumns = arrayOf(COLUMN_CURRENCY_CODE),
+            parentColumns = [COLUMN_CURRENCY_CODE],
+            childColumns = [COLUMN_CURRENCY_CODE],
+            onDelete = ForeignKey.CASCADE
+        ),
+        ForeignKey(
+            entity = OperationEntity::class,
+            parentColumns = [COLUMN_OPERATION_ID],
+            childColumns = [COLUMN_OPERATION_ID],
             onDelete = ForeignKey.CASCADE
         )
-    ),
-    indices = [Index(value = [COLUMN_CURRENCY_CODE])]
+    ],
+    indices = [
+        Index(value = [COLUMN_CURRENCY_CODE]),
+        Index(value = [COLUMN_OPERATION_ID])
+    ]
 )
 data class RateEntity(
     @PrimaryKey(autoGenerate = false)
@@ -39,7 +49,8 @@ data class RateEntity(
     @ColumnInfo(name = COLUMN_RATE_TO_EURO)
     var rateToEuro: Double,
 
-    val hostRatesList: Long
+    @ColumnInfo(name = COLUMN_OPERATION_ID)
+    var hostOperationId: Long = 0L
 
 )
 
@@ -56,23 +67,22 @@ data class CurrencyEntity(
     val fullNameRes: Int
 )
 
-data class CurrencyRate(
-    @Embedded val currency: CurrencyEntity,
+data class RateCurrency(
+    @Embedded val rate: RateEntity,
     @Relation(
         parentColumn = COLUMN_CURRENCY_CODE,
         entityColumn = COLUMN_CURRENCY_CODE
     )
-    val rate: RateEntity
-
+    val currency: CurrencyEntity
 )
 
-//data class CurrencyRatesList(
-//    @Embedded val ratesList: RatesList,
-//    @Relation(
-//        entity = CurrencyRate::class,
-//        parentColumn = "ratesId",
-//        entityColumn = "hostRatesList"
-//    )
-//    val currencyRates: List<CurrencyRate>
-//)
+data class CurrencyRatesList(
+    @Embedded val operation: OperationEntity,
+    @Relation(
+        entity = RateEntity::class,
+        parentColumn = COLUMN_OPERATION_ID,
+        entityColumn = COLUMN_OPERATION_ID
+    )
+    val rates: List<RateCurrency>
+)
 
