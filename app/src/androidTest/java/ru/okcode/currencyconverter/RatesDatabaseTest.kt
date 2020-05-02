@@ -95,17 +95,22 @@ class RatesDatabaseTest {
         var operation: CurrencyRatesList? = dao.getRates()
         val rates: List<RateCurrency>? = operation?.rates
         var currList: List<CurrencyEntity> = dao.getCurrenciesList()
+        var onlyRates: List<RateEntity> = dao.getOnlyRates()
 
         assertEquals(3, rates?.size)
         assertTrue(operation != null)
         assertTrue(currList.isNotEmpty())
+        assertTrue(onlyRates.isNotEmpty())
 
         dao.clearOperation()
         operation = dao.getRates()
         currList = dao.getCurrenciesList()
+        onlyRates = dao.getOnlyRates()
+
 
         assertTrue(operation == null)
         assertTrue(currList.isNotEmpty())
+        assertTrue(onlyRates.isEmpty())
 
     }
 
