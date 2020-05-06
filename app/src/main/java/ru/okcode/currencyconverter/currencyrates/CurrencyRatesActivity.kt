@@ -41,18 +41,18 @@ class CurrencyRatesActivity : AppCompatActivity() {
             ViewModelProvider(this, viewModelFactory).get(CurrencyRatesViewModel::class.java)
 
 
-//        // RecyclerView
-//        viewManager = LinearLayoutManager(this)
-//
-//        viewModel.ratesData.observe(this, Observer { ratesData ->
-//            if (ratesData != null) {
-//                viewAdaptor = CurrencyRecyclerViewAdaptor(ratesData)
-//                ratesRecyclerView = binding.currencyRatesRecycleview.apply {
-//                    layoutManager = viewManager
-//                    adapter = viewAdaptor
-//                }
-//
-//            }
-//        })
+        // RecyclerView
+        viewManager = LinearLayoutManager(this)
+
+        viewModel.ratesData.observe(this, Observer { ratesData ->
+            if (ratesData != null) {
+                viewAdaptor = CurrencyRecyclerViewAdaptor(ratesData)
+                ratesRecyclerView = binding.currencyRatesRecycleview.apply {
+                    layoutManager = viewManager
+                    adapter = viewAdaptor
+                }
+
+            }
+        })
     }
 }

@@ -5,10 +5,12 @@ import java.util.*
 
 private const val COLUMN_RATES_DATE = "rates_date"
 private const val COLUMN_RATE_TO_EURO = "rate_to_euro"
+private const val COLUMN_RATE_TO_BASE = "rate_to_base"
 private const val COLUMN_CURRENCY_CODE = "currency_code"
 private const val COLUMN_CURRENCY_FULL_NAME_RES = "currency_name_resource"
 private const val COLUMN_CURRENCY_FLAG_RES = "currency_flag_resource"
 private const val COLUMN_OPERATION_ID = "operation_id"
+private const val COLUMN_BASE_CURRENCY = "base_currency"
 
 @Entity(tableName = "operation_table")
 data class OperationEntity(
@@ -17,7 +19,10 @@ data class OperationEntity(
     val id: Long = 0L,
 
     @ColumnInfo(name = COLUMN_RATES_DATE)
-    var ratesDate: Date
+    var ratesDate: Date,
+
+    @ColumnInfo(name = COLUMN_BASE_CURRENCY)
+    var baseCurrencu: String = "EUR"
 )
 
 @Entity(
@@ -48,6 +53,9 @@ data class RateEntity(
 
     @ColumnInfo(name = COLUMN_RATE_TO_EURO)
     var rateToEuro: Double,
+
+    @ColumnInfo(name = COLUMN_RATE_TO_BASE)
+    var rateToBase: Double,
 
     @ColumnInfo(name = COLUMN_OPERATION_ID)
     var hostOperationId: Long = 0L

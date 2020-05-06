@@ -11,6 +11,7 @@ import java.util.*
  */
 data class RatesData(
     val date: Date,
+    val baseCurrency: String,
     val rates: List<Rate>
 ) {
 
@@ -24,5 +25,6 @@ data class Rate(
     val currencyCode: String,
     @DrawableRes val flagRes: Int,
     @StringRes val fullNameRes: Int,
-    val rateToEuro: Double
+    val rateToEuro: Double,
+    val rateToBase: Double
 )

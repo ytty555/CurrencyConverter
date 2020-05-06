@@ -1,9 +1,5 @@
 package ru.okcode.currencyconverter.model
 
-import android.util.Log
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import ru.okcode.currencyconverter.model.api.ApiService
 import ru.okcode.currencyconverter.model.db.*
 
@@ -11,8 +7,6 @@ class DefaultRatesRepository(
     private val ratesRemoteDataSource: ApiService,
     private val ratesLocalDataSource: RatesDao
 ) : RatesRepository {
-    private val TAG = "DefaultRatesRepository"
-    private lateinit var currenciesList: List<CurrencyEntity>
 
     override suspend fun getRates(forceUpdate: Boolean): Result<RatesData> {
         if (forceUpdate) {
@@ -35,7 +29,8 @@ class DefaultRatesRepository(
         val rates = ratesForSave.rates.map { rate ->
             RateEntity(
                 currencyCode = rate.currencyCode,
-                rateToEuro = rate.rateToEuro
+                rateToEuro = rate.rateToEuro,
+                rateToBase = rate.rateToBase
             )
         }
         ratesLocalDataSource.safeRates(operation, rates)
