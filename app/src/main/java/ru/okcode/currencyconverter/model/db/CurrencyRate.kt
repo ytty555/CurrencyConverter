@@ -22,18 +22,12 @@ data class OperationEntity(
     var ratesDate: Date,
 
     @ColumnInfo(name = COLUMN_BASE_CURRENCY)
-    var baseCurrencu: String = "EUR"
+    var baseCurrency: String = "EUR"
 )
 
 @Entity(
     tableName = "rate_table",
     foreignKeys = [
-        ForeignKey(
-            entity = CurrencyEntity::class,
-            parentColumns = [COLUMN_CURRENCY_CODE],
-            childColumns = [COLUMN_CURRENCY_CODE],
-            onDelete = ForeignKey.CASCADE
-        ),
         ForeignKey(
             entity = OperationEntity::class,
             parentColumns = [COLUMN_OPERATION_ID],
@@ -62,27 +56,27 @@ data class RateEntity(
 
 )
 
-@Entity(tableName = "currency_table")
-data class CurrencyEntity(
-    @PrimaryKey(autoGenerate = false)
-    @ColumnInfo(name = COLUMN_CURRENCY_CODE)
-    val currencyCode: String,
+//@Entity(tableName = "currency_table")
+//data class CurrencyEntity(
+//    @PrimaryKey(autoGenerate = false)
+//    @ColumnInfo(name = COLUMN_CURRENCY_CODE)
+//    val currencyCode: String,
+//
+//    @ColumnInfo(name = COLUMN_CURRENCY_FLAG_RES)
+//    val flagRes: Int,
+//
+//    @ColumnInfo(name = COLUMN_CURRENCY_FULL_NAME_RES)
+//    val fullNameRes: Int
+//)
 
-    @ColumnInfo(name = COLUMN_CURRENCY_FLAG_RES)
-    val flagRes: Int,
-
-    @ColumnInfo(name = COLUMN_CURRENCY_FULL_NAME_RES)
-    val fullNameRes: Int
-)
-
-data class RateCurrency(
-    @Embedded val rate: RateEntity,
-    @Relation(
-        parentColumn = COLUMN_CURRENCY_CODE,
-        entityColumn = COLUMN_CURRENCY_CODE
-    )
-    val currency: CurrencyEntity
-)
+//data class RateCurrency(
+//    @Embedded val rate: RateEntity,
+//    @Relation(
+//        parentColumn = COLUMN_CURRENCY_CODE,
+//        entityColumn = COLUMN_CURRENCY_CODE
+//    )
+//    val currency: CurrencyEntity
+//)
 
 data class CurrencyRatesList(
     @Embedded val operation: OperationEntity,
@@ -91,6 +85,6 @@ data class CurrencyRatesList(
         parentColumn = COLUMN_OPERATION_ID,
         entityColumn = COLUMN_OPERATION_ID
     )
-    val rates: List<RateCurrency>
+    val rates: List<RateEntity>
 )
 

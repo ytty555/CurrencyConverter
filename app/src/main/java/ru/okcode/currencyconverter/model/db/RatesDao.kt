@@ -20,11 +20,9 @@ interface RatesDao {
         insertRates(rates)
     }
 
+    @Transaction
     @Query("SELECT * FROM operation_table")
     suspend fun getRates(): CurrencyRatesList?
-
-    @Query("SELECT * FROM currency_table ORDER BY currency_code")
-    suspend fun getCurrenciesList(): List<CurrencyEntity>
 
 
     @Query("DELETE FROM operation_table")
@@ -35,9 +33,6 @@ interface RatesDao {
 
     @Insert
     fun insertRates(ratesList: List<RateEntity>)
-
-    @Insert
-    fun prepopulateCurrencies(currenciesList: List<CurrencyEntity>)
 
     @Query("SELECT * FROM rate_table")
     @TestOnly

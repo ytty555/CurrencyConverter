@@ -5,11 +5,10 @@ import androidx.annotation.StringRes
 import ru.okcode.currencyconverter.R
 
 enum class CurrencyEnum(
-    @StringRes fullNameRes: Int,
-    @DrawableRes flagRes: Int) {
-
-    RUB(R.drawable.ic_rub, R.string.RUB),
-    EUR(R.drawable.ic_eur, R.string.EUR),
-    USD(R.drawable.ic_usd, R.string.USD)
-
+    @DrawableRes val flagRes: Int,
+    @StringRes val fullNameRes: Int
+) {
+    RUB(flagRes = R.drawable.ic_rub, fullNameRes = R.string.RUB),
+    EUR(flagRes = R.drawable.ic_eur, fullNameRes = R.string.EUR),
+    USD(flagRes = R.drawable.ic_usd, fullNameRes = R.string.USD);
 }

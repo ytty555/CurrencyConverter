@@ -13,8 +13,9 @@ class CurrencyRecyclerViewAdaptor(private val ratesData: RatesData) :
 
     class ViewHolder private constructor(private val binding: RateItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(rate: Rate) {
+        fun bind(rate: Rate, ratesData: RatesData) {
             binding.rate = rate
+            binding.ratesData = ratesData
             binding.executePendingBindings()
         }
 
@@ -36,6 +37,7 @@ class CurrencyRecyclerViewAdaptor(private val ratesData: RatesData) :
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val rate = ratesData.rates[position]
-        holder.bind(rate)
+        val ratesData = ratesData
+        holder.bind(rate, ratesData)
     }
 }

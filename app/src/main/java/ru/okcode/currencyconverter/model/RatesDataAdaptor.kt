@@ -6,14 +6,15 @@ class RatesDataAdaptor {
     companion object {
         fun convertToRatesData(inputData: CurrencyRatesList): RatesData {
             val date = inputData.operation.ratesDate
-            val baseCurrency = inputData.operation.baseCurrencu
+            val baseCurrency = inputData.operation.baseCurrency
             val rates: List<Rate> = inputData.rates.map { inputRate ->
+                val currency = CurrencyEnum.valueOf(inputRate.currencyCode)
                 Rate(
-                    currencyCode = inputRate.currency.currencyCode,
-                    flagRes = inputRate.currency.flagRes,
-                    fullNameRes = inputRate.currency.fullNameRes,
-                    rateToEuro = inputRate.rate.rateToEuro,
-                    rateToBase = inputRate.rate.rateToBase
+                    currencyCode = inputRate.currencyCode,
+                    flagRes = currency.flagRes,
+                    fullNameRes = currency.fullNameRes,
+                    rateToEuro = inputRate.rateToEuro,
+                    rateToBase = inputRate.rateToBase
                 )
             }
             return RatesData(date, baseCurrency, rates)

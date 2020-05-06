@@ -12,7 +12,7 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
 @Database(
-    entities = [OperationEntity::class, RateEntity::class, CurrencyEntity::class],
+    entities = [OperationEntity::class, RateEntity::class],
     version = 1,
     exportSchema = false
 )
