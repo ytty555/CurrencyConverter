@@ -26,14 +26,9 @@ class DefaultRatesRepository : RatesRepository {
             Timber.tag("ytty").d("remoteData.getRatesList() = ${remoteData?.getRatesList()}")
             remoteData?.let {
                 saveRatesLocal(it)
-                return remoteData
             }
         }
-
-
-
-//        return getLocalRates()
-        return null
+        return getLocalRates()
     }
 
     private fun getRemoteRates(): RatesData? {
@@ -63,9 +58,9 @@ class DefaultRatesRepository : RatesRepository {
 
     private suspend fun getLocalRates(): RatesData? {
         val ratesList = db.getRates()
-//        ratesList?.let {
-//            return RatesDataAdaptor.convertToRatesData(it)
-//        }
+        ratesList?.let {
+            return RatesDataAdaptor.convertToRatesData(it)
+        }
         return null
     }
 
