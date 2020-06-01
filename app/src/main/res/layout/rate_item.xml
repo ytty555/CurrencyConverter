@@ -6,11 +6,8 @@
 
     <data>
         <variable
-            name="ratesData"
-            type="ru.okcode.currencyconverter.model.RatesData" />
-        <variable
             name="rate"
-            type="ru.okcode.currencyconverter.model.Rate" />
+            type="ru.okcode.currencyconverter.model.api.Rate" />
     </data>
 
     <androidx.cardview.widget.CardView
@@ -74,7 +71,6 @@
                 android:layout_height="wrap_content"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/currency_code"
-                android:text="@{ratesData.baseCurrency}"
                 tools:text="to EUR" />
 
 

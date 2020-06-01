@@ -1,46 +1,72 @@
 package ru.okcode.currencyconverter.model
 
+import kotlinx.coroutines.*
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import ru.okcode.currencyconverter.App
 import ru.okcode.currencyconverter.model.api.ApiService
+import ru.okcode.currencyconverter.model.api.Rate
+import ru.okcode.currencyconverter.model.api.RatesData
 import ru.okcode.currencyconverter.model.db.*
+import timber.log.Timber
 
-class DefaultRatesRepository(
-    private val ratesRemoteDataSource: ApiService,
-    private val ratesLocalDataSource: RatesDao
-) : RatesRepository {
+class DefaultRatesRepository : RatesRepository {
 
-    override suspend fun getRates(forceUpdate: Boolean): Result<RatesData> {
+    val api = ApiService.create()
+    val db = RatesDatabase.getInstance(App.getAppContext()).ratesDao
+
+
+    override suspend fun getRates(forceUpdate: Boolean): RatesData? {
+        Timber.tag("ytty").d("forceUpdate = $forceUpdate")
         if (forceUpdate) {
-            try {
-                val ratesDataResult: Result<RatesData> = ratesRemoteDataSource.getRates()
-                if (ratesDataResult is Result.Success) {
-                    saveRatesLocal(ratesDataResult.data)
-                } else {
-                    TODO("Вывести ошибку в snackbar")
-                }
-            } catch (ex: Exception) {
-                return Result.Error(ex)
+            val remoteData = getRemoteRates()
+            Timber.tag("ytty").d("remoteData.date = ${remoteData?.date}")
+            Timber.tag("ytty").d("remoteData.baseCurrency = ${remoteData?.baseCurrency}")
+            Timber.tag("ytty").d("remoteData.getRatesList() = ${remoteData?.getRatesList()}")
+            remoteData?.let {
+                saveRatesLocal(it)
+                return remoteData
             }
         }
-        return getRatesLocal()
+
+
+
+//        return getLocalRates()
+        return null
+    }
+
+    private fun getRemoteRates(): RatesData? {
+        val call: Call<RatesData> = api.getAllLatest()
+        var result: RatesData? = null
+
+        val response = call.execute()
+        if (response.isSuccessful && response.code() == 200) {
+            result = response.body()
+        }
+
+        return result
     }
 
     private suspend fun saveRatesLocal(ratesForSave: RatesData) {
+        Timber.tag("ytty").d("saveRatesLocal")
         val operation = OperationEntity(ratesDate = ratesForSave.date)
-        val rates = ratesForSave.rates.map { rate ->
+        val ratesList: List<RateEntity> = ratesForSave.getRatesList().map {
             RateEntity(
-                currencyCode = rate.currencyCode,
-                rateToEuro = rate.rateToEuro,
-                rateToBase = rate.rateToBase
+                currencyCode = it.currencyCode,
+                rateToBase = it.rateToBase,
+                rateToEuro = it.rateToEuro
             )
         }
-        ratesLocalDataSource.safeRates(operation, rates)
+        db.safeRates(operation, ratesList)
     }
 
-    private suspend fun getRatesLocal(): Result<RatesData> {
-        val dbData = ratesLocalDataSource.getRates()
-            ?: return Result.Error(Exception("Can't load rates from the local database"))
-
-        return Result.Success(RatesDataAdaptor.convertToRatesData(dbData))
+    private suspend fun getLocalRates(): RatesData? {
+        val ratesList = db.getRates()
+//        ratesList?.let {
+//            return RatesDataAdaptor.convertToRatesData(it)
+//        }
+        return null
     }
 
 }

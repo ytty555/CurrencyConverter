@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="noName">NoName</string>
     <string name="EUR">Euro</string>
     <string name="RUB">Russian ruble</string>
     <string name="USD">American dollar</string>
