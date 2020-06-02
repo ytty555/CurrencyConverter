@@ -4,4 +4,36 @@
     <string name="EUR">Euro</string>
     <string name="RUB">Russian ruble</string>
     <string name="USD">American dollar</string>
+    <string name="CAD">Canadian dollar</string>
+    <string name="HKD">Hong Kong dollar</string>
+    <string name="ISK">Icelandic krona</string>
+    <string name="PHP">Philippine peso</string>
+    <string name="DKK">Danish krone</string>
+    <string name="HUF">Hungarian forint</string>
+    <string name="CZK">Czech koruna</string>
+    <string name="AUD">Australian dollar</string>
+    <string name="RON">Romanian leu</string>
+    <string name="SEK">Swedish krona</string>
+    <string name="IDR">Indonesian rupiah</string>
+    <string name="INR">Indian rupee</string>
+    <string name="BRL">Brazilian real</string>
+    <string name="HRK">Croatian kuna</string>
+    <string name="JPY">Japanese yen</string>
+    <string name="THB">Thai baht</string>
+    <string name="CHF">Swiss franc</string>
+    <string name="SGD">Singapore dollar</string>
+    <string name="PLN">Polish złoty</string>
+    <string name="BGN">Bulgarian lev</string>
+    <string name="TRY">Turkish lira</string>
+    <string name="CNY">Renminbi</string>
+    <string name="NOK">Norwegian krone</string>
+    <string name="NZD">New Zealand dollar</string>
+    <string name="ZAR">South African rand</string>
+    <string name="MXN">Mexican peso</string>
+    <string name="ILS">Israeli new shekel</string>
+    <string name="GBP">Pound sterling</string>
+    <string name="KRW">South Korean won</string>
+    <string name="MYR">Malaysian ringgit</string>
+
+
 </resources>
