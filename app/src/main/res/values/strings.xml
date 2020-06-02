@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">CurrencyConverter</string>
+    <string name="app_name">Currency converter</string>
     <string name="base_currency_info">"Base currency: %s"</string>
 
     // Error messages

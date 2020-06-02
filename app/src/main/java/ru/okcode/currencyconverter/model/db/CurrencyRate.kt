@@ -7,8 +7,6 @@ private const val COLUMN_RATES_DATE = "rates_date"
 private const val COLUMN_RATE_TO_EURO = "rate_to_euro"
 private const val COLUMN_RATE_TO_BASE = "rate_to_base"
 private const val COLUMN_CURRENCY_CODE = "currency_code"
-private const val COLUMN_CURRENCY_FULL_NAME_RES = "currency_name_resource"
-private const val COLUMN_CURRENCY_FLAG_RES = "currency_flag_resource"
 private const val COLUMN_OPERATION_ID = "operation_id"
 private const val COLUMN_BASE_CURRENCY = "base_currency"
 

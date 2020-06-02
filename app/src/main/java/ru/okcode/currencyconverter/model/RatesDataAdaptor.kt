@@ -1,7 +1,6 @@
 package ru.okcode.currencyconverter.model
 
 import com.google.gson.JsonObject
-import ru.okcode.currencyconverter.model.api.Rate
 import ru.okcode.currencyconverter.model.api.RatesData
 import ru.okcode.currencyconverter.model.db.CurrencyRatesList
 import ru.okcode.currencyconverter.model.db.RateEntity

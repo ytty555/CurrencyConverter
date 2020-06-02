@@ -1,17 +1,14 @@
 package ru.okcode.currencyconverter.currencyrates
 
-import android.content.Context
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import ru.okcode.currencyconverter.R
 import ru.okcode.currencyconverter.databinding.ActivityCurrencyRatesBinding
-import ru.okcode.currencyconverter.model.RatesRepository
 
 class CurrencyRatesActivity : AppCompatActivity() {
 

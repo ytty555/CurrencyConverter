@@ -33,13 +33,12 @@ class CurrencyRecyclerViewAdaptor :
     }
 
 
-
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(getItem(position))
     }
 }
 
-class RateDiff: DiffUtil.ItemCallback<Rate>() {
+class RateDiff : DiffUtil.ItemCallback<Rate>() {
     override fun areItemsTheSame(oldItem: Rate, newItem: Rate): Boolean {
         return oldItem.currencyCode == newItem.currencyCode
     }

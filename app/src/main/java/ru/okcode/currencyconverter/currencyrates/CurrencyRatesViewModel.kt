@@ -4,11 +4,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.*
-import ru.okcode.currencyconverter.R
 import ru.okcode.currencyconverter.model.DefaultRatesRepository
 import ru.okcode.currencyconverter.model.api.RatesData
 import ru.okcode.currencyconverter.model.RatesRepository
-import ru.okcode.currencyconverter.model.Result
 
 class CurrencyRatesViewModel : ViewModel() {
 
@@ -27,7 +25,7 @@ class CurrencyRatesViewModel : ViewModel() {
     private fun getActualRates() {
         uiScope.launch {
             withContext(Dispatchers.IO) {
-            val resultRatesData: RatesData? = repository.getRates(forceUpdate = true)
+                val resultRatesData: RatesData? = repository.getRates(forceUpdate = true)
                 resultRatesData?.let {
                     _ratesData.postValue(it)
                 }

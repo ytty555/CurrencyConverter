@@ -1,12 +1,8 @@
 package ru.okcode.currencyconverter.model
 
-import kotlinx.coroutines.*
 import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 import ru.okcode.currencyconverter.App
 import ru.okcode.currencyconverter.model.api.ApiService
-import ru.okcode.currencyconverter.model.api.Rate
 import ru.okcode.currencyconverter.model.api.RatesData
 import ru.okcode.currencyconverter.model.db.*
 import timber.log.Timber
@@ -14,7 +10,7 @@ import timber.log.Timber
 class DefaultRatesRepository : RatesRepository {
 
     val api = ApiService.create()
-    val db = RatesDatabase.getInstance(App.getAppContext()).ratesDao
+    private val db = RatesDatabase.getInstance(App.getAppContext()).ratesDao
 
 
     override suspend fun getRates(forceUpdate: Boolean): RatesData? {
