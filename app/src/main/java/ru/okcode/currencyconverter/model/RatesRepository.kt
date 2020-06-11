@@ -1,9 +1,10 @@
 package ru.okcode.currencyconverter.model
 
+import io.reactivex.rxjava3.core.Observable
 import ru.okcode.currencyconverter.model.api.RatesData
 
 interface RatesRepository {
 
-    suspend fun getRates(forceUpdate: Boolean): RatesData?
+    fun getRawRatesData(forceUpdate: Boolean): Observable<RatesData>
 
 }

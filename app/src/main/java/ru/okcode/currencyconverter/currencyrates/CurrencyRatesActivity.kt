@@ -26,6 +26,8 @@ class CurrencyRatesActivity : AppCompatActivity() {
 
         binding.lifecycleOwner = this
 
+        binding.viewModel = viewModel
+
 
         // RecyclerView Rates
         val ratesLayoutManager: RecyclerView.LayoutManager = LinearLayoutManager(this)

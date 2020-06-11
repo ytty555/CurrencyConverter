@@ -1,4 +1,4 @@
-package ru.okcode.currencyconverter.model.db
+package ru.okcode.currencyconverter.model.dbCache
 
 import androidx.room.*
 import org.jetbrains.annotations.TestOnly
@@ -8,7 +8,7 @@ import org.jetbrains.annotations.TestOnly
 interface RatesDao {
 
     @Transaction
-    suspend fun safeRates(operation: OperationEntity, rates: List<RateEntity>) {
+    fun safeRates(operation: OperationEntity, rates: List<RateEntity>) {
         // Clear old data
         clearOperation()
 
@@ -22,7 +22,7 @@ interface RatesDao {
 
     @Transaction
     @Query("SELECT * FROM operation_table")
-    suspend fun getRates(): CurrencyRatesList?
+    fun getRates(): CurrencyRatesList?
 
 
     @Query("DELETE FROM operation_table")

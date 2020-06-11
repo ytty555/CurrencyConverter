@@ -2,8 +2,8 @@ package ru.okcode.currencyconverter.model
 
 import com.google.gson.JsonObject
 import ru.okcode.currencyconverter.model.api.RatesData
-import ru.okcode.currencyconverter.model.db.CurrencyRatesList
-import ru.okcode.currencyconverter.model.db.RateEntity
+import ru.okcode.currencyconverter.model.dbCache.CurrencyRatesList
+import ru.okcode.currencyconverter.model.dbCache.RateEntity
 
 class RatesDataAdaptor {
     companion object {
