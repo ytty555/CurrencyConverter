@@ -54,28 +54,6 @@ data class RateEntity(
 
 )
 
-//@Entity(tableName = "currency_table")
-//data class CurrencyEntity(
-//    @PrimaryKey(autoGenerate = false)
-//    @ColumnInfo(name = COLUMN_CURRENCY_CODE)
-//    val currencyCode: String,
-//
-//    @ColumnInfo(name = COLUMN_CURRENCY_FLAG_RES)
-//    val flagRes: Int,
-//
-//    @ColumnInfo(name = COLUMN_CURRENCY_FULL_NAME_RES)
-//    val fullNameRes: Int
-//)
-
-//data class RateCurrency(
-//    @Embedded val rate: RateEntity,
-//    @Relation(
-//        parentColumn = COLUMN_CURRENCY_CODE,
-//        entityColumn = COLUMN_CURRENCY_CODE
-//    )
-//    val currency: CurrencyEntity
-//)
-
 data class CurrencyRatesList(
     @Embedded val operation: OperationEntity,
     @Relation(

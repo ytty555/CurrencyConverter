@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="ratesData"
+            type="ru.okcode.currencyconverter.model.api.RatesData" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorYellow"
+        android:padding="8dp">
+
+        <TextView
+            android:id="@+id/currency_label"
+            style="@style/Text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/base_currency_label"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/amount_label"
+            style="@style/Text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/amount_label"
+            app:layout_constraintBaseline_toBaselineOf="@+id/currency_label"
+            app:layout_constraintStart_toStartOf="@+id/currency_amount" />
+
+        <TextView
+            android:id="@+id/currency_codeAndName"
+            style="@style/Text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="18sp"
+            android:text="@{ratesData.baseCurrency}"
+            app:layout_constraintStart_toStartOf="@+id/currency_label"
+            app:layout_constraintTop_toBottomOf="@+id/currency_label"
+            tools:text="Currency code + name" />
+
+        <TextView
+            android:id="@+id/currency_amount"
+            style="@style/Text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorRed"
+            android:textSize="22sp"
+            app:layout_constraintBaseline_toBaselineOf="@+id/currency_codeAndName"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:text="888.888" />
+
+        <TextView
+            android:id="@+id/updated_label"
+            style="@style/Text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="8dp"
+            android:text="@string/updated_label"
+            app:layout_constraintStart_toStartOf="@+id/currency_label"
+            app:layout_constraintTop_toBottomOf="@+id/currency_codeAndName" />
+
+        <TextView
+            android:id="@+id/currency_updated"
+            style="@style/Text"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="@{ratesData.date.toString()}"
+            app:layout_constraintBaseline_toBaselineOf="@+id/updated_label"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/updated_label"
+            tools:text="Date and time of currency update" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

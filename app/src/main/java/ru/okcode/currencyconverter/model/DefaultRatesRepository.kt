@@ -1,8 +1,8 @@
 package ru.okcode.currencyconverter.model
 
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Observable
-import io.reactivex.rxjava3.schedulers.Schedulers
+import io.reactivex.Completable
+import io.reactivex.Observable
+import io.reactivex.schedulers.Schedulers
 import ru.okcode.currencyconverter.App
 import ru.okcode.currencyconverter.model.api.ApiService
 import ru.okcode.currencyconverter.model.api.RatesData
@@ -21,7 +21,7 @@ class DefaultRatesRepository : RatesRepository {
      * If @param forceUpdate is true, then function request data form api first.
      * Else data come form cache only
      */
-    override fun getRawRatesData(forceUpdate: Boolean): Observable<RatesData> {
+    override fun getRatesDataSource(forceUpdate: Boolean): Observable<RatesData> {
         if (forceUpdate) {
             // Request data form remote API and save it to the cache
             return Observable.create { s ->

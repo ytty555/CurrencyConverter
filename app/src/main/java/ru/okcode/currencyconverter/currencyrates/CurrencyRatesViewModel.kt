@@ -1,10 +1,11 @@
 package ru.okcode.currencyconverter.currencyrates
 
+import android.annotation.SuppressLint
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
-import io.reactivex.rxjava3.schedulers.Schedulers
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import ru.okcode.currencyconverter.model.DefaultRatesRepository
 import ru.okcode.currencyconverter.model.RatesRepository
 import ru.okcode.currencyconverter.model.api.RatesData
@@ -29,9 +30,10 @@ class CurrencyRatesViewModel : ViewModel() {
         getActualRates()
     }
 
+    @SuppressLint("CheckResult")
     private fun getActualRates() {
         _isLoading.value = true
-        repository.getRawRatesData(true)
+        repository.getRatesDataSource(true)
             .subscribeOn(Schedulers.newThread())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ ratesData ->
