@@ -6,15 +6,16 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import ru.okcode.currencyconverter.databinding.RateItemBinding
+import ru.okcode.currencyconverter.model.CommonRateItem
 import ru.okcode.currencyconverter.model.api.Rate
 
 class CurrencyRecyclerViewAdaptor :
-    ListAdapter<Rate, CurrencyRecyclerViewAdaptor.ViewHolder>(RateDiff()) {
+    ListAdapter<CommonRateItem, CurrencyRecyclerViewAdaptor.ViewHolder>(RateDiff()) {
 
 
     class ViewHolder private constructor(private val binding: RateItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(item: Rate) {
+        fun bind(item: CommonRateItem) {
             binding.rate = item
             binding.executePendingBindings()
         }
@@ -38,12 +39,12 @@ class CurrencyRecyclerViewAdaptor :
     }
 }
 
-class RateDiff : DiffUtil.ItemCallback<Rate>() {
-    override fun areItemsTheSame(oldItem: Rate, newItem: Rate): Boolean {
+class RateDiff : DiffUtil.ItemCallback<CommonRateItem>() {
+    override fun areItemsTheSame(oldItem: CommonRateItem, newItem: CommonRateItem): Boolean {
         return oldItem.currencyCode == newItem.currencyCode
     }
 
-    override fun areContentsTheSame(oldItem: Rate, newItem: Rate): Boolean {
+    override fun areContentsTheSame(oldItem: CommonRateItem, newItem: CommonRateItem): Boolean {
         return oldItem == newItem
     }
 

@@ -6,7 +6,7 @@ import android.widget.ProgressBar
 import androidx.databinding.BindingAdapter
 
 @BindingAdapter("app:srcVector")
-fun ImageView.setImageResource(resource: Int) {
+fun ImageView.setVectorResource(resource: Int) {
     setImageResource(resource)
 }
 

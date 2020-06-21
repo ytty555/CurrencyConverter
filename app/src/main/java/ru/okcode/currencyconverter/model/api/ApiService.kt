@@ -9,7 +9,7 @@ import retrofit2.http.GET
 interface ApiService {
 
     @GET("latest")
-    fun getAllLatest(): Observable<RatesData>
+    fun getAllLatest(): Observable<RatesApiData>
 
     companion object {
         private const val API_PATH = "https://api.exchangeratesapi.io/"

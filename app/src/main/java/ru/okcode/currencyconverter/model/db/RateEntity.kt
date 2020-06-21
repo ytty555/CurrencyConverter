@@ -1,4 +1,4 @@
-package ru.okcode.currencyconverter.model.dbCache
+package ru.okcode.currencyconverter.model.db
 
 import androidx.room.*
 import java.util.*
@@ -8,26 +8,35 @@ private const val COLUMN_RATE_TO_EURO = "rate_to_euro"
 private const val COLUMN_RATE_TO_BASE = "rate_to_base"
 private const val COLUMN_CURRENCY_CODE = "currency_code"
 private const val COLUMN_OPERATION_ID = "operation_id"
-private const val COLUMN_BASE_CURRENCY = "base_currency"
+private const val COLUMN_BASE_CURRENCY_CODE = "base_currency_code"
+private const val COLUMN_BASE_CURRENCY_AMOUNT = "base_currency_amount"
+private const val COLUMN_BASE_CURRENCY_RATE_TO_EURO = "base_currency_rate_to_euro"
 
 @Entity(tableName = "operation_table")
-data class OperationEntity(
+data class DataSetEntity(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = COLUMN_OPERATION_ID)
     val id: Long = 0L,
 
     @ColumnInfo(name = COLUMN_RATES_DATE)
-    var ratesDate: Date,
+    var actualDate: Date,
 
-    @ColumnInfo(name = COLUMN_BASE_CURRENCY)
-    var baseCurrency: String = "EUR"
+    @ColumnInfo(name = COLUMN_BASE_CURRENCY_CODE)
+    var baseCurrencyCode: String = "EUR",
+
+    @ColumnInfo(name = COLUMN_BASE_CURRENCY_RATE_TO_EURO)
+    var baseCurrencyRateToEuro: Double,
+
+    @ColumnInfo(name = COLUMN_BASE_CURRENCY_AMOUNT)
+    var baseCurrencyAmount: Float = 1F
+
 )
 
 @Entity(
     tableName = "rate_table",
     foreignKeys = [
         ForeignKey(
-            entity = OperationEntity::class,
+            entity = DataSetEntity::class,
             parentColumns = [COLUMN_OPERATION_ID],
             childColumns = [COLUMN_OPERATION_ID],
             onDelete = ForeignKey.CASCADE
@@ -55,7 +64,7 @@ data class RateEntity(
 )
 
 data class CurrencyRatesList(
-    @Embedded val operation: OperationEntity,
+    @Embedded val dataSet: DataSetEntity,
     @Relation(
         entity = RateEntity::class,
         parentColumn = COLUMN_OPERATION_ID,

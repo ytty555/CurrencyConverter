@@ -1,4 +1,4 @@
-package ru.okcode.currencyconverter.model.dbCache
+package ru.okcode.currencyconverter.model
 
 import androidx.room.TypeConverter
 import java.util.*

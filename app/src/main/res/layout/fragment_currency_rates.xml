@@ -36,7 +36,7 @@
 
                 <include
                     android:id="@+id/include"
-                    app:ratesData="@{viewModel.ratesData}"
+                    app:ratesDataSet="@{viewModel.ratesData.commonRatesDataSet}"
                     app:layout_scrollFlags="scroll|snap"
                     layout="@layout/baze_currency"
                      />

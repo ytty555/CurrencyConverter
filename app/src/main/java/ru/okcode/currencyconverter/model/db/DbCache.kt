@@ -1,33 +1,34 @@
-package ru.okcode.currencyconverter.model.dbCache
+package ru.okcode.currencyconverter.model.db
 
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import ru.okcode.currencyconverter.model.Converters
 
 @Database(
-    entities = [OperationEntity::class, RateEntity::class],
+    entities = [DataSetEntity::class, RateEntity::class],
     version = 1,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
-abstract class RatesDatabase : RoomDatabase() {
+abstract class DbCache : RoomDatabase() {
 
-    abstract val ratesDao: RatesDao
+    abstract val cacheRatesDao: RatesDao
 
     companion object {
         @Volatile
-        private var INSTANCE: RatesDatabase? = null
+        private var INSTANCE: DbCache? = null
 
-        fun getInstance(context: Context): RatesDatabase {
+        fun getInstance(context: Context): DbCache {
             synchronized(this) {
                 var instance = INSTANCE
 
                 if (instance == null) {
                     instance = Room.databaseBuilder(
                         context.applicationContext,
-                        RatesDatabase::class.java,
+                        DbCache::class.java,
                         "rates_database"
                     )
                         .fallbackToDestructiveMigration()

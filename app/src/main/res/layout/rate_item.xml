@@ -8,7 +8,7 @@
 
         <variable
             name="rate"
-            type="ru.okcode.currencyconverter.model.api.Rate" />
+            type="ru.okcode.currencyconverter.model.CommonRateItem" />
     </data>
 
     <androidx.cardview.widget.CardView
@@ -85,7 +85,7 @@
                 android:id="@+id/currency_rate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@{String.valueOf(rate.rateToEuro)}"
+                android:text="@{String.valueOf(rate.rateToBase)}"
                 android:textColor="@color/colorPrimary"
                 android:textSize="18sp"
                 android:textStyle="bold"

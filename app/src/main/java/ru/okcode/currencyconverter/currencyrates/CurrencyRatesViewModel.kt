@@ -6,9 +6,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import ru.okcode.currencyconverter.model.CommonRates
 import ru.okcode.currencyconverter.model.DefaultRatesRepository
 import ru.okcode.currencyconverter.model.RatesRepository
-import ru.okcode.currencyconverter.model.api.RatesData
 
 class CurrencyRatesViewModel : ViewModel() {
 
@@ -18,9 +18,10 @@ class CurrencyRatesViewModel : ViewModel() {
     val errorManager: LiveData<String>
         get() = _errorMessage
 
-    private val _ratesData = MutableLiveData<RatesData?>()
-    val ratesData: LiveData<RatesData?>
+    private val _ratesData = MutableLiveData<CommonRates>()
+    val ratesData: LiveData<CommonRates>
         get() = _ratesData
+
 
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean>
@@ -36,8 +37,8 @@ class CurrencyRatesViewModel : ViewModel() {
         repository.getRatesDataSource(true)
             .subscribeOn(Schedulers.newThread())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({ ratesData ->
-                _ratesData.value = ratesData
+            .subscribe({commonRates ->
+                _ratesData.value = commonRates
                 _isLoading.value = false
             }, {
                 _errorMessage.value = it.localizedMessage

@@ -6,8 +6,8 @@
     <data>
 
         <variable
-            name="ratesData"
-            type="ru.okcode.currencyconverter.model.api.RatesData" />
+            name="ratesDataSet"
+            type="ru.okcode.currencyconverter.model.CommonRatesDataSet" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -41,7 +41,7 @@
             android:layout_height="wrap_content"
             android:textColor="@color/colorPrimaryDark"
             android:textSize="18sp"
-            android:text="@{ratesData.baseCurrency}"
+            android:text="@{ratesDataSet.baseCurrencyCode}"
             app:layout_constraintStart_toStartOf="@+id/currency_label"
             app:layout_constraintTop_toBottomOf="@+id/currency_label"
             tools:text="Currency code + name" />
@@ -74,7 +74,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:text="@{ratesData.date.toString()}"
+            android:text="@{ratesDataSet.actualDate.toString()}"
             app:layout_constraintBaseline_toBaselineOf="@+id/updated_label"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/updated_label"

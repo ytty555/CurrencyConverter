@@ -47,7 +47,7 @@ class CurrencyRatesFragment : Fragment() {
         ratesRecyclerVeiw.adapter = ratesAdaptor
         viewModel.ratesData.observe(viewLifecycleOwner, Observer {
             it?.let {
-                ratesAdaptor.submitList(it.getRatesList())
+                ratesAdaptor.submitList(it.commonRatesList)
                 ratesAdaptor.notifyDataSetChanged()
             }
         })

@@ -12,7 +12,7 @@ import kotlin.collections.ArrayList
  * Класс итоговых выходных данных из репозитория RatesRepository
  * @param date - дата актуальности курсов валют
  */
-data class RatesData(
+data class RatesApiData(
     @SerializedName("date")
     val date: Date,
     @SerializedName("base")
