@@ -1,5 +1,6 @@
 package ru.okcode.currencyconverter.model.db
 
+import android.util.Log
 import androidx.room.*
 import io.reactivex.Observable
 import ru.okcode.currencyconverter.model.CommonRates
@@ -21,7 +22,8 @@ interface RatesDao {
             baseCurrencyAmount = commonRates.commonRatesDataSet.baseCurrencyAmount,
             baseCurrencyRateToEuro = commonRates.commonRatesDataSet.baseCurrencyRateToEuro
         )
-        val ratesList = commonRates.commonRatesList.map { commonRateItem ->
+        val ratesList: List<RateEntity> = commonRates.commonRatesList.map { commonRateItem ->
+            Log.e("qq", "dataSet ID $dataSet.id")
             RateEntity(
                 currencyCode = commonRateItem.currencyCode,
                 rateToEuro = commonRateItem.rateToEuro,
@@ -33,6 +35,9 @@ interface RatesDao {
                 hostOperationId = dataSet.id
             )
         }
+        Log.e("qq", "ratesList hostOperationId ${ratesList[0].hostOperationId}")
+
+
         // Insert data
         insert(dataSet, ratesList)
         return Observable.just(commonRates)

@@ -8,7 +8,9 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import ru.okcode.currencyconverter.model.CommonRates
 import java.io.IOException
+import org.junit.Assert.*
 
 @RunWith(AndroidJUnit4::class)
 class DbWorkTest {
@@ -31,7 +33,15 @@ class DbWorkTest {
     @Test
     @Throws(Exception::class)
     fun writeCommonRatesAndReadInList() {
-        val commonRates =
+        val commonRates: CommonRates = TestHelperDbWork().createTestCommonRatesBaseEuro()
+
+        workDao.safeRates(commonRates)
+
+        workDao.getRates()
+            .subscribe{
+                val countRates = it?.rates?.size
+                assertEquals(3, commonRates)
+            }
     }
 
 }
