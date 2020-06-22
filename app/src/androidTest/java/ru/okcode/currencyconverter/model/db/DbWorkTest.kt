@@ -32,7 +32,7 @@ class DbWorkTest {
 
     @Test
     @Throws(Exception::class)
-    fun writeCommonRatesAndReadInList() {
+    fun writeCommonRatesAndReadReadRatesListSize() {
         val commonRates: CommonRates = TestHelperDbWork().createTestCommonRatesBaseEuro()
 
         workDao.safeRates(commonRates)

@@ -6,6 +6,7 @@ import io.reactivex.Observable
 import ru.okcode.currencyconverter.model.CommonRates
 import ru.okcode.currencyconverter.model.Converters
 import ru.okcode.currencyconverter.utils.getRateToBase
+import kotlin.random.Random
 
 @Dao
 @TypeConverters(Converters::class)
@@ -16,14 +17,17 @@ interface RatesDao {
         clear()
 
         // Convert data
+        val foreignKey: Long = Random.nextLong(Long.MAX_VALUE)
+
         val dataSet = DataSetEntity(
+            id = foreignKey,
             actualDate = commonRates.commonRatesDataSet.actualDate,
             baseCurrencyCode = commonRates.commonRatesDataSet.baseCurrencyCode,
             baseCurrencyAmount = commonRates.commonRatesDataSet.baseCurrencyAmount,
             baseCurrencyRateToEuro = commonRates.commonRatesDataSet.baseCurrencyRateToEuro
         )
+
         val ratesList: List<RateEntity> = commonRates.commonRatesList.map { commonRateItem ->
-            Log.e("qq", "dataSet ID $dataSet.id")
             RateEntity(
                 currencyCode = commonRateItem.currencyCode,
                 rateToEuro = commonRateItem.rateToEuro,
@@ -32,11 +36,9 @@ interface RatesDao {
                     baseCurrencyAmount = commonRates.commonRatesDataSet.baseCurrencyAmount,
                     currentCurrencyRateToEuro = commonRateItem.rateToEuro
                 ),
-                hostOperationId = dataSet.id
+                hostOperationId = foreignKey
             )
         }
-        Log.e("qq", "ratesList hostOperationId ${ratesList[0].hostOperationId}")
-
 
         // Insert data
         insert(dataSet, ratesList)

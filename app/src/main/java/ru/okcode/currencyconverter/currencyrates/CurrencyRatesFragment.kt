@@ -1,6 +1,7 @@
 package ru.okcode.currencyconverter.currencyrates
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -47,6 +48,7 @@ class CurrencyRatesFragment : Fragment() {
         ratesRecyclerVeiw.adapter = ratesAdaptor
         viewModel.ratesData.observe(viewLifecycleOwner, Observer {
             it?.let {
+                Log.e("qq", "CommonRates to adapter: $it")
                 ratesAdaptor.submitList(it.commonRatesList)
                 ratesAdaptor.notifyDataSetChanged()
             }
