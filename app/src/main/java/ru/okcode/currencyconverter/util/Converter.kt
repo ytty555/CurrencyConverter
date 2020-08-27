@@ -27,7 +27,7 @@ fun convertToRates(ratesDto: RatesDto): Rates {
         Rate(currency = currency, value = rate, flagRes = flagRes)
     }
     return Rates(
-        actualDate = Date(),
+        actualDate = Date(),// TODO Fix it!!!
         baseCurrency = Currency.getInstance(ratesDto.baseCode),
         rates = ratesList
     )

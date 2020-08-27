@@ -13,7 +13,6 @@ import kotlinx.coroutines.launch
 import ru.okcode.currencyconverter.model.Rates
 import ru.okcode.currencyconverter.model.Repository
 import ru.okcode.currencyconverter.util.convertToRates
-import java.lang.Exception
 
 class OverviewViewModel @ViewModelInject constructor(
     private val repository: Repository,
@@ -23,18 +22,20 @@ class OverviewViewModel @ViewModelInject constructor(
     private val job = Job()
     private val scope = CoroutineScope(Dispatchers.Main + job)
 
-    private val _errorMessage = MutableLiveData<String>()
-    val errorMessage: LiveData<String>
-        get() = _errorMessage
+    // Error messages
+    private val _message = MutableLiveData<String>()
+    val message: LiveData<String>
+        get() = _message
 
+    // Rates data
     private val _rates = MutableLiveData<Rates>()
     val rates: LiveData<Rates>
         get() = _rates
 
-
-    private val _isLoading = MutableLiveData<Boolean>()
-    val isLoading: LiveData<Boolean>
-        get() = _isLoading
+    // Loading status
+    private val _status = MutableLiveData<ApiStatus>()
+    val status: LiveData<ApiStatus>
+        get() = _status
 
     init {
         getRates()
@@ -42,12 +43,15 @@ class OverviewViewModel @ViewModelInject constructor(
 
     private fun getRates() {
         scope.launch {
+            _status.value = ApiStatus.LOADING
             val ratesDtoDeferred = repository.getRatesAsync()
             try {
                 val ratesDto = ratesDtoDeferred.await()
                 _rates.value = convertToRates(ratesDto)
+                _status.value = ApiStatus.DONE
             } catch (e: Exception) {
-                _errorMessage.value = e.localizedMessage
+                _status.value = ApiStatus.ERROR
+                _message.value = e.localizedMessage
             }
         }
     }
@@ -56,4 +60,10 @@ class OverviewViewModel @ViewModelInject constructor(
         super.onCleared()
         job.cancel()
     }
+}
+
+enum class ApiStatus {
+    LOADING,
+    ERROR,
+    DONE
 }

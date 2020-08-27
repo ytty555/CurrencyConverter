@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
@@ -19,9 +19,7 @@ import ru.okcode.currencyconverter.databinding.FragmentCurrencyRatesBinding
 class OverviewFragment : Fragment() {
 
     private lateinit var binding: FragmentCurrencyRatesBinding
-    private val viewModel: OverviewViewModel by lazy {
-        ViewModelProvider(this).get(OverviewViewModel::class.java)
-    }
+    private val viewModel: OverviewViewModel by viewModels()
     private lateinit var ratesRecyclerVeiw: RecyclerView
     private lateinit var coordinatorLayout: CoordinatorLayout
 
@@ -38,8 +36,8 @@ class OverviewFragment : Fragment() {
 
         binding.viewModel = viewModel
 
-        // Handle error messages
-        viewModel.errorMessage.observe(viewLifecycleOwner, { errorMessage ->
+        // Handle messages
+        viewModel.message.observe(viewLifecycleOwner, { errorMessage ->
             showMessage(errorMessage)
         })
 
@@ -59,7 +57,7 @@ class OverviewFragment : Fragment() {
 
     private fun showMessage(text: String) {
         Snackbar.make(coordinatorLayout, text, Snackbar.LENGTH_SHORT)
-            .setDuration(10000)
+            .setDuration(7000)
             .show()
     }
 }

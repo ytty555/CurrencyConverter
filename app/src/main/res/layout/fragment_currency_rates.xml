@@ -16,9 +16,9 @@
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:id="@+id/coordinator"
-        android:fitsSystemWindows="true"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true">
 
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -36,13 +36,11 @@
 
                 <include
                     android:id="@+id/include"
-                    app:ratesDataSet="@{viewModel.rates}"
-                    app:layout_scrollFlags="scroll|snap"
                     layout="@layout/baze_currency"
-                     />
+                    app:layout_scrollFlags="scroll|snap"
+                    app:ratesDataSet="@{viewModel.rates}" />
 
             </com.google.android.material.appbar.AppBarLayout>
-
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/currency_rates_recycleview"
@@ -53,17 +51,15 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/appBar" />
 
-            <ProgressBar
-                android:id="@+id/progressBar"
-                style="?android:attr/progressBarStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:indeterminate="true"
-                android:visibility="@{viewModel.isLoading()}"
+            <ImageView
+                android:id="@+id/status_image"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                app:loadingApiStatus="@{viewModel.status}" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>
