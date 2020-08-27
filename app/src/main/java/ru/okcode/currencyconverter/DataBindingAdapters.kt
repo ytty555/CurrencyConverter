@@ -5,16 +5,16 @@ import android.widget.ImageView
 import android.widget.ProgressBar
 import androidx.databinding.BindingAdapter
 
-@BindingAdapter("app:srcVector")
+@BindingAdapter("srcVector")
 fun ImageView.setVectorResource(resource: Int) {
     setImageResource(resource)
 }
 
 @BindingAdapter("android:visibility")
 fun ProgressBar.setVisibility(visible: Boolean) {
-    if (visible) {
-        visibility = View.VISIBLE
+    visibility = if (visible) {
+        View.VISIBLE
     } else {
-        visibility = View.GONE
+        View.GONE
     }
 }

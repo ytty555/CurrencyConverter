@@ -10,7 +10,7 @@
 
         <variable
             name="viewModel"
-            type="ru.okcode.currencyconverter.currencyrates.CurrencyRatesViewModel" />
+            type="ru.okcode.currencyconverter.ui.overview.OverviewViewModel" />
 
     </data>
 
@@ -24,7 +24,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            tools:context=".currencyrates.CurrencyRatesFragment">
+            tools:context=".ui.overview.OverviewFragment">
 
             <com.google.android.material.appbar.AppBarLayout
                 android:id="@+id/appBar"
@@ -36,7 +36,7 @@
 
                 <include
                     android:id="@+id/include"
-                    app:ratesDataSet="@{viewModel.ratesData.commonRatesDataSet}"
+                    app:ratesDataSet="@{viewModel.rates}"
                     app:layout_scrollFlags="scroll|snap"
                     layout="@layout/baze_currency"
                      />

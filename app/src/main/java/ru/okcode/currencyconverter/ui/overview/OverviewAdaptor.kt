@@ -1,4 +1,4 @@
-package ru.okcode.currencyconverter.currencyrates
+package ru.okcode.currencyconverter.ui.overview
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -6,16 +6,15 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import ru.okcode.currencyconverter.databinding.RateItemBinding
-import ru.okcode.currencyconverter.model.CommonRateItem
-import ru.okcode.currencyconverter.model.api.Rate
+import ru.okcode.currencyconverter.model.Rate
 
 class CurrencyRecyclerViewAdaptor :
-    ListAdapter<CommonRateItem, CurrencyRecyclerViewAdaptor.ViewHolder>(RateDiff()) {
+    ListAdapter<Rate, CurrencyRecyclerViewAdaptor.ViewHolder>(RateDiff()) {
 
 
     class ViewHolder private constructor(private val binding: RateItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(item: CommonRateItem) {
+        fun bind(item: Rate) {
             binding.rate = item
             binding.executePendingBindings()
         }
@@ -39,12 +38,12 @@ class CurrencyRecyclerViewAdaptor :
     }
 }
 
-class RateDiff : DiffUtil.ItemCallback<CommonRateItem>() {
-    override fun areItemsTheSame(oldItem: CommonRateItem, newItem: CommonRateItem): Boolean {
-        return oldItem.currencyCode == newItem.currencyCode
+class RateDiff : DiffUtil.ItemCallback<Rate>() {
+    override fun areItemsTheSame(oldItem: Rate, newItem: Rate): Boolean {
+        return oldItem.currency == newItem.currency
     }
 
-    override fun areContentsTheSame(oldItem: CommonRateItem, newItem: CommonRateItem): Boolean {
+    override fun areContentsTheSame(oldItem: Rate, newItem: Rate): Boolean {
         return oldItem == newItem
     }
 

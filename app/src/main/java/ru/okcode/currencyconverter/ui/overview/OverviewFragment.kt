@@ -1,4 +1,4 @@
-package ru.okcode.currencyconverter.currencyrates
+package ru.okcode.currencyconverter.ui.overview
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -8,17 +8,21 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
+import dagger.hilt.android.AndroidEntryPoint
 import ru.okcode.currencyconverter.R
 import ru.okcode.currencyconverter.databinding.FragmentCurrencyRatesBinding
 
-class CurrencyRatesFragment : Fragment() {
+@AndroidEntryPoint
+class OverviewFragment : Fragment() {
 
     private lateinit var binding: FragmentCurrencyRatesBinding
-    private val viewModel: CurrencyRatesViewModel by activityViewModels()
+    private val viewModel: OverviewViewModel by lazy {
+        ViewModelProvider(this).get(OverviewViewModel::class.java)
+    }
     private lateinit var ratesRecyclerVeiw: RecyclerView
     private lateinit var coordinatorLayout: CoordinatorLayout
 
@@ -27,16 +31,17 @@ class CurrencyRatesFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_currency_rates, container, false)
+        binding =
+            DataBindingUtil.inflate(inflater, R.layout.fragment_currency_rates, container, false)
 
         binding.lifecycleOwner = this
         coordinatorLayout = binding.coordinator
 
         binding.viewModel = viewModel
 
-
-        viewModel.errorManager.observe(viewLifecycleOwner, Observer {
-            showMessage("Error: $it")
+        // Handle error messages
+        viewModel.errorMessage.observe(viewLifecycleOwner, { errorMessage ->
+            showMessage(errorMessage)
         })
 
         // RecyclerView Rates
@@ -45,11 +50,9 @@ class CurrencyRatesFragment : Fragment() {
         ratesRecyclerVeiw = binding.currencyRatesRecycleview
         ratesRecyclerVeiw.layoutManager = ratesLayoutManager
         ratesRecyclerVeiw.adapter = ratesAdaptor
-        viewModel.ratesData.observe(viewLifecycleOwner, Observer {
-            it?.let {
-                ratesAdaptor.submitList(it.commonRatesList)
-                ratesAdaptor.notifyDataSetChanged()
-            }
+        viewModel.rates.observe(viewLifecycleOwner, { ratesList ->
+            ratesAdaptor.submitList(ratesList.rates)
+            ratesAdaptor.notifyDataSetChanged()
         })
 
         return binding.root
@@ -57,7 +60,7 @@ class CurrencyRatesFragment : Fragment() {
 
     private fun showMessage(text: String) {
         Snackbar.make(coordinatorLayout, text, Snackbar.LENGTH_SHORT)
-            .setDuration(3000)
+            .setDuration(10000)
             .show()
     }
 }
