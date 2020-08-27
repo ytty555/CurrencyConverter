@@ -1,9 +1,6 @@
 package ru.okcode.currencyconverter.model.api
 
 import com.squareup.moshi.Json
-import org.json.JSONObject
-import java.math.BigDecimal
-
 
 data class RatesDto(
     @Json(name = "result") val result: String,
