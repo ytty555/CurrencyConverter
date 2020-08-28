@@ -1,5 +1,6 @@
 package ru.okcode.currencyconverter.model
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Transformations
 import kotlinx.coroutines.Dispatchers
@@ -19,10 +20,12 @@ class RepositoryImpl @Inject constructor(
 
     override val rates: LiveData<Rates> =
         Transformations.map(cacheDao.getCacheRates()) { cacheHeaderWithRates ->
-            cacheHeaderWithRates.toDomainModel()
+            Log.e("qq", "RepositoryImpl setting rates LiveData...")
+            cacheHeaderWithRates?.toDomainModel()
         }
 
-    suspend fun refreshCacheRates() {
+
+    override suspend fun refreshCacheRates() {
         withContext(Dispatchers.IO) {
             val apiRates: RatesDto = api.getRatesAsync().await()
             cacheDao.insertToCache(

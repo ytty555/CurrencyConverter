@@ -8,4 +8,6 @@ import ru.okcode.currencyconverter.util.Result
 
 interface Repository {
     val rates: LiveData<Rates>
+
+    suspend fun refreshCacheRates()
 }

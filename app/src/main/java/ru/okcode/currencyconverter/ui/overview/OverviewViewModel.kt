@@ -12,7 +12,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import ru.okcode.currencyconverter.model.Rates
 import ru.okcode.currencyconverter.model.Repository
-import ru.okcode.currencyconverter.util.convertToRates
 
 class OverviewViewModel @ViewModelInject constructor(
     private val repository: Repository,
@@ -28,31 +27,11 @@ class OverviewViewModel @ViewModelInject constructor(
         get() = _message
 
     // Rates data
-    private val _rates = MutableLiveData<Rates>()
-    val rates: LiveData<Rates>
-        get() = _rates
-
-    // Loading status
-    private val _status = MutableLiveData<ApiStatus>()
-    val status: LiveData<ApiStatus>
-        get() = _status
+    val rates: LiveData<Rates> = repository.rates
 
     init {
-        getRates()
-    }
-
-    private fun getRates() {
         scope.launch {
-            _status.value = ApiStatus.LOADING
-            val ratesDtoDeferred = repository.getRatesAsync()
-            try {
-                val ratesDto = ratesDtoDeferred.await()
-                _rates.value = convertToRates(ratesDto)
-                _status.value = ApiStatus.DONE
-            } catch (e: Exception) {
-                _status.value = ApiStatus.ERROR
-                _message.value = e.localizedMessage
-            }
+            repository.refreshCacheRates()
         }
     }
 
@@ -60,10 +39,4 @@ class OverviewViewModel @ViewModelInject constructor(
         super.onCleared()
         job.cancel()
     }
-}
-
-enum class ApiStatus {
-    LOADING,
-    ERROR,
-    DONE
 }

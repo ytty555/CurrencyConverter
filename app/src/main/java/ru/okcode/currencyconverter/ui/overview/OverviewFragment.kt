@@ -48,8 +48,10 @@ class OverviewFragment : Fragment() {
         ratesRecyclerVeiw.layoutManager = ratesLayoutManager
         ratesRecyclerVeiw.adapter = ratesAdaptor
         viewModel.rates.observe(viewLifecycleOwner, { ratesList ->
-            ratesAdaptor.submitList(ratesList.rates)
-            ratesAdaptor.notifyDataSetChanged()
+            ratesList?.let {
+                ratesAdaptor.submitList(ratesList.rates)
+                ratesAdaptor.notifyDataSetChanged()
+            }
         })
 
         return binding.root
