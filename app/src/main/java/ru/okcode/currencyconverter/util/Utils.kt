@@ -19,11 +19,7 @@ fun convertToRates(ratesDto: RatesDto): Rates {
         val rate: BigDecimal = BigDecimal.valueOf(pair.value)
 
         // get Flag
-        val flagRes = try {
-            CurrencyEnum.valueOf(currencyCode).flagRes
-        } catch (e: IllegalArgumentException) {
-            null
-        }
+        val flagRes = getFlagRes(currencyCode)
         Rate(currency = currency, value = rate, flagRes = flagRes)
     }
     return Rates(
@@ -31,4 +27,12 @@ fun convertToRates(ratesDto: RatesDto): Rates {
         baseCurrency = Currency.getInstance(ratesDto.baseCode),
         rates = ratesList
     )
+}
+
+fun getFlagRes(currencyCode: String): Int? {
+    return try {
+        CurrencyEnum.valueOf(currencyCode).flagRes
+    } catch (e: IllegalArgumentException) {
+        null
+    }
 }

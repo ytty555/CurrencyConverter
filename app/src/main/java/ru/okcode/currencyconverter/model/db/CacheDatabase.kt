@@ -5,7 +5,7 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 
 @Database(
-    entities = [Cache::class, CurrencyRate::class],
+    entities = [CacheRatesHeader::class, CacheCurrencyRate::class],
     version = 1,
     exportSchema = false
 )

@@ -1,16 +1,32 @@
 package ru.okcode.currencyconverter.model.db
 
+import androidx.lifecycle.LiveData
 import androidx.room.*
 
 @Dao
 interface CacheDao {
     @Transaction
-    @Query("SELECT * FROM Cache")
-    fun getCacheRates(): List<CacheRates>
+    @Query("SELECT * FROM CacheRatesHeader")
+    fun getCacheRates(): LiveData<CacheHeaderWithRates>
+
+    @Transaction
+    fun insertToCache(cacheRatesHeader: CacheRatesHeader, ratesList: List<CacheCurrencyRate>) {
+        clearCacheTitle()
+        clearCacheCurrencyRates()
+        insertCacheTitle(cacheRatesHeader)
+        insertCacheRates(ratesList)
+    }
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertCacheRates(cache: Cache, currencyRate: CurrencyRate)
+    fun insertCacheTitle(cache: CacheRatesHeader)
 
-    @Delete
-    fun deleteAll(vararg cache: Cache)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertCacheRates(ratesList: List<CacheCurrencyRate>)
+
+    @Query("DELETE FROM CacheRatesHeader")
+    fun clearCacheTitle()
+
+    @Query("DELETE FROM CacheCurrencyRate")
+    fun clearCacheCurrencyRates()
+
 }
