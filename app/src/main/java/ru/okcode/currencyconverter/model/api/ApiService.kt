@@ -6,6 +6,6 @@ import retrofit2.http.GET
 import retrofit2.http.Path
 
 interface ApiService {
-    @GET("latest/USD")
+    @GET("latest/EUR")
     fun getRatesAsync(): Deferred<RatesDto>
 }

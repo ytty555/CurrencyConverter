@@ -7,7 +7,7 @@ import ru.okcode.currencyconverter.model.db.CacheDatabase
 import ru.okcode.currencyconverter.util.Result
 
 interface Repository {
-    val rates: LiveData<Rates>
+    val cachedRates: LiveData<Rates>
 
-    suspend fun refreshCacheRates()
+    suspend fun refreshCacheRates(immediately: Boolean = false)
 }

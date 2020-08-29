@@ -21,17 +21,17 @@ class OverviewViewModel @ViewModelInject constructor(
     private val job = Job()
     private val scope = CoroutineScope(Dispatchers.Main + job)
 
-    // Error messages
+    // Messages
     private val _message = MutableLiveData<String>()
     val message: LiveData<String>
         get() = _message
 
     // Rates data
-    val rates: LiveData<Rates> = repository.rates
+    val rates: LiveData<Rates> = repository.cachedRates
 
     init {
         scope.launch {
-            repository.refreshCacheRates()
+            repository.refreshCacheRates(true)
         }
     }
 

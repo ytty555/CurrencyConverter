@@ -2,6 +2,8 @@ package ru.okcode.currencyconverter.model.db
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
+import kotlinx.coroutines.*
+import java.util.*
 
 @Dao
 interface CacheDao {
@@ -29,4 +31,18 @@ interface CacheDao {
     @Query("DELETE FROM CacheCurrencyRate")
     fun clearCacheCurrencyRates()
 
+    // Cache has an actual data checking -------------------------------------
+    @Query("SELECT * FROM CacheRatesHeader")
+    fun getDataForCheckCache(): CacheHeaderWithRates?
+
+    fun isActual(): Deferred<Boolean> {
+        return GlobalScope.async(Dispatchers.IO) {
+            val cacheData = getDataForCheckCache()
+            val currentTimeStamp = Date().time / 1000
+            cacheData != null
+                    && currentTimeStamp >= cacheData.cache.timeLastUpdateUnix
+                    && currentTimeStamp < cacheData.cache.timeNextUpdateUnix
+                    && !cacheData.rates.isNullOrEmpty()
+        }
+    }
 }

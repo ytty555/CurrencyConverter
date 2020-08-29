@@ -18,20 +18,35 @@ class RepositoryImpl @Inject constructor(
     private val cacheDao: CacheDao
 ) : Repository {
 
-    override val rates: LiveData<Rates> =
+    override val cachedRates: LiveData<Rates> =
         Transformations.map(cacheDao.getCacheRates()) { cacheHeaderWithRates ->
-            Log.e("qq", "RepositoryImpl setting rates LiveData...")
+            Log.e("qq", "RepositoryImpl: Setting rates LiveData...")
             cacheHeaderWithRates?.toDomainModel()
         }
 
+    override suspend fun refreshCacheRates(immediately: Boolean) {
+        val isActualDataInCache = cacheDao.isActual().await()
+        Log.e("qq", "RepositoryImpl: Cache actual: $isActualDataInCache")
+        if (!immediately && isActualDataInCache) {
+            Log.e("qq", "RepositoryImpl: Cache has actual data. Do nothing")
+            return
+        }
 
-    override suspend fun refreshCacheRates() {
+        Log.e("qq", "RepositoryImpl: Starting cache refreshing")
         withContext(Dispatchers.IO) {
-            val apiRates: RatesDto = api.getRatesAsync().await()
-            cacheDao.insertToCache(
-                apiRates.toCacheRatesHeader(),
-                apiRates.toCacheCurrencyRatesList()
-            )
+            try {
+                val apiRates: RatesDto = api.getRatesAsync().await()
+                cacheDao.insertToCache(
+                    apiRates.toCacheRatesHeader(),
+                    apiRates.toCacheCurrencyRatesList()
+                )
+                Log.e("qq", "RepositoryImpl: Data cached!")
+
+            } catch (e: Exception) {
+                Log.e("qq", "RepositoryImpl: Error: ${e.message}")
+
+            }
         }
     }
+
 }

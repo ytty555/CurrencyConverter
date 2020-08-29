@@ -14,8 +14,8 @@ import java.util.*
 @Entity
 data class CacheRatesHeader(
     @PrimaryKey
-    val timeLastUpdate: String,
-    val timeNextUpdate: String,
+    val timeLastUpdateUnix: Long,
+    val timeNextUpdateUnix: Long,
     val baseCode: String,
 )
 
@@ -24,21 +24,22 @@ data class CacheCurrencyRate(
     @PrimaryKey
     var currencyCode: String,
     var rate: BigDecimal,
-    var timeLastUpdate: String,
+    var timeLastUpdateUnix: Long,
     var priorityPosition: Int = 0
 )
 
 data class CacheHeaderWithRates(
     @Embedded val cache: CacheRatesHeader,
     @Relation(
-        parentColumn = "timeLastUpdate",
-        entityColumn = "timeLastUpdate"
+        parentColumn = "timeLastUpdateUnix",
+        entityColumn = "timeLastUpdateUnix"
     )
     val rates: List<CacheCurrencyRate>
 )
 
 fun CacheHeaderWithRates.toDomainModel(): Rates {
-    val actualDate: Date = Date(cache.timeLastUpdate)
+    val lastUpdate = Date(cache.timeLastUpdateUnix * 1000)
+    val nextUpdate = Date(cache.timeNextUpdateUnix * 1000)
     val baseCurrency = Currency.getInstance(cache.baseCode)
     val rates: List<Rate> = this.rates.map {
         Rate(
@@ -47,5 +48,10 @@ fun CacheHeaderWithRates.toDomainModel(): Rates {
             flagRes = getFlagRes(it.currencyCode)
         )
     }
-    return Rates(actualDate, baseCurrency, rates)
+    return Rates(
+        baseCurrency = baseCurrency,
+        rates = rates,
+        lastUpdate = lastUpdate,
+        nextUpdate = nextUpdate
+    )
 }
