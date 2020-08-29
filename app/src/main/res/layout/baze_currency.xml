@@ -74,7 +74,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:text="@{ratesDataSet.actualDate.toString()}"
+            android:text="@{ratesDataSet.lastUpdate.toString()}"
             app:layout_constraintBaseline_toBaselineOf="@+id/updated_label"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/updated_label"

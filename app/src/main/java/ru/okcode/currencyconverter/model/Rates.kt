@@ -5,9 +5,10 @@ import android.icu.util.Currency
 import java.util.*
 
 data class Rates(
-    val actualDate: Date,
     val baseCurrency: Currency,
-    val rates: List<Rate>
+    val rates: List<Rate>,
+    val lastUpdate: Date,
+    val nextUpdate: Date
 )
 
 data class Rate(
