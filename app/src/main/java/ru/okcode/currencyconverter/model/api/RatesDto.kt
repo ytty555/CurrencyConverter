@@ -2,8 +2,8 @@ package ru.okcode.currencyconverter.model.api
 
 import android.icu.math.BigDecimal
 import com.squareup.moshi.Json
-import ru.okcode.currencyconverter.model.db.CacheCurrencyRate
-import ru.okcode.currencyconverter.model.db.CacheRatesHeader
+import ru.okcode.currencyconverter.model.db.cache.CacheCurrencyRate
+import ru.okcode.currencyconverter.model.db.cache.CacheRatesHeader
 
 data class RatesDto(
     @Json(name = "result") val result: String,

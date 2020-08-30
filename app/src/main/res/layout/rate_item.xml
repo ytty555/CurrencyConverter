@@ -5,10 +5,11 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+        <import type="android.icu.util.Currency"/>
 
         <variable
             name="rate"
-            type="ru.okcode.currencyconverter.model.Rate" />
+            type="ru.okcode.currencyconverter.model.readyRates.Rate" />
     </data>
 
     <androidx.cardview.widget.CardView
@@ -59,7 +60,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:text="@{rate.currency.currencyCode}"
+                android:text="@{rate.currencyCode}"
                 android:textSize="14sp"
                 app:layout_constraintBottom_toTopOf="@+id/currency_name"
                 app:layout_constraintStart_toEndOf="@+id/flag_cardview"
@@ -72,7 +73,7 @@
                 android:id="@+id/currency_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@{rate.currency.displayName}"
+                android:text="11111111111111111111111"
                 android:textColor="@android:color/black"
                 android:textSize="18sp"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -85,7 +86,7 @@
                 android:id="@+id/currency_rate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@{String.valueOf(rate.value)}"
+                android:text="@{String.valueOf(rate.rate)}"
                 android:textColor="@color/colorPrimary"
                 android:textSize="18sp"
                 android:textStyle="bold"

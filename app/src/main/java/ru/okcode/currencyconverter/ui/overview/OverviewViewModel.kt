@@ -10,11 +10,11 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import ru.okcode.currencyconverter.model.Rates
-import ru.okcode.currencyconverter.model.Repository
+import ru.okcode.currencyconverter.model.RepositoryMain
+import ru.okcode.currencyconverter.model.readyRates.Rates
 
 class OverviewViewModel @ViewModelInject constructor(
-    private val repository: Repository,
+    private val repositoryMain: RepositoryMain,
     @Assisted private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -26,12 +26,12 @@ class OverviewViewModel @ViewModelInject constructor(
     val message: LiveData<String>
         get() = _message
 
-    // Rates data
-    val rates: LiveData<Rates> = repository.cachedRates
+    // Ready rates data
+    val readyRates: LiveData<Rates> = repositoryMain.readyRates
 
     init {
         scope.launch {
-            repository.refreshCacheRates(true)
+            repositoryMain.refreshData(true)
         }
     }
 
@@ -39,4 +39,5 @@ class OverviewViewModel @ViewModelInject constructor(
         super.onCleared()
         job.cancel()
     }
+
 }

@@ -4,10 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
         <variable
             name="ratesDataSet"
-            type="ru.okcode.currencyconverter.model.Rates" />
+            type="ru.okcode.currencyconverter.model.readyRates.Rates" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -41,7 +40,7 @@
             android:layout_height="wrap_content"
             android:textColor="@color/colorPrimaryDark"
             android:textSize="18sp"
-            android:text="@{ratesDataSet.baseCurrency.currencyCode}"
+            android:text="@{ratesDataSet.baseCurrencyCode}"
             app:layout_constraintStart_toStartOf="@+id/currency_label"
             app:layout_constraintTop_toBottomOf="@+id/currency_label"
             tools:text="Currency code + name" />
@@ -74,7 +73,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:text="@{ratesDataSet.lastUpdate.toString()}"
+            android:text="2222222222222222222222222"
             app:layout_constraintBaseline_toBaselineOf="@+id/updated_label"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/updated_label"

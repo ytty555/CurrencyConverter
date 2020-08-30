@@ -1,4 +1,4 @@
-package ru.okcode.currencyconverter.model.db
+package ru.okcode.currencyconverter.model.db.cache
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
@@ -13,20 +13,20 @@ interface CacheDao {
 
     @Transaction
     fun insertToCache(cacheRatesHeader: CacheRatesHeader, ratesList: List<CacheCurrencyRate>) {
-        clearCacheTitle()
+        clearCacheHeader()
         clearCacheCurrencyRates()
-        insertCacheTitle(cacheRatesHeader)
+        insertCacheHeader(cacheRatesHeader)
         insertCacheRates(ratesList)
     }
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertCacheTitle(cache: CacheRatesHeader)
+    fun insertCacheHeader(cache: CacheRatesHeader)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertCacheRates(ratesList: List<CacheCurrencyRate>)
 
     @Query("DELETE FROM CacheRatesHeader")
-    fun clearCacheTitle()
+    fun clearCacheHeader()
 
     @Query("DELETE FROM CacheCurrencyRate")
     fun clearCacheCurrencyRates()
@@ -40,8 +40,8 @@ interface CacheDao {
             val cacheData = getDataForCheckCache()
             val currentTimeStamp = Date().time / 1000
             cacheData != null
-                    && currentTimeStamp >= cacheData.cache.timeLastUpdateUnix
-                    && currentTimeStamp < cacheData.cache.timeNextUpdateUnix
+                    && currentTimeStamp >= cacheData.cacheHeader.timeLastUpdateUnix
+                    && currentTimeStamp < cacheData.cacheHeader.timeNextUpdateUnix
                     && !cacheData.rates.isNullOrEmpty()
         }
     }
