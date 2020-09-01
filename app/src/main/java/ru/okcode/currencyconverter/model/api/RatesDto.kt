@@ -26,7 +26,7 @@ fun RatesDto.toCacheCurrencyRatesList(): List<CacheCurrencyRate> =
     this.conversionRates.map {
         CacheCurrencyRate(
             currencyCode = it.key,
-            rate = BigDecimal.valueOf(it.value),
+            rateToBase = BigDecimal.valueOf(it.value),
             timeLastUpdateUnix = this.timeLastUpdateUnix
         )
     }

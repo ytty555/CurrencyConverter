@@ -9,6 +9,8 @@ import ru.okcode.currencyconverter.model.readyRates.Rate
 import ru.okcode.currencyconverter.model.readyRates.Rates
 import ru.okcode.currencyconverter.util.getFlagRes
 
+private const val CODE_EURO = "EUR"
+
 @Entity
 data class CacheRatesHeader(
     @PrimaryKey
@@ -21,7 +23,7 @@ data class CacheRatesHeader(
 data class CacheCurrencyRate(
     @PrimaryKey
     var currencyCode: String,
-    var rate: BigDecimal,
+    var rateToBase: BigDecimal,
     var timeLastUpdateUnix: Long,
 )
 
@@ -34,17 +36,37 @@ data class CacheHeaderWithRates(
     val rates: List<CacheCurrencyRate>
 )
 
+
+fun CacheCurrencyRate.getRateToEuro(baseCurrencyRateToEuro: BigDecimal): BigDecimal {
+    return baseCurrencyRateToEuro.multiply(rateToBase)
+}
+
+fun CacheHeaderWithRates.getBaseCurrencyRateToEuro(): BigDecimal {
+    if (cacheHeader.baseCode == CODE_EURO) {
+        return BigDecimal.valueOf(1.0)
+    }
+
+    val euroRateToBase =
+        rates.filter { CODE_EURO == it.currencyCode }[0].rateToBase
+
+    return BigDecimal.valueOf(1.0).divide(euroRateToBase)
+}
+
 fun CacheHeaderWithRates.toDomainModel(): Rates {
+    val baseCurrencyRateToEuro = getBaseCurrencyRateToEuro()
+
     val rates: List<Rate> = this.rates.map {
         Rate(
             currencyCode = it.currencyCode,
-            rate = it.rate,
-            sum = it.rate,
+            rateToBase = it.rateToBase,
+            rateToEur = it.getRateToEuro(baseCurrencyRateToEuro),
+            sum = it.rateToBase,
             flagRes = getFlagRes(it.currencyCode)
         )
     }
     return Rates(
         baseCurrencyCode = cacheHeader.baseCode,
+        baseCurrencyRateToEuro = baseCurrencyRateToEuro,
         rates = rates,
         timeLastUpdateUnix = cacheHeader.timeLastUpdateUnix,
         timeNextUpdateUnix = cacheHeader.timeNextUpdateUnix

@@ -4,7 +4,13 @@ import androidx.lifecycle.LiveData
 import ru.okcode.currencyconverter.model.readyRates.Rates
 
 interface RepositoryMain {
-    val readyRates: LiveData<Rates>
+    val rawRates: LiveData<Rates>
 
-    suspend fun refreshData(immidiately: Boolean)
+    val baseCurrencyCode: LiveData<String>
+
+    suspend fun refreshData(immediately: Boolean)
+
+    suspend fun updateBaseCurrencyCode(code: String)
+
+    suspend fun updateBaseCurrencyAmount(amount: Double)
 }

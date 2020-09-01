@@ -4,10 +4,7 @@ import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ApplicationComponent
-import ru.okcode.currencyconverter.model.RepositoryMain
-import ru.okcode.currencyconverter.model.RepositoryCache
-import ru.okcode.currencyconverter.model.RepositoryCacheImpl
-import ru.okcode.currencyconverter.model.RepositoryMainImpl
+import ru.okcode.currencyconverter.model.*
 import javax.inject.Singleton
 
 @Module
@@ -16,9 +13,13 @@ abstract class RepositoryModule {
 
     @Binds
     @Singleton
-    abstract fun bindRepository(impl: RepositoryMainImpl): RepositoryMain
+    abstract fun bindRepositoryMain(impl: RepositoryMainImpl): RepositoryMain
 
     @Binds
     @Singleton
     abstract fun bindRepositoryCache(impl: RepositoryCacheImpl): RepositoryCache
+
+    @Binds
+    @Singleton
+    abstract fun bindRepositoryConfig(impl: RepositoryConfigImpl): RepositoryConfig
 }

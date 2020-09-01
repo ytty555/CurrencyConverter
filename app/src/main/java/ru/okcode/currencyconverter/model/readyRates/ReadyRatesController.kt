@@ -9,7 +9,7 @@ import ru.okcode.currencyconverter.model.db.ready.ReadyHeader
 import ru.okcode.currencyconverter.model.db.ready.ReadyRate
 import javax.inject.Inject
 
-class ReadyRatesHandler : ReadyRates {
+class ReadyRatesController : ReadyRates {
     @Inject
     lateinit var readyDao: ReadyDao
 
@@ -45,7 +45,7 @@ private fun Rates.toReadyRates(
     return this.rates.map { rate ->
         ReadyRate(
             currencyCode = rate.currencyCode,
-            rate = rate.rate,
+            rate = rate.rateToBase,
             sum = rate.sum,
             timeLastUpdateUnix = timeLastUpdateUnix,
             priorityPosition = rate.priorityPosition

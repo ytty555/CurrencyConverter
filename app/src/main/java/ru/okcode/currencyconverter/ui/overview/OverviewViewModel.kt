@@ -11,7 +11,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import ru.okcode.currencyconverter.model.RepositoryMain
+import ru.okcode.currencyconverter.model.readyRates.BaseCurrencyCodeChanger
 import ru.okcode.currencyconverter.model.readyRates.Rates
+import ru.okcode.currencyconverter.model.readyRates.RatesDecorator
+import ru.okcode.currencyconverter.model.readyRates.ReadyRatesController
 
 class OverviewViewModel @ViewModelInject constructor(
     private val repositoryMain: RepositoryMain,
@@ -27,17 +30,47 @@ class OverviewViewModel @ViewModelInject constructor(
         get() = _message
 
     // Ready rates data
-    val readyRates: LiveData<Rates> = repositoryMain.readyRates
+    private val _readyRares = MutableLiveData<Rates>()
+    val readyRates: LiveData<Rates> = repositoryMain.rawRates
+
+    private val baseCurrencyCode = repositoryMain.baseCurrencyCode
+
 
     init {
         scope.launch {
             repositoryMain.refreshData(true)
         }
+
+        repositoryMain.baseCurrencyCode.observeForever {
+            updateReadyRates()
+        }
+    }
+
+    private fun updateReadyRates() {
+        val ratesDecorator: RatesDecorator =
+            BaseCurrencyCodeChanger(ReadyRatesController(), baseCurrencyCode.value)
+
+        readyRates.value?.let {rates ->
+            ratesDecorator.writeRates(rates)
+        }
+
+    }
+
+    fun onBaseCurrencyCodeChange(baseCurrencyCode: String) {
+        scope.launch {
+            repositoryMain.updateBaseCurrencyCode(baseCurrencyCode)
+        }
+    }
+
+    fun onBaseCurrencyAmountChange(amount: Double) {
+        scope.launch {
+            repositoryMain.updateBaseCurrencyAmount(amount)
+        }
     }
 
     override fun onCleared() {
-        super.onCleared()
         job.cancel()
+        super.onCleared()
     }
 
 }
