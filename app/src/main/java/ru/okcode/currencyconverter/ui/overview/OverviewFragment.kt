@@ -47,7 +47,7 @@ class OverviewFragment : Fragment() {
         ratesRecyclerVeiw = binding.currencyRatesRecycleview
         ratesRecyclerVeiw.layoutManager = ratesLayoutManager
         ratesRecyclerVeiw.adapter = ratesAdaptor
-        viewModel.readyRates.observe(viewLifecycleOwner, { ratesList ->
+        viewModel.readyRatesDataSource.observe(viewLifecycleOwner, { ratesList ->
             ratesList?.let {
                 ratesAdaptor.submitList(ratesList.rates)
                 ratesAdaptor.notifyDataSetChanged()

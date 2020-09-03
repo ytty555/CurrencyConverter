@@ -7,22 +7,21 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import ru.okcode.currencyconverter.model.Rates
 import ru.okcode.currencyconverter.model.db.cache.CacheDao
-import ru.okcode.currencyconverter.model.db.cache.toDomainModel
 import ru.okcode.currencyconverter.model.network.ApiService
 import ru.okcode.currencyconverter.model.network.RatesDto
 import ru.okcode.currencyconverter.model.network.toCacheCurrencyRatesList
 import ru.okcode.currencyconverter.model.network.toCacheRatesHeader
 import javax.inject.Inject
 
-class RepositoryCacheImpl @Inject constructor(
+class CacheRepositoryImpl @Inject constructor(
     private val api: ApiService,
     private val cacheDao: CacheDao,
-) : RepositoryCache {
+) : CacheRepository {
 
-    override val cachedRates: LiveData<Rates> =
+    override val cacheDataSource: LiveData<Rates> =
         Transformations.map(cacheDao.getCacheRates()) { cacheHeaderWithRates ->
             Log.e("qq", "RepositoryImpl: Setting rates LiveData...")
-            cacheHeaderWithRates?.toDomainModel()
+            cacheHeaderWithRates?.toModel(cacheHeaderWithRates)
         }
 
     override suspend fun refreshCacheRates(immediately: Boolean) {

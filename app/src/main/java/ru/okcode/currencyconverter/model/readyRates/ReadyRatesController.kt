@@ -18,38 +18,6 @@ class ReadyRatesController : ReadyRates {
     private val scope: CoroutineScope = CoroutineScope(Dispatchers.IO + job)
 
     override fun writeRates(rates: Rates) {
-        scope.launch {
-            val readyHeader = rates.toReadyHeader()
-            val readyRates = rates.toReadyRates(readyHeader.timeLastUpdateUnix)
-
-            readyDao.insertToReadyRates(
-                readyHeader,
-                readyRates
-            )
-        }
-    }
-}
-
-private fun Rates.toReadyHeader(): ReadyHeader {
-    return ReadyHeader(
-        baseCurrencyCode = this.baseCurrencyCode,
-        baseCurrencyAmount = this.baseCurrencyAmount,
-        timeLastUpdateUnix = this.timeLastUpdateUnix,
-        timeNextUpdateUnix = this.timeNextUpdateUnix
-
-    )
-}
-
-private fun Rates.toReadyRates(
-    timeLastUpdateUnix: Long,
-): List<ReadyRate> {
-    return this.rates.map { rate ->
-        ReadyRate(
-            currencyCode = rate.currencyCode,
-            rate = rate.rateToBase,
-            sum = rate.sum,
-            timeLastUpdateUnix = timeLastUpdateUnix,
-            priorityPosition = rate.priorityPosition
-        )
+        TODO("Not implemented yet")
     }
 }

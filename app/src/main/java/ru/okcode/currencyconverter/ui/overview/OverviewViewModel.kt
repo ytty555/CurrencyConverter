@@ -2,75 +2,79 @@ package ru.okcode.currencyconverter.ui.overview
 
 import androidx.hilt.Assisted
 import androidx.hilt.lifecycle.ViewModelInject
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import ru.okcode.currencyconverter.model.repositories.RepositoryMain
-import ru.okcode.currencyconverter.model.readyRates.BaseCurrencyCodeChanger
+import ru.okcode.currencyconverter.model.Config
 import ru.okcode.currencyconverter.model.Rates
-import ru.okcode.currencyconverter.model.readyRates.RatesDecorator
-import ru.okcode.currencyconverter.model.readyRates.ReadyRatesController
+import ru.okcode.currencyconverter.model.repositories.RepositoryMain
 
 class OverviewViewModel @ViewModelInject constructor(
     private val repositoryMain: RepositoryMain,
     @Assisted private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
+    // Coroutines scope
     private val job = Job()
     private val scope = CoroutineScope(Dispatchers.Main + job)
 
-    // Messages
+    // Messages ---------------------------------------------------------------------
     private val _message = MutableLiveData<String>()
     val message: LiveData<String>
         get() = _message
 
-    // Ready rates data
-    private val _readyRares = MutableLiveData<Rates>()
-    val readyRates: LiveData<Rates> = repositoryMain.rawRates
+    //Cache data ---------------------------------------------------------------------
+    private val cacheDataSource: LiveData<Rates>
+        get() = repositoryMain.cacheDataSource
 
-    private val baseCurrencyCode = repositoryMain.baseCurrencyCode
+    private val cacheObserver: Observer<Rates> = Observer { cachedRates ->
+        val config: Config = configDataSource.value ?: Config.getDefaultConfig()
 
+        repositoryMain.updateReadyRates(cachedRates, config)
+    }
+
+    //Config data ---------------------------------------------------------------------
+    private val configDataSource: LiveData<Config>
+        get() = repositoryMain.configDataSource
+
+    private val configObserver: Observer<Config> = Observer { config ->
+        scope.launch {
+            val cachedRates: Rates =
+                cacheDataSource.value ?: repositoryMain.getCachedRatesAsync().await()
+            repositoryMain.updateReadyRates(cachedRates, config)
+        }
+    }
+
+    // ReadyRates
+    val readyRatesDataSource: LiveData<Rates>
+        get() = repositoryMain.readyRatesDataSource
 
     init {
+        // TODO ??????????????????????????????????????
         scope.launch {
             repositoryMain.refreshData(true)
         }
 
-        repositoryMain.baseCurrencyCode.observeForever {
-            updateReadyRates()
-        }
-    }
-
-    private fun updateReadyRates() {
-        val ratesDecorator: RatesDecorator =
-            BaseCurrencyCodeChanger(ReadyRatesController(), baseCurrencyCode.value)
-
-        readyRates.value?.let {rates ->
-            ratesDecorator.writeRates(rates)
-        }
-
-    }
-
-    fun onBaseCurrencyCodeChange(baseCurrencyCode: String) {
-        scope.launch {
-            repositoryMain.updateBaseCurrencyCode(baseCurrencyCode)
-        }
-    }
-
-    fun onBaseCurrencyAmountChange(amount: Double) {
-        scope.launch {
-            repositoryMain.updateBaseCurrencyAmount(amount)
-        }
+        startObserve()
     }
 
     override fun onCleared() {
+        stopObserve()
         job.cancel()
         super.onCleared()
     }
+
+    private fun startObserve() {
+        cacheDataSource.observeForever(cacheObserver)
+        configDataSource.observeForever(configObserver)
+    }
+
+    private fun stopObserve() {
+        cacheDataSource.removeObserver(cacheObserver)
+        configDataSource.removeObserver(configObserver)
+    }
+
 
 }

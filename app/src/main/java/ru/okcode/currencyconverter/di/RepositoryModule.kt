@@ -17,9 +17,9 @@ abstract class RepositoryModule {
 
     @Binds
     @Singleton
-    abstract fun bindRepositoryCache(impl: RepositoryCacheImpl): RepositoryCache
+    abstract fun bindRepositoryCache(impl: CacheRepositoryImpl): CacheRepository
 
     @Binds
     @Singleton
-    abstract fun bindRepositoryConfig(impl: RepositoryConfigImpl): RepositoryConfig
+    abstract fun bindRepositoryConfig(impl: ConfigRepositoryImpl): ConfigRepository
 }

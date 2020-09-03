@@ -1,26 +1,35 @@
 package ru.okcode.currencyconverter.model.repositories
 
 import androidx.lifecycle.LiveData
+import kotlinx.coroutines.Deferred
+import ru.okcode.currencyconverter.model.Config
+import ru.okcode.currencyconverter.model.Rates
 import javax.inject.Inject
 
 class RepositoryMainImpl @Inject constructor(
-    private val repositoryCache: RepositoryCache,
-    private val repositoryConfig: RepositoryConfig
+    private val cacheRepository: CacheRepository,
+    private val configRepository: ConfigRepository,
+    private val readyRepository: ReadyRepository
 ) : RepositoryMain {
 
-    override val baseCurrencyCode: LiveData<String> = repositoryConfig.baseCurrencyCode
+    override val configDataSource: LiveData<Config>
+        get() = configRepository.configDataSource
 
-    override val rawRates = repositoryCache.cachedRates
+    override val cacheDataSource: LiveData<Rates>
+        get() = cacheRepository.cacheDataSource
+
+    override val readyRatesDataSource: LiveData<Rates>
+        get() = readyRepository.readyRatesDataSource
 
     override suspend fun refreshData(immediately: Boolean) {
-        repositoryCache.refreshCacheRates(immediately)
+        cacheRepository.refreshCacheRates(immediately)
     }
 
-    override suspend fun updateBaseCurrencyCode(code: String) {
+    override fun getCachedRatesAsync(): Deferred<Rates> {
         TODO("Not yet implemented")
     }
 
-    override suspend fun updateBaseCurrencyAmount(amount: Double) {
-        TODO("Not yet implemented")
+    override fun updateReadyRates(rates: Rates, config: Config) {
+        readyRepository.updateReadyRates(rates, config)
     }
 }
