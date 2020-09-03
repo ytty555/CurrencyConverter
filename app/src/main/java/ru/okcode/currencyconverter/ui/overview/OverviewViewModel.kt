@@ -9,10 +9,14 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import ru.okcode.currencyconverter.model.Config
 import ru.okcode.currencyconverter.model.Rates
-import ru.okcode.currencyconverter.model.repositories.RepositoryMain
+import ru.okcode.currencyconverter.model.repositories.CacheRepository
+import ru.okcode.currencyconverter.model.repositories.ConfigRepository
+import ru.okcode.currencyconverter.model.repositories.ReadyRepository
 
 class OverviewViewModel @ViewModelInject constructor(
-    private val repositoryMain: RepositoryMain,
+    private val cacheRepository: CacheRepository,
+    private val configRepository: ConfigRepository,
+    private val readyRepository: ReadyRepository,
     @Assisted private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -27,34 +31,34 @@ class OverviewViewModel @ViewModelInject constructor(
 
     //Cache data ---------------------------------------------------------------------
     private val cacheDataSource: LiveData<Rates>
-        get() = repositoryMain.cacheDataSource
+        get() = cacheRepository.cacheDataSource
 
     private val cacheObserver: Observer<Rates> = Observer { cachedRates ->
         val config: Config = configDataSource.value ?: Config.getDefaultConfig()
 
-        repositoryMain.updateReadyRates(cachedRates, config)
+        readyRepository.updateReadyRates(cachedRates, config)
     }
 
     //Config data ---------------------------------------------------------------------
     private val configDataSource: LiveData<Config>
-        get() = repositoryMain.configDataSource
+        get() = configRepository.configDataSource
 
     private val configObserver: Observer<Config> = Observer { config ->
         scope.launch {
             val cachedRates: Rates =
-                cacheDataSource.value ?: repositoryMain.getCachedRatesAsync().await()
-            repositoryMain.updateReadyRates(cachedRates, config)
+                cacheDataSource.value ?: cacheRepository.getCachedRatesAsync().await()
+            readyRepository.updateReadyRates(cachedRates, config)
         }
     }
 
     // ReadyRates
-    val readyRatesDataSource: LiveData<Rates>
-        get() = repositoryMain.readyRatesDataSource
+    val getReadyRatesDataSource: LiveData<Rates>
+        get() = readyRepository.readyRatesDataSource
 
     init {
         // TODO ??????????????????????????????????????
         scope.launch {
-            repositoryMain.refreshData(true)
+            cacheRepository.refreshCacheRates(true)
         }
 
         startObserve()

@@ -35,12 +35,12 @@ data class CacheHeaderWithRates(
         entityColumn = "timeLastUpdateUnix"
     )
     val rates: List<CacheCurrencyRate>
-): ModelMapper<CacheHeaderWithRates, Rates> {
+): ModelMapper<Rates> {
 
-    override fun toModel(entity: CacheHeaderWithRates): Rates {
-        val baseCurrencyRateToEuro = entity.getBaseCurrencyRateToEuro()
+    override fun toModel(): Rates {
+        val baseCurrencyRateToEuro = getBaseCurrencyRateToEuro()
 
-        val rates: List<Rate> = entity.rates.map {
+        val rates: List<Rate> = rates.map {
             Rate(
                 currencyCode = it.currencyCode,
                 rateToBase = it.rateToBase,
@@ -50,11 +50,11 @@ data class CacheHeaderWithRates(
             )
         }
         return Rates(
-            baseCurrencyCode = entity.cacheHeader.baseCode,
+            baseCurrencyCode = cacheHeader.baseCode,
             baseCurrencyRateToEuro = baseCurrencyRateToEuro,
             rates = rates,
-            timeLastUpdateUnix = entity.cacheHeader.timeLastUpdateUnix,
-            timeNextUpdateUnix = entity.cacheHeader.timeNextUpdateUnix
+            timeLastUpdateUnix = cacheHeader.timeLastUpdateUnix,
+            timeNextUpdateUnix = cacheHeader.timeNextUpdateUnix
         )
     }
 }

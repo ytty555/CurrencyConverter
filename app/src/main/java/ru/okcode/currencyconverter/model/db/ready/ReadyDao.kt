@@ -7,14 +7,14 @@ import androidx.room.*
 interface ReadyDao {
     @Transaction
     @Query("SELECT * FROM ReadyHeader")
-    suspend fun getReadyRates(): LiveData<ReadyHeaderWithRates>
+    fun getReadyRates(): LiveData<ReadyHeaderWithRates>
 
     @Transaction
-    suspend fun insertToReadyRates(readyHeader: ReadyHeader, ratesList: List<ReadyRate>) {
+    suspend fun insertToReadyRates(readyHeaderWithRates: ReadyHeaderWithRates) {
         clearReadyHeader()
         clearReadyRates()
-        insertReadyHeader(readyHeader)
-        insertReadyRates(ratesList)
+        insertReadyHeader(readyHeaderWithRates.readyHeader)
+        insertReadyRates(readyHeaderWithRates.rates)
     }
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

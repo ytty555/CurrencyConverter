@@ -36,28 +36,4 @@ data class ReadyHeaderWithRates(
         entityColumn = "timeLastUpdateUnix"
     )
     val rates: List<ReadyRate>
-): ModelMapper<ReadyHeaderWithRates, Rates> {
-
-    override fun toModel(entity: ReadyHeaderWithRates): Rates {
-
-        val rates: List<Rate> = entity.rates.map {readyRate ->
-            Rate(
-                currencyCode = readyRate.currencyCode,
-                rateToBase = readyRate.rateToBase,
-                rateToEur = readyRate.rateToEuro,
-                sum = readyRate.sum,
-                priorityPosition = readyRate.priorityPosition,
-                flagRes = getFlagRes(readyRate.currencyCode)
-            )
-        }
-
-        return Rates(
-            baseCurrencyCode = entity.readyHeader.baseCurrencyCode,
-            baseCurrencyAmount = entity.readyHeader.baseCurrencyAmount,
-            baseCurrencyRateToEuro = entity.readyHeader.baseCurrencyRateToEuro,
-            rates = rates,
-            timeLastUpdateUnix = entity.readyHeader.timeLastUpdateUnix,
-            timeNextUpdateUnix = entity.readyHeader.timeNextUpdateUnix
-        )
-    }
-}
+)

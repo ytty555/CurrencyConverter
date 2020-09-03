@@ -11,6 +11,9 @@ interface CacheDao {
     @Query("SELECT * FROM CacheRatesHeader")
     fun getCacheRates(): LiveData<CacheHeaderWithRates>
 
+    @Query("SELECT * FROM CacheRatesHeader")
+    fun getCacheRatesAsync(): Deferred<CacheHeaderWithRates>
+
     @Transaction
     fun insertToCache(cacheRatesHeader: CacheRatesHeader, ratesList: List<CacheCurrencyRate>) {
         clearCacheHeader()
@@ -35,7 +38,7 @@ interface CacheDao {
     @Query("SELECT * FROM CacheRatesHeader")
     fun getDataForCheckCache(): CacheHeaderWithRates?
 
-    fun isActual(): Deferred<Boolean> {
+    fun isActualAsync(): Deferred<Boolean> {
         return GlobalScope.async(Dispatchers.IO) {
             val cacheData = getDataForCheckCache()
             val currentTimeStamp = Date().time / 1000

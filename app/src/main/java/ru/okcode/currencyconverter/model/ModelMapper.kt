@@ -1,7 +1,6 @@
 package ru.okcode.currencyconverter.model
 
 interface ModelMapper<Entity, Model> {
-    fun toModel(entity: Entity): Model
-
-    fun toEntity(model: Model): Entity
+    fun mapToModel(entity: Entity): Model
+    fun mapToEntity(model: Model): Entity
 }
