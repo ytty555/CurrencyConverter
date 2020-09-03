@@ -3,10 +3,10 @@ package ru.okcode.currencyconverter.model.repositories
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Transformations
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import ru.okcode.currencyconverter.model.Rates
 import ru.okcode.currencyconverter.model.db.cache.CacheDao
-import ru.okcode.currencyconverter.model.db.cache.CacheHeaderWithRates
 import ru.okcode.currencyconverter.model.db.cache.CacheMapper
 import ru.okcode.currencyconverter.model.network.ApiService
 import ru.okcode.currencyconverter.model.network.RatesDto
