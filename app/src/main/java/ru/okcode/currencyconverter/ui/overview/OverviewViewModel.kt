@@ -10,9 +10,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import ru.okcode.currencyconverter.model.RepositoryMain
+import ru.okcode.currencyconverter.model.repositories.RepositoryMain
 import ru.okcode.currencyconverter.model.readyRates.BaseCurrencyCodeChanger
-import ru.okcode.currencyconverter.model.readyRates.Rates
+import ru.okcode.currencyconverter.model.Rates
 import ru.okcode.currencyconverter.model.readyRates.RatesDecorator
 import ru.okcode.currencyconverter.model.readyRates.ReadyRatesController
 

@@ -1,4 +1,4 @@
-package ru.okcode.currencyconverter.model.api
+package ru.okcode.currencyconverter.model.network
 
 import android.icu.math.BigDecimal
 import com.squareup.moshi.Json

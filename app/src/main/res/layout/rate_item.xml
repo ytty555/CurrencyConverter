@@ -9,7 +9,7 @@
 
         <variable
             name="rate"
-            type="ru.okcode.currencyconverter.model.readyRates.Rate" />
+            type="ru.okcode.currencyconverter.model.Rate" />
     </data>
 
     <androidx.cardview.widget.CardView

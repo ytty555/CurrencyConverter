@@ -5,8 +5,9 @@ import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.Relation
-import ru.okcode.currencyconverter.model.readyRates.Rate
-import ru.okcode.currencyconverter.model.readyRates.Rates
+import ru.okcode.currencyconverter.model.ModelMapper
+import ru.okcode.currencyconverter.model.Rate
+import ru.okcode.currencyconverter.model.Rates
 import ru.okcode.currencyconverter.util.getFlagRes
 
 private const val CODE_EURO = "EUR"
@@ -34,7 +35,29 @@ data class CacheHeaderWithRates(
         entityColumn = "timeLastUpdateUnix"
     )
     val rates: List<CacheCurrencyRate>
-)
+): ModelMapper<CacheHeaderWithRates, Rates> {
+
+    override fun toModel(entity: CacheHeaderWithRates): Rates {
+        val baseCurrencyRateToEuro = entity.getBaseCurrencyRateToEuro()
+
+        val rates: List<Rate> = entity.rates.map {
+            Rate(
+                currencyCode = it.currencyCode,
+                rateToBase = it.rateToBase,
+                rateToEur = it.getRateToEuro(baseCurrencyRateToEuro),
+                sum = it.rateToBase,
+                flagRes = getFlagRes(it.currencyCode)
+            )
+        }
+        return Rates(
+            baseCurrencyCode = entity.cacheHeader.baseCode,
+            baseCurrencyRateToEuro = baseCurrencyRateToEuro,
+            rates = rates,
+            timeLastUpdateUnix = entity.cacheHeader.timeLastUpdateUnix,
+            timeNextUpdateUnix = entity.cacheHeader.timeNextUpdateUnix
+        )
+    }
+}
 
 
 fun CacheCurrencyRate.getRateToEuro(baseCurrencyRateToEuro: BigDecimal): BigDecimal {
@@ -50,25 +73,4 @@ fun CacheHeaderWithRates.getBaseCurrencyRateToEuro(): BigDecimal {
         rates.filter { CODE_EURO == it.currencyCode }[0].rateToBase
 
     return BigDecimal.valueOf(1.0).divide(euroRateToBase)
-}
-
-fun CacheHeaderWithRates.toDomainModel(): Rates {
-    val baseCurrencyRateToEuro = getBaseCurrencyRateToEuro()
-
-    val rates: List<Rate> = this.rates.map {
-        Rate(
-            currencyCode = it.currencyCode,
-            rateToBase = it.rateToBase,
-            rateToEur = it.getRateToEuro(baseCurrencyRateToEuro),
-            sum = it.rateToBase,
-            flagRes = getFlagRes(it.currencyCode)
-        )
-    }
-    return Rates(
-        baseCurrencyCode = cacheHeader.baseCode,
-        baseCurrencyRateToEuro = baseCurrencyRateToEuro,
-        rates = rates,
-        timeLastUpdateUnix = cacheHeader.timeLastUpdateUnix,
-        timeNextUpdateUnix = cacheHeader.timeNextUpdateUnix
-    )
 }

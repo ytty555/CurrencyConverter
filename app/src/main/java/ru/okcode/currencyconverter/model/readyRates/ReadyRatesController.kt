@@ -4,6 +4,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import ru.okcode.currencyconverter.model.Rates
 import ru.okcode.currencyconverter.model.db.ready.ReadyDao
 import ru.okcode.currencyconverter.model.db.ready.ReadyHeader
 import ru.okcode.currencyconverter.model.db.ready.ReadyRate

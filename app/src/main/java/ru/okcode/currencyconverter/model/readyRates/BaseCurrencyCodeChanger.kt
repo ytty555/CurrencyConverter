@@ -1,5 +1,7 @@
 package ru.okcode.currencyconverter.model.readyRates
 
+import ru.okcode.currencyconverter.model.Rates
+
 class BaseCurrencyCodeChanger(
     source: ReadyRates,
     private val baseCurrencyCode: String?

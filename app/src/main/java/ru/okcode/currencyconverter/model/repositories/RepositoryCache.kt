@@ -1,7 +1,7 @@
-package ru.okcode.currencyconverter.model
+package ru.okcode.currencyconverter.model.repositories
 
 import androidx.lifecycle.LiveData
-import ru.okcode.currencyconverter.model.readyRates.Rates
+import ru.okcode.currencyconverter.model.Rates
 
 interface RepositoryCache {
     val cachedRates: LiveData<Rates>

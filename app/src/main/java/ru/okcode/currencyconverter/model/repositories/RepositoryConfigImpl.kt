@@ -1,6 +1,7 @@
-package ru.okcode.currencyconverter.model
+package ru.okcode.currencyconverter.model.repositories
 
 import androidx.lifecycle.LiveData
+import ru.okcode.currencyconverter.model.repositories.RepositoryConfig
 import javax.inject.Inject
 
 class RepositoryConfigImpl @Inject constructor(): RepositoryConfig {

@@ -1,4 +1,4 @@
-package ru.okcode.currencyconverter.model.readyRates
+package ru.okcode.currencyconverter.model
 
 import android.icu.math.BigDecimal
 

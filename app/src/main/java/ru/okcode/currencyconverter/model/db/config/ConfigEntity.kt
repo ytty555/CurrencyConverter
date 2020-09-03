@@ -16,7 +16,7 @@ data class Config(
 @Entity
 data class VisibleCurrency(
     @PrimaryKey
-    val currencyCode: String
+    val currencyCode: String,
     val ownerId: Long
 )
 

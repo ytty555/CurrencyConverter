@@ -1,10 +1,6 @@
-package ru.okcode.currencyconverter.model
+package ru.okcode.currencyconverter.model.repositories
 
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import ru.okcode.currencyconverter.model.readyRates.BaseCurrencyCodeChanger
-import ru.okcode.currencyconverter.model.readyRates.Rates
-import ru.okcode.currencyconverter.model.readyRates.ReadyRatesController
 import javax.inject.Inject
 
 class RepositoryMainImpl @Inject constructor(

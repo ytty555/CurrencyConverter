@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import ru.okcode.currencyconverter.databinding.RateItemBinding
-import ru.okcode.currencyconverter.model.readyRates.Rate
+import ru.okcode.currencyconverter.model.Rate
 
 class CurrencyRecyclerViewAdaptor :
     ListAdapter<Rate, CurrencyRecyclerViewAdaptor.ViewHolder>(RateDiff()) {
