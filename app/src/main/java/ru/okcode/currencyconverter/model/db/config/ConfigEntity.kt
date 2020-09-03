@@ -13,3 +13,4 @@ data class ConfigEntity(
     val baseCurrencyAmount: Double,
     val visibleCurrencies: List<String>
 )
+

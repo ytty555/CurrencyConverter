@@ -5,10 +5,6 @@ import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.Relation
-import ru.okcode.currencyconverter.model.ModelMapper
-import ru.okcode.currencyconverter.model.Rate
-import ru.okcode.currencyconverter.model.Rates
-import ru.okcode.currencyconverter.util.getFlagRes
 
 @Entity
 data class ReadyHeader(
@@ -32,7 +28,7 @@ data class ReadyRate(
 data class ReadyHeaderWithRates(
     @Embedded val readyHeader: ReadyHeader,
     @Relation(
-        parentColumn = "timeNextUpdateUnix",
+        parentColumn = "timeLastUpdateUnix",
         entityColumn = "timeLastUpdateUnix"
     )
     val rates: List<ReadyRate>

@@ -5,7 +5,6 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-        <import type="android.icu.util.Currency"/>
 
         <variable
             name="rate"
@@ -60,7 +59,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:text="@{rate.currencyCode}"
+                android:text="@{rate.currency.currencyCode}"
                 android:textSize="14sp"
                 app:layout_constraintBottom_toTopOf="@+id/currency_name"
                 app:layout_constraintStart_toEndOf="@+id/flag_cardview"
@@ -73,7 +72,7 @@
                 android:id="@+id/currency_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="11111111111111111111111"
+                android:text="@{rate.currency.displayName}"
                 android:textColor="@android:color/black"
                 android:textSize="18sp"
                 app:layout_constraintBottom_toBottomOf="parent"

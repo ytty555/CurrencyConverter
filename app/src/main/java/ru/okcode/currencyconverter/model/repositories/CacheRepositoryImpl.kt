@@ -7,6 +7,7 @@ import kotlinx.coroutines.*
 import ru.okcode.currencyconverter.model.Rates
 import ru.okcode.currencyconverter.model.db.cache.CacheDao
 import ru.okcode.currencyconverter.model.db.cache.CacheHeaderWithRates
+import ru.okcode.currencyconverter.model.db.cache.CacheMapper
 import ru.okcode.currencyconverter.model.network.ApiService
 import ru.okcode.currencyconverter.model.network.RatesDto
 import ru.okcode.currencyconverter.model.network.toCacheCurrencyRatesList
@@ -16,12 +17,15 @@ import javax.inject.Inject
 class CacheRepositoryImpl @Inject constructor(
     private val api: ApiService,
     private val cacheDao: CacheDao,
+    private val cacheMapper: CacheMapper
 ) : CacheRepository {
 
     override val cacheDataSource: LiveData<Rates> =
         Transformations.map(cacheDao.getCacheRates()) { cacheHeaderWithRates ->
             Log.e("qq", "RepositoryImpl: Setting rates LiveData...")
-            cacheHeaderWithRates?.toModel()
+            cacheHeaderWithRates?.let {
+                cacheMapper.mapToModel(it)
+            }
         }
 
     override suspend fun refreshCacheRates(immediately: Boolean) {
@@ -46,15 +50,6 @@ class CacheRepositoryImpl @Inject constructor(
                 Log.e("qq", "RepositoryImpl: Error: ${e.message}")
 
             }
-        }
-    }
-
-    override suspend fun getCachedRatesAsync(): Deferred<Rates> {
-        refreshCacheRates()
-        val cacheHeaderWithRates: CacheHeaderWithRates = cacheDao.getCacheRatesAsync().await()
-
-        return GlobalScope.async {
-            cacheHeaderWithRates.toModel()
         }
     }
 }

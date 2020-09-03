@@ -7,7 +7,7 @@ import androidx.room.*
 interface ReadyDao {
     @Transaction
     @Query("SELECT * FROM ReadyHeader")
-    fun getReadyRates(): LiveData<ReadyHeaderWithRates>
+    fun getReadyRates(): LiveData<ReadyHeaderWithRates?>
 
     @Transaction
     suspend fun insertToReadyRates(readyHeaderWithRates: ReadyHeaderWithRates) {

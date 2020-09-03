@@ -3,10 +3,7 @@ package ru.okcode.currencyconverter.ui.overview
 import androidx.hilt.Assisted
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import ru.okcode.currencyconverter.model.Config
 import ru.okcode.currencyconverter.model.Rates
 import ru.okcode.currencyconverter.model.repositories.CacheRepository
@@ -34,9 +31,12 @@ class OverviewViewModel @ViewModelInject constructor(
         get() = cacheRepository.cacheDataSource
 
     private val cacheObserver: Observer<Rates> = Observer { cachedRates ->
-        val config: Config = configDataSource.value ?: Config.getDefaultConfig()
-
-        readyRepository.updateReadyRates(cachedRates, config)
+        cachedRates?.let {
+            val config: Config = configDataSource.value ?: Config.getDefaultConfig()
+            GlobalScope.launch() {
+                readyRepository.updateReadyRates(it, config)
+            }
+        }
     }
 
     //Config data ---------------------------------------------------------------------
@@ -44,21 +44,25 @@ class OverviewViewModel @ViewModelInject constructor(
         get() = configRepository.configDataSource
 
     private val configObserver: Observer<Config> = Observer { config ->
+        val currentConfig = config ?: Config.getDefaultConfig()
         scope.launch {
-            val cachedRates: Rates =
-                cacheDataSource.value ?: cacheRepository.getCachedRatesAsync().await()
-            readyRepository.updateReadyRates(cachedRates, config)
+            val cachedRates: Rates? = cacheDataSource.value
+            if (cachedRates != null) {
+                readyRepository.updateReadyRates(cachedRates, currentConfig)
+            } else {
+                cacheRepository.refreshCacheRates()
+            }
         }
     }
 
     // ReadyRates
-    val getReadyRatesDataSource: LiveData<Rates>
+    val readyRatesDataSource: LiveData<Rates>
         get() = readyRepository.readyRatesDataSource
 
     init {
         // TODO ??????????????????????????????????????
         scope.launch {
-            cacheRepository.refreshCacheRates(true)
+            cacheRepository.refreshCacheRates(false)
         }
 
         startObserve()

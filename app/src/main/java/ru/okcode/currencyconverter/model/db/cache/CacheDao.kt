@@ -9,10 +9,11 @@ import java.util.*
 interface CacheDao {
     @Transaction
     @Query("SELECT * FROM CacheRatesHeader")
-    fun getCacheRates(): LiveData<CacheHeaderWithRates>
+    fun getCacheRates(): LiveData<CacheHeaderWithRates?>
 
+    @Transaction
     @Query("SELECT * FROM CacheRatesHeader")
-    fun getCacheRatesAsync(): Deferred<CacheHeaderWithRates>
+    fun getCacheRatesAsync(): CacheHeaderWithRates?
 
     @Transaction
     fun insertToCache(cacheRatesHeader: CacheRatesHeader, ratesList: List<CacheCurrencyRate>) {
@@ -35,6 +36,7 @@ interface CacheDao {
     fun clearCacheCurrencyRates()
 
     // Cache has an actual data checking -------------------------------------
+    @Transaction
     @Query("SELECT * FROM CacheRatesHeader")
     fun getDataForCheckCache(): CacheHeaderWithRates?
 

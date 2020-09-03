@@ -5,12 +5,6 @@ import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.Relation
-import ru.okcode.currencyconverter.model.ModelMapper
-import ru.okcode.currencyconverter.model.Rate
-import ru.okcode.currencyconverter.model.Rates
-import ru.okcode.currencyconverter.util.getFlagRes
-
-private const val CODE_EURO = "EUR"
 
 @Entity
 data class CacheRatesHeader(
@@ -35,42 +29,4 @@ data class CacheHeaderWithRates(
         entityColumn = "timeLastUpdateUnix"
     )
     val rates: List<CacheCurrencyRate>
-): ModelMapper<Rates> {
-
-    override fun toModel(): Rates {
-        val baseCurrencyRateToEuro = getBaseCurrencyRateToEuro()
-
-        val rates: List<Rate> = rates.map {
-            Rate(
-                currencyCode = it.currencyCode,
-                rateToBase = it.rateToBase,
-                rateToEur = it.getRateToEuro(baseCurrencyRateToEuro),
-                sum = it.rateToBase,
-                flagRes = getFlagRes(it.currencyCode)
-            )
-        }
-        return Rates(
-            baseCurrencyCode = cacheHeader.baseCode,
-            baseCurrencyRateToEuro = baseCurrencyRateToEuro,
-            rates = rates,
-            timeLastUpdateUnix = cacheHeader.timeLastUpdateUnix,
-            timeNextUpdateUnix = cacheHeader.timeNextUpdateUnix
-        )
-    }
-}
-
-
-fun CacheCurrencyRate.getRateToEuro(baseCurrencyRateToEuro: BigDecimal): BigDecimal {
-    return baseCurrencyRateToEuro.multiply(rateToBase)
-}
-
-fun CacheHeaderWithRates.getBaseCurrencyRateToEuro(): BigDecimal {
-    if (cacheHeader.baseCode == CODE_EURO) {
-        return BigDecimal.valueOf(1.0)
-    }
-
-    val euroRateToBase =
-        rates.filter { CODE_EURO == it.currencyCode }[0].rateToBase
-
-    return BigDecimal.valueOf(1.0).divide(euroRateToBase)
-}
+)

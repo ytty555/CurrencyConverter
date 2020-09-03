@@ -1,15 +1,18 @@
 package ru.okcode.currencyconverter.model.readyRates
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
+import android.util.Log
 import ru.okcode.currencyconverter.model.Rates
 import ru.okcode.currencyconverter.model.db.ready.ReadyDao
-import javax.inject.Inject
+import ru.okcode.currencyconverter.model.db.ready.ReadyMapper
 
-class ReadyRatesController(private val readyDao: ReadyDao) : ReadyRates {
+private const val TAG = "ReadyRatesController"
 
-    override fun writeRates(rates: Rates) {
-        readyDao.insertToReadyRates()
+class ReadyRatesController(
+    private val readyDao: ReadyDao,
+    private val readyMapper: ReadyMapper
+) : ReadyRates {
+
+    override suspend fun writeRates(rates: Rates) {
+        readyDao.insertToReadyRates(readyMapper.mapToEntity(rates))
     }
 }

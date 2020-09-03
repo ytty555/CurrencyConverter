@@ -5,7 +5,7 @@
 
     <data>
         <variable
-            name="ratesDataSet"
+            name="rates"
             type="ru.okcode.currencyconverter.model.Rates" />
     </data>
 
@@ -40,7 +40,7 @@
             android:layout_height="wrap_content"
             android:textColor="@color/colorPrimaryDark"
             android:textSize="18sp"
-            android:text="@{ratesDataSet.baseCurrencyCode}"
+            android:text="@{rates.baseCurrency.currencyCode}"
             app:layout_constraintStart_toStartOf="@+id/currency_label"
             app:layout_constraintTop_toBottomOf="@+id/currency_label"
             tools:text="Currency code + name" />

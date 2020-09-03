@@ -9,5 +9,5 @@ import androidx.room.Transaction
 interface ConfigDao {
     @Transaction
     @Query("SELECT * FROM ConfigEntity")
-    fun getConfig(): LiveData<ConfigEntity>
+    fun getConfig(): LiveData<ConfigEntity?>
 }

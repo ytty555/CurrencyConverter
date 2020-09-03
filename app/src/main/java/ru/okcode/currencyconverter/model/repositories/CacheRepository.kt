@@ -8,6 +8,4 @@ interface CacheRepository {
     val cacheDataSource: LiveData<Rates>
 
     suspend fun refreshCacheRates(immediately: Boolean = false)
-
-    suspend fun getCachedRatesAsync(): Deferred<Rates>
 }

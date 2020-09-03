@@ -36,9 +36,9 @@
 
                 <include
                     android:id="@+id/include"
-                    layout="@layout/baze_currency"
+                    layout="@layout/base_currency"
                     app:layout_scrollFlags="scroll|snap"
-                    app:ratesDataSet="@{viewModel.getReadyRatesDataSource}" />
+                    app:rates="@{viewModel.readyRatesDataSource}" />
 
             </com.google.android.material.appbar.AppBarLayout>
 

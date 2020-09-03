@@ -1,6 +1,7 @@
 package ru.okcode.currencyconverter.ui.overview
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,6 +15,8 @@ import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import ru.okcode.currencyconverter.R
 import ru.okcode.currencyconverter.databinding.FragmentCurrencyRatesBinding
+
+private const val TAG = "OverviewFragment"
 
 @AndroidEntryPoint
 class OverviewFragment : Fragment() {
@@ -47,7 +50,8 @@ class OverviewFragment : Fragment() {
         ratesRecyclerVeiw = binding.currencyRatesRecycleview
         ratesRecyclerVeiw.layoutManager = ratesLayoutManager
         ratesRecyclerVeiw.adapter = ratesAdaptor
-        viewModel.getReadyRatesDataSource.observe(viewLifecycleOwner, { ratesList ->
+        viewModel.readyRatesDataSource.observe(viewLifecycleOwner, { ratesList ->
+            Log.e(TAG, "rates: $ratesList")
             ratesList?.let {
                 ratesAdaptor.submitList(ratesList.rates)
                 ratesAdaptor.notifyDataSetChanged()

@@ -6,12 +6,12 @@ class BaseCurrencyCodeChanger(
     source: ReadyRates,
     private val baseCurrencyCode: String?
 ) : RatesDecorator(source) {
-    override fun writeRates(rates: Rates) {
+    override suspend fun writeRates(rates: Rates) {
         super.writeRates(changeBaseCurrencyCode(rates))
     }
 
     private fun changeBaseCurrencyCode(rates: Rates): Rates {
-        if (baseCurrencyCode == rates.baseCurrencyCode || baseCurrencyCode.isNullOrEmpty()) {
+        if (baseCurrencyCode == rates.baseCurrency.currencyCode || baseCurrencyCode.isNullOrEmpty()) {
             // Do nothing. Return input rates
             return rates
         }

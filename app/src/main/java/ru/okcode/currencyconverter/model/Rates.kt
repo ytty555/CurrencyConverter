@@ -1,9 +1,10 @@
 package ru.okcode.currencyconverter.model
 
 import android.icu.math.BigDecimal
+import android.icu.util.Currency
 
 data class Rates(
-    val baseCurrencyCode: String,
+    val baseCurrency: Currency,
     val baseCurrencyAmount: Double = 1.0,
     val baseCurrencyRateToEuro: BigDecimal,
     val rates: List<Rate>,
@@ -12,7 +13,7 @@ data class Rates(
 )
 
 data class Rate(
-    val currencyCode: String,
+    val currency: Currency,
     val rateToBase: BigDecimal,
     val rateToEur: BigDecimal,
     val sum: BigDecimal,

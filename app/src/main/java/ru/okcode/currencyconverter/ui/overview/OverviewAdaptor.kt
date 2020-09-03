@@ -40,7 +40,7 @@ class CurrencyRecyclerViewAdaptor :
 
 class RateDiff : DiffUtil.ItemCallback<Rate>() {
     override fun areItemsTheSame(oldItem: Rate, newItem: Rate): Boolean {
-        return oldItem.currencyCode == newItem.currencyCode
+        return oldItem.currency == newItem.currency
     }
 
     override fun areContentsTheSame(oldItem: Rate, newItem: Rate): Boolean {
