@@ -10,7 +10,20 @@ data class Rates(
     val rates: List<Rate>,
     val timeLastUpdateUnix: Long,
     val timeNextUpdateUnix: Long
-)
+) {
+    companion object {
+        fun getEmptyInstance(): Rates {
+            return Rates(
+                baseCurrency = Currency.getInstance("EUR"),
+                baseCurrencyAmount = 1.0,
+                baseCurrencyRateToEuro = BigDecimal.valueOf(1.0),
+                timeLastUpdateUnix = 0,
+                timeNextUpdateUnix = 0,
+                rates = ArrayList()
+            )
+        }
+    }
+}
 
 data class Rate(
     val currency: Currency,

@@ -1,21 +1,26 @@
 package ru.okcode.currencyconverter.ui.overview
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import ru.okcode.currencyconverter.databinding.RateItemBinding
 import ru.okcode.currencyconverter.model.Rate
+import ru.okcode.currencyconverter.model.Rates
 
-class CurrencyRecyclerViewAdaptor :
-    ListAdapter<Rate, CurrencyRecyclerViewAdaptor.ViewHolder>(RateDiff()) {
+private const val TAG = "OverviewAdaptor"
 
+class OverviewAdaptor :
+    RecyclerView.Adapter<OverviewAdaptor.ViewHolder>() {
+
+    private var ratesData: Rates = Rates.getEmptyInstance()
 
     class ViewHolder private constructor(private val binding: RateItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(item: Rate) {
-            binding.rate = item
+        fun bind(ratesData: Rates, position: Int) {
+            Log.e(TAG, "ViewHolder bind item: $ratesData.rates[position]")
+            binding.fullRates = ratesData
+            binding.rate = ratesData.rates[position]
             binding.executePendingBindings()
         }
 
@@ -34,18 +39,22 @@ class CurrencyRecyclerViewAdaptor :
 
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(getItem(position))
-    }
-}
-
-class RateDiff : DiffUtil.ItemCallback<Rate>() {
-    override fun areItemsTheSame(oldItem: Rate, newItem: Rate): Boolean {
-        return oldItem.currency == newItem.currency
+        if (!ratesData.rates.isNullOrEmpty()) {
+            holder.bind(ratesData, position)
+        }
     }
 
-    override fun areContentsTheSame(oldItem: Rate, newItem: Rate): Boolean {
-        return oldItem == newItem
+    override fun getItemCount(): Int {
+        return if (!ratesData.rates.isNullOrEmpty()) {
+            ratesData.rates.size
+        } else {
+            0
+        }
     }
 
+    fun setData(data: Rates) {
+        ratesData = data
+        notifyDataSetChanged()
+    }
 }
 
