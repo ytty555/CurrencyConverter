@@ -15,6 +15,7 @@ import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import ru.okcode.currencyconverter.R
 import ru.okcode.currencyconverter.databinding.FragmentCurrencyRatesBinding
+import ru.okcode.currencyconverter.model.Rates
 
 private const val TAG = "OverviewFragment"
 
@@ -25,6 +26,7 @@ class OverviewFragment : Fragment() {
     private val viewModel: OverviewViewModel by viewModels()
     private lateinit var ratesRecyclerVeiw: RecyclerView
     private lateinit var coordinatorLayout: CoordinatorLayout
+    private lateinit var rates: Rates
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -44,16 +46,17 @@ class OverviewFragment : Fragment() {
             showMessage(errorMessage)
         })
 
+
         // RecyclerView Rates
         val ratesLayoutManager: RecyclerView.LayoutManager = LinearLayoutManager(context)
-        val ratesAdaptor = CurrencyRecyclerViewAdaptor()
+        val ratesAdaptor = OverviewAdaptor()
+
         ratesRecyclerVeiw = binding.currencyRatesRecycleview
         ratesRecyclerVeiw.layoutManager = ratesLayoutManager
         ratesRecyclerVeiw.adapter = ratesAdaptor
         viewModel.readyRatesDataSource.observe(viewLifecycleOwner, { ratesList ->
-            Log.e(TAG, "rates: $ratesList")
             ratesList?.let {
-                ratesAdaptor.submitList(ratesList.rates)
+                ratesAdaptor.setRatesData(it)
                 ratesAdaptor.notifyDataSetChanged()
             }
         })

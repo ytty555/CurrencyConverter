@@ -2,15 +2,12 @@ package ru.okcode.currencyconverter.ui.overview
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import ru.okcode.currencyconverter.databinding.RateItemBinding
 import ru.okcode.currencyconverter.model.Rate
+import ru.okcode.currencyconverter.model.Rates
 
-class CurrencyRecyclerViewAdaptor :
-    ListAdapter<Rate, CurrencyRecyclerViewAdaptor.ViewHolder>(RateDiff()) {
-
+class OverviewAdaptor : RecyclerView.Adapter<OverviewAdaptor.ViewHolder>() {
 
     class ViewHolder private constructor(private val binding: RateItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
@@ -34,18 +31,17 @@ class CurrencyRecyclerViewAdaptor :
 
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(getItem(position))
-    }
-}
-
-class RateDiff : DiffUtil.ItemCallback<Rate>() {
-    override fun areItemsTheSame(oldItem: Rate, newItem: Rate): Boolean {
-        return oldItem.currency == newItem.currency
+        ratesData?.let {
+            holder.bind(it.rates[position])
+        }
     }
 
-    override fun areContentsTheSame(oldItem: Rate, newItem: Rate): Boolean {
-        return oldItem == newItem
+    override fun getItemCount(): Int {
+        return ratesData.rates.size
     }
 
+    fun setRatesData(data: Rates) {
+        ratesData = data
+    }
 }
 
