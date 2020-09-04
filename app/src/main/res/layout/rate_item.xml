@@ -7,6 +7,10 @@
     <data>
 
         <variable
+            name="clickListener"
+            type="ru.okcode.currencyconverter.ui.overview.RatesListListener" />
+
+        <variable
             name="fullRates"
             type="ru.okcode.currencyconverter.model.Rates" />
 
@@ -19,6 +23,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="4dp"
+        android:onClick="@{() -> clickListener.onClick(rate)}"
         app:cardCornerRadius="5dp">
 
 

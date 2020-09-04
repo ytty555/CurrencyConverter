@@ -1,5 +1,6 @@
 package ru.okcode.currencyconverter.ui.overview
 
+import android.icu.util.Currency
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -10,15 +11,16 @@ import ru.okcode.currencyconverter.model.Rates
 
 private const val TAG = "OverviewAdaptor"
 
-class OverviewAdaptor :
+class OverviewAdaptor(private val rateListListener: RatesListListener) :
     RecyclerView.Adapter<OverviewAdaptor.ViewHolder>() {
 
     private var ratesData: Rates = Rates.getEmptyInstance()
 
     class ViewHolder private constructor(private val binding: RateItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(ratesData: Rates, position: Int) {
+        fun bind(ratesData: Rates, position: Int, rateListListener: RatesListListener) {
             Log.e(TAG, "ViewHolder bind item: $ratesData.rates[position]")
+            binding.clickListener = rateListListener
             binding.fullRates = ratesData
             binding.rate = ratesData.rates[position]
             binding.executePendingBindings()
@@ -40,7 +42,7 @@ class OverviewAdaptor :
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         if (!ratesData.rates.isNullOrEmpty()) {
-            holder.bind(ratesData, position)
+            holder.bind(ratesData, position, rateListListener)
         }
     }
 
@@ -58,3 +60,6 @@ class OverviewAdaptor :
     }
 }
 
+class RatesListListener(val clickListener: (currency: Currency) -> Unit) {
+    fun onClick(rate: Rate) = clickListener(rate.currency)
+}

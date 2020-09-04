@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -48,7 +49,9 @@ class OverviewFragment : Fragment() {
 
         // RecyclerView Rates
         val ratesLayoutManager: RecyclerView.LayoutManager = LinearLayoutManager(context)
-        val ratesAdaptor = OverviewAdaptor()
+        val ratesAdaptor = OverviewAdaptor(RatesListListener {
+            Toast.makeText(context, "Pressed currency: ${it.currencyCode}", Toast.LENGTH_LONG).show()
+        })
 
         ratesRecyclerVeiw = binding.currencyRatesRecycleview
         ratesRecyclerVeiw.layoutManager = ratesLayoutManager
