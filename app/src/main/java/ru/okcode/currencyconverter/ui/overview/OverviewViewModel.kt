@@ -1,5 +1,6 @@
 package ru.okcode.currencyconverter.ui.overview
 
+import android.icu.util.Currency
 import androidx.hilt.Assisted
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
@@ -31,10 +32,13 @@ class OverviewViewModel @ViewModelInject constructor(
         get() = cacheRepository.cacheDataSource
 
     private val cacheObserver: Observer<Rates> = Observer { cachedRates ->
-        cachedRates?.let {
-            val config: Config = configDataSource.value ?: Config.getDefaultConfig()
-            GlobalScope.launch() {
-                readyRepository.updateReadyRates(it, config)
+        cachedRates?.let {rates ->
+            val config: Config? = configDataSource.value
+
+            config?.let {currentConfig ->
+                GlobalScope.launch() {
+                    readyRepository.updateReadyRates(rates, currentConfig)
+                }
             }
         }
     }
@@ -84,5 +88,11 @@ class OverviewViewModel @ViewModelInject constructor(
         configDataSource.removeObserver(configObserver)
     }
 
+    fun onBaseCurrencyChange(baseCurrency: Currency) {
+        val baseCurrencyCode = baseCurrency.currencyCode
+        scope.launch {
+            configRepository.changeBaseCurrency(baseCurrencyCode)
+        }
+    }
 
 }

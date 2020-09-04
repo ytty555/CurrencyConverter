@@ -8,9 +8,19 @@ import ru.okcode.currencyconverter.model.ModelMapper
 @Entity
 data class ConfigEntity(
     @PrimaryKey(autoGenerate = true)
-    val id: Long = 0,
-    val baseCurrencyCode: String,
-    val baseCurrencyAmount: Double,
-    val visibleCurrencies: List<String>
-)
+    var id: Long = 0,
+    var baseCurrencyCode: String,
+    var baseCurrencyAmount: Double,
+    var visibleCurrencies: List<String>
+) {
+    companion object {
+        fun createDefaultConfig(): ConfigEntity {
+            return ConfigEntity(
+                baseCurrencyCode = "EUR",
+                baseCurrencyAmount = 1.0,
+                visibleCurrencies = ArrayList()
+            )
+        }
+    }
+}
 

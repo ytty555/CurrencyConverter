@@ -19,7 +19,6 @@ class OverviewAdaptor(private val rateListListener: RatesListListener) :
     class ViewHolder private constructor(private val binding: RateItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(ratesData: Rates, position: Int, rateListListener: RatesListListener) {
-            Log.e(TAG, "ViewHolder bind item: $ratesData.rates[position]")
             binding.clickListener = rateListListener
             binding.fullRates = ratesData
             binding.rate = ratesData.rates[position]

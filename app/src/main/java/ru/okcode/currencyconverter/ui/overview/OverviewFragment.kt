@@ -50,7 +50,8 @@ class OverviewFragment : Fragment() {
         // RecyclerView Rates
         val ratesLayoutManager: RecyclerView.LayoutManager = LinearLayoutManager(context)
         val ratesAdaptor = OverviewAdaptor(RatesListListener {
-            Toast.makeText(context, "Pressed currency: ${it.currencyCode}", Toast.LENGTH_LONG).show()
+            viewModel.onBaseCurrencyChange(it)
+            Toast.makeText(context, "Pressed currency: ${it.currencyCode}", Toast.LENGTH_SHORT).show()
         })
 
         ratesRecyclerVeiw = binding.currencyRatesRecycleview
