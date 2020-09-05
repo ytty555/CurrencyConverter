@@ -9,7 +9,11 @@ import javax.inject.Inject
 
 class ReadyMapper @Inject constructor() : ModelMapper<ReadyHeaderWithRates, Rates> {
 
-    override fun mapToModel(entity: ReadyHeaderWithRates): Rates {
+    override fun mapToModel(entity: ReadyHeaderWithRates?): Rates? {
+        if (entity == null) {
+            return null
+        }
+
         val rates: List<Rate> = entity.rates.map { readyRate ->
             Rate(
                 currency = Currency.getInstance(readyRate.currencyCode),

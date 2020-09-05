@@ -1,10 +1,8 @@
 package ru.okcode.currencyconverter.model.repositories
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Transformations
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import ru.okcode.currencyconverter.model.Rates
 import ru.okcode.currencyconverter.model.db.cache.CacheDao
 import ru.okcode.currencyconverter.model.db.cache.CacheMapper
@@ -21,8 +19,7 @@ class CacheRepositoryImpl @Inject constructor(
 ) : CacheRepository {
 
     override val cacheDataSource: LiveData<Rates> =
-        Transformations.map(cacheDao.getCacheRates()) { cacheHeaderWithRates ->
-            Log.e("qq", "RepositoryImpl: Setting rates LiveData...")
+        Transformations.map(cacheDao.getCacheRatesDataSource()) { cacheHeaderWithRates ->
             cacheHeaderWithRates?.let {
                 cacheMapper.mapToModel(it)
             }
@@ -30,13 +27,11 @@ class CacheRepositoryImpl @Inject constructor(
 
     override suspend fun refreshCacheRates(immediately: Boolean) {
         val isActualDataInCache = cacheDao.isActualAsync().await()
-        Log.e("qq", "RepositoryImpl: Cache actual: $isActualDataInCache")
+
         if (!immediately && isActualDataInCache) {
-            Log.e("qq", "RepositoryImpl: Cache has actual data. Do nothing")
             return
         }
 
-        Log.e("qq", "RepositoryImpl: Starting cache refreshing")
         withContext(Dispatchers.IO) {
             try {
                 val apiRates: RatesDto = api.getRatesAsync().await()
@@ -44,12 +39,17 @@ class CacheRepositoryImpl @Inject constructor(
                     apiRates.toCacheRatesHeader(),
                     apiRates.toCacheCurrencyRatesList()
                 )
-                Log.e("qq", "RepositoryImpl: Data cached!")
 
             } catch (e: Exception) {
-                Log.e("qq", "RepositoryImpl: Error: ${e.message}")
 
             }
         }
     }
+
+    override fun getCacheRatesAsync(): Deferred<Rates?> {
+       return GlobalScope.async {
+           cacheMapper.mapToModel(cacheDao.getCacheRates())
+       }
+    }
+
 }

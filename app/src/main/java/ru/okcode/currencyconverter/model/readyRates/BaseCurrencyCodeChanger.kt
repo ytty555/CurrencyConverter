@@ -1,29 +1,59 @@
 package ru.okcode.currencyconverter.model.readyRates
 
-import android.util.Log
+import android.icu.math.BigDecimal
+import android.icu.util.Currency
+import ru.okcode.currencyconverter.model.Config
+import ru.okcode.currencyconverter.model.Rate
 import ru.okcode.currencyconverter.model.Rates
 
-private const val TAG = "BaseCurrencyCodeChanger"
 
 class BaseCurrencyCodeChanger(
     source: ReadyRates,
-    private val baseCurrencyCode: String?
+    private val config: Config
 ) : RatesDecorator(source) {
     override suspend fun writeRates(rates: Rates) {
-        super.writeRates(changeBaseCurrencyCode(rates))
+        super.writeRates(changeBaseCurrency(rates))
     }
 
-    private fun changeBaseCurrencyCode(rates: Rates): Rates {
-        Log.e(TAG, "old = ${rates.baseCurrency.currencyCode} => new = $baseCurrencyCode")
-        if (baseCurrencyCode == rates.baseCurrency.currencyCode || baseCurrencyCode.isNullOrEmpty()) {
-            // Do nothing. Return input rates
-            Log.e(TAG, "changeBaseCurrencyCode Do NOTHING!")
+    private fun changeBaseCurrency(rates: Rates): Rates {
 
-            return rates
+        val newBaseCurrencyCode = config.baseCurrencyCode
+
+        val newBaseCurrency = Currency.getInstance(newBaseCurrencyCode)
+
+        val newBaseCurrencyRateToEuro: BigDecimal =
+            rates.rates
+                .filter { rate -> rate.currency.currencyCode == newBaseCurrencyCode }[0]
+                .rateToEur
+
+        val newBaseCurrencyAmount = config.baseCurrencyAmount
+
+        val newRatesList: List<Rate> = rates.rates.map { oldRate ->
+            val newRateToBase: BigDecimal = calcNewRateToBase(oldRate, newBaseCurrencyRateToEuro)
+            Rate(
+                currency = oldRate.currency,
+                rateToBase = newRateToBase,
+                rateToEur = oldRate.rateToEur,
+                sum = newRateToBase.multiply(BigDecimal.valueOf(newBaseCurrencyAmount)),
+                priorityPosition = oldRate.priorityPosition,
+                flagRes = oldRate.flagRes
+            )
         }
 
-            Log.e(TAG, "changeBaseCurrencyCode Do some thing!")
-        // TODO FIX IT
-        return  rates
+        return Rates(
+            baseCurrency = newBaseCurrency,
+            baseCurrencyAmount = newBaseCurrencyAmount,
+            baseCurrencyRateToEuro = newBaseCurrencyRateToEuro,
+            rates = newRatesList,
+            timeLastUpdateUnix = rates.timeLastUpdateUnix,
+            timeNextUpdateUnix = rates.timeNextUpdateUnix
+        )
+    }
+
+    private fun calcNewRateToBase(
+        rate: Rate,
+        baseCurrencyRateToEuro: BigDecimal
+    ): BigDecimal {
+        return rate.rateToEur.divide(baseCurrencyRateToEuro)
     }
 }

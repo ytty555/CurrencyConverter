@@ -12,7 +12,11 @@ private const val CODE_EURO = "EUR"
 
 class CacheMapper @Inject constructor() : ModelMapper<CacheHeaderWithRates, Rates> {
 
-    override fun mapToModel(entity: CacheHeaderWithRates): Rates {
+    override fun mapToModel(entity: CacheHeaderWithRates?): Rates? {
+        if (entity == null) {
+            return null
+        }
+
         val baseCurrencyRateToEuro = getBaseCurrencyRateToEuro(entity)
 
         val rates: List<Rate> = entity.rates.map {

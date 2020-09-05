@@ -2,7 +2,9 @@ package ru.okcode.currencyconverter.model.repositories
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Transformations
+import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import ru.okcode.currencyconverter.model.Config
 import ru.okcode.currencyconverter.model.db.config.ConfigDao
@@ -16,8 +18,9 @@ class ConfigRepositoryImpl @Inject constructor(
     private val configDao: ConfigDao,
     private val configMapper: ConfigMapper
 ) : ConfigRepository {
+
     override val configDataSource: LiveData<Config>
-        get() = Transformations.map(configDao.getConfig()) { configEntity ->
+        get() = Transformations.map(configDao.getConfigDataSource()) { configEntity ->
             if (configEntity == null) {
                 val defaultConfig: ConfigEntity = ConfigEntity.createDefaultConfig()
 
@@ -33,6 +36,12 @@ class ConfigRepositoryImpl @Inject constructor(
 
     override suspend fun changeBaseCurrency(baseCurrencyCode: String) {
         configDao.updateBaseCurrency(baseCurrencyCode)
+    }
+
+    override fun getConfigAsync(): Deferred<Config?> {
+        return GlobalScope.async {
+            configMapper.mapToModel(configDao.getConfig())
+        }
     }
 
 }

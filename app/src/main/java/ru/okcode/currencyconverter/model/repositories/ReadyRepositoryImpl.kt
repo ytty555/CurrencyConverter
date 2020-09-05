@@ -27,7 +27,7 @@ class ReadyRepositoryImpl @Inject constructor(
     override suspend fun updateReadyRates(rates: Rates, config: Config) {
         val readyRatesController: ReadyRates = ReadyRatesController(readyDao, readyMapper)
         val decorator: RatesDecorator =
-            BaseCurrencyCodeChanger(readyRatesController, config.baseCurrencyCode)
+            BaseCurrencyCodeChanger(readyRatesController, config)
         decorator.writeRates(rates)
     }
 }

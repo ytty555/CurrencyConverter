@@ -2,18 +2,17 @@ package ru.okcode.currencyconverter.model.db.cache
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
 import java.util.*
 
 @Dao
 interface CacheDao {
     @Transaction
     @Query("SELECT * FROM CacheRatesHeader")
-    fun getCacheRates(): LiveData<CacheHeaderWithRates?>
-
-    @Transaction
-    @Query("SELECT * FROM CacheRatesHeader")
-    fun getCacheRatesAsync(): CacheHeaderWithRates?
+    fun getCacheRatesDataSource(): LiveData<CacheHeaderWithRates?>
 
     @Transaction
     fun insertToCache(cacheRatesHeader: CacheRatesHeader, ratesList: List<CacheCurrencyRate>) {
@@ -34,6 +33,11 @@ interface CacheDao {
 
     @Query("DELETE FROM CacheCurrencyRate")
     fun clearCacheCurrencyRates()
+
+    //  -------------------------------------
+    @Transaction
+    @Query("SELECT * FROM CacheRatesHeader")
+    fun getCacheRates(): CacheHeaderWithRates
 
     // Cache has an actual data checking -------------------------------------
     @Transaction

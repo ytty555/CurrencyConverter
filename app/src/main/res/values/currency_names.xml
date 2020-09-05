@@ -1,39 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="noName">NoName</string>
-    <string name="EUR">Euro</string>
-    <string name="RUB">Russian ruble</string>
-    <string name="USD">American dollar</string>
-    <string name="CAD">Canadian dollar</string>
-    <string name="HKD">Hong Kong dollar</string>
-    <string name="ISK">Icelandic krona</string>
-    <string name="PHP">Philippine peso</string>
-    <string name="DKK">Danish krone</string>
-    <string name="HUF">Hungarian forint</string>
-    <string name="CZK">Czech koruna</string>
-    <string name="AUD">Australian dollar</string>
-    <string name="RON">Romanian leu</string>
-    <string name="SEK">Swedish krona</string>
-    <string name="IDR">Indonesian rupiah</string>
-    <string name="INR">Indian rupee</string>
-    <string name="BRL">Brazilian real</string>
-    <string name="HRK">Croatian kuna</string>
-    <string name="JPY">Japanese yen</string>
-    <string name="THB">Thai baht</string>
-    <string name="CHF">Swiss franc</string>
-    <string name="SGD">Singapore dollar</string>
-    <string name="PLN">Polish złoty</string>
-    <string name="BGN">Bulgarian lev</string>
-    <string name="TRY">Turkish lira</string>
-    <string name="CNY">Renminbi</string>
-    <string name="NOK">Norwegian krone</string>
-    <string name="NZD">New Zealand dollar</string>
-    <string name="ZAR">South African rand</string>
-    <string name="MXN">Mexican peso</string>
-    <string name="ILS">Israeli new shekel</string>
-    <string name="GBP">Pound sterling</string>
-    <string name="KRW">South Korean won</string>
-    <string name="MYR">Malaysian ringgit</string>
+    <string name="EUR" translatable="false">Euro</string>
+    <string name="RUB" translatable="false">Russian ruble</string>
+    <string name="USD" translatable="false">American dollar</string>
+    <string name="CAD" translatable="false">Canadian dollar</string>
+    <string name="HKD" translatable="false">Hong Kong dollar</string>
+    <string name="ISK" translatable="false">Icelandic krona</string>
+    <string name="PHP" translatable="false">Philippine peso</string>
+    <string name="DKK" translatable="false">Danish krone</string>
+    <string name="HUF" translatable="false">Hungarian forint</string>
+    <string name="CZK" translatable="false">Czech koruna</string>
+    <string name="AUD" translatable="false">Australian dollar</string>
+    <string name="RON" translatable="false">Romanian leu</string>
+    <string name="SEK" translatable="false">Swedish krona</string>
+    <string name="IDR" translatable="false">Indonesian rupiah</string>
+    <string name="INR" translatable="false">Indian rupee</string>
+    <string name="BRL" translatable="false">Brazilian real</string>
+    <string name="HRK" translatable="false">Croatian kuna</string>
+    <string name="JPY" translatable="false">Japanese yen</string>
+    <string name="THB" translatable="false">Thai baht</string>
+    <string name="CHF" translatable="false">Swiss franc</string>
+    <string name="SGD" translatable="false">Singapore dollar</string>
+    <string name="PLN" translatable="false">Polish złoty</string>
+    <string name="BGN" translatable="false">Bulgarian lev</string>
+    <string name="TRY" translatable="false">Turkish lira</string>
+    <string name="CNY" translatable="false">Renminbi</string>
+    <string name="NOK" translatable="false">Norwegian krone</string>
+    <string name="NZD" translatable="false">New Zealand dollar</string>
+    <string name="ZAR" translatable="false">South African rand</string>
+    <string name="MXN" translatable="false">Mexican peso</string>
+    <string name="ILS" translatable="false">Israeli new shekel</string>
+    <string name="GBP" translatable="false">Pound sterling</string>
+    <string name="KRW" translatable="false">South Korean won</string>
+    <string name="MYR" translatable="false">Malaysian ringgit</string>
 
 
 </resources>

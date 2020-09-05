@@ -4,7 +4,10 @@ import android.icu.util.Currency
 import androidx.hilt.Assisted
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import ru.okcode.currencyconverter.model.Config
 import ru.okcode.currencyconverter.model.Rates
 import ru.okcode.currencyconverter.model.repositories.CacheRepository
@@ -31,32 +34,16 @@ class OverviewViewModel @ViewModelInject constructor(
     private val cacheDataSource: LiveData<Rates>
         get() = cacheRepository.cacheDataSource
 
-    private val cacheObserver: Observer<Rates> = Observer { cachedRates ->
-        cachedRates?.let {rates ->
-            val config: Config? = configDataSource.value
-
-            config?.let {currentConfig ->
-                GlobalScope.launch() {
-                    readyRepository.updateReadyRates(rates, currentConfig)
-                }
-            }
-        }
+    private val cacheObserver: Observer<Rates> = Observer {
+        updateReadyRates()
     }
 
     //Config data ---------------------------------------------------------------------
     private val configDataSource: LiveData<Config>
         get() = configRepository.configDataSource
 
-    private val configObserver: Observer<Config> = Observer { config ->
-        val currentConfig = config ?: Config.getDefaultConfig()
-        scope.launch {
-            val cachedRates: Rates? = cacheDataSource.value
-            if (cachedRates != null) {
-                readyRepository.updateReadyRates(cachedRates, currentConfig)
-            } else {
-                cacheRepository.refreshCacheRates()
-            }
-        }
+    private val configObserver: Observer<Config> = Observer {
+        updateReadyRates()
     }
 
     // ReadyRates
@@ -64,11 +51,6 @@ class OverviewViewModel @ViewModelInject constructor(
         get() = readyRepository.readyRatesDataSource
 
     init {
-        // TODO ??????????????????????????????????????
-//        scope.launch {
-//            cacheRepository.refreshCacheRates(false)
-//        }
-
         startObserve()
     }
 
@@ -95,4 +77,18 @@ class OverviewViewModel @ViewModelInject constructor(
         }
     }
 
+    private fun updateReadyRates() {
+        scope.launch {
+            val config: Config =
+                configRepository.getConfigAsync().await() ?: Config.getDefaultConfig()
+
+            val cachedRates: Rates? = cacheRepository.getCacheRatesAsync().await()
+
+            if (cachedRates != null) {
+                readyRepository.updateReadyRates(cachedRates, config)
+            } else {
+                cacheRepository.refreshCacheRates()
+            }
+        }
+    }
 }

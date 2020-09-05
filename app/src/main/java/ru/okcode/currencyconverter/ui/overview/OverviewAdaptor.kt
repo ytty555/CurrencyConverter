@@ -1,15 +1,12 @@
 package ru.okcode.currencyconverter.ui.overview
 
 import android.icu.util.Currency
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import ru.okcode.currencyconverter.databinding.RateItemBinding
 import ru.okcode.currencyconverter.model.Rate
 import ru.okcode.currencyconverter.model.Rates
-
-private const val TAG = "OverviewAdaptor"
 
 class OverviewAdaptor(private val rateListListener: RatesListListener) :
     RecyclerView.Adapter<OverviewAdaptor.ViewHolder>() {

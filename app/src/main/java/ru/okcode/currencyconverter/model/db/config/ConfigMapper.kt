@@ -5,7 +5,11 @@ import ru.okcode.currencyconverter.model.ModelMapper
 import javax.inject.Inject
 
 class ConfigMapper @Inject constructor() : ModelMapper<ConfigEntity, Config> {
-    override fun mapToModel(entity: ConfigEntity): Config {
+    override fun mapToModel(entity: ConfigEntity?): Config? {
+        if (entity == null) {
+            return null
+        }
+
         return Config(
             baseCurrencyCode = entity.baseCurrencyCode,
             baseCurrencyAmount = entity.baseCurrencyAmount,
