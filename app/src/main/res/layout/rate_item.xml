@@ -7,6 +7,14 @@
     <data>
 
         <variable
+            name="clickListener"
+            type="ru.okcode.currencyconverter.ui.overview.RatesListListener" />
+
+        <variable
+            name="fullRates"
+            type="ru.okcode.currencyconverter.model.Rates" />
+
+        <variable
             name="rate"
             type="ru.okcode.currencyconverter.model.Rate" />
     </data>
@@ -15,6 +23,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="4dp"
+        android:onClick="@{() -> clickListener.onClick(rate)}"
         app:cardCornerRadius="5dp">
 
 
@@ -24,7 +33,9 @@
             android:paddingStart="8dp"
             android:paddingTop="4dp"
             android:paddingEnd="8dp"
-            android:paddingBottom="4dp">
+            android:paddingBottom="4dp"
+            app:backgroundFromBaseCurrency="@{fullRates.baseCurrency}"
+            app:currentCurrency="@{rate.currency}">
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/flag_cardview"
@@ -70,12 +81,15 @@
 
             <TextView
                 android:id="@+id/currency_name"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginRight="8dp"
+                android:singleLine="true"
                 android:text="@{rate.currency.displayName}"
                 android:textColor="@android:color/black"
                 android:textSize="18sp"
                 app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/currency_rate"
                 app:layout_constraintStart_toStartOf="@+id/currency_code"
                 app:layout_constraintTop_toBottomOf="@+id/currency_code"
                 app:layout_constraintVertical_chainStyle="spread"
@@ -85,21 +99,50 @@
                 android:id="@+id/currency_rate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@{String.valueOf(rate.value)}"
+                android:layout_marginRight="4dp"
                 android:textColor="@color/colorPrimary"
-                android:textSize="18sp"
+                android:textSize="16sp"
                 android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/base_currency"
+                app:layout_constraintEnd_toStartOf="@id/currency_symbol"
+                app:layout_constraintTop_toBottomOf="@+id/base_currency_symbol"
+                app:text="@{String.valueOf(rate.rateToBase)}"
                 tools:text="1.2635" />
 
             <TextView
-                android:id="@+id/base_currency"
+                android:id="@+id/currency_symbol"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:text="@{rate.currency.symbol}"
+                android:textColor="@color/colorPrimary"
+
+                android:textSize="14sp"
+                android:textStyle="bold"
+                app:layout_constraintBaseline_toBaselineOf="@+id/currency_rate"
+                app:layout_constraintEnd_toEndOf="parent"
+                tools:text="1.2635" />
+
+            <TextView
+                android:id="@+id/base_currency_symbol"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{fullRates.baseCurrency.symbol}"
+                app:currentCurrency="@{rate.currency}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/currency_code"
+                app:visibilityFromBaseCurrency="@{fullRates.baseCurrency}"
                 tools:text="to EUR" />
+
+            <TextView
+                android:id="@+id/base_currency_amount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="2dp"
+                android:text="@{String.valueOf(fullRates.baseCurrencyAmount)}"
+                app:currentCurrency="@{rate.currency}"
+                app:layout_constraintEnd_toStartOf="@id/base_currency_symbol"
+                app:layout_constraintTop_toTopOf="@+id/base_currency_symbol"
+                app:visibilityFromBaseCurrency="@{fullRates.baseCurrency}"
+                tools:text="888.15" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>

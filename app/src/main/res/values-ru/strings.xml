@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Конвертер валют</string>
+    <string name="noName">Без имени</string>
+    <string name="base_currency_info">Базовая валюта: %s</string>
+    <string name="err_loading_from_db">Ошибка загрузки курсов валют из локальной базы данных</string>
+    <string name="err_loading_from_remote_api">Ошибка загрузки курсов валют из удаленного API</string>
+    <string name="country_flag_of_the_currency">Государственный флаг валюты</string>
+    <string name="base_currency_label">Базовая валюта</string>
+    <string name="amount_label">Количество</string>
+    <string name="updated_label">Обновлено:</string>
+</resources>

@@ -2,17 +2,34 @@ package ru.okcode.currencyconverter.model
 
 import android.icu.math.BigDecimal
 import android.icu.util.Currency
-import java.util.*
 
 data class Rates(
     val baseCurrency: Currency,
+    val baseCurrencyAmount: Double = 1.0,
+    val baseCurrencyRateToEuro: BigDecimal,
     val rates: List<Rate>,
-    val lastUpdate: Date,
-    val nextUpdate: Date
-)
+    val timeLastUpdateUnix: Long,
+    val timeNextUpdateUnix: Long
+) {
+    companion object {
+        fun getEmptyInstance(): Rates {
+            return Rates(
+                baseCurrency = Currency.getInstance("EUR"),
+                baseCurrencyAmount = 1.0,
+                baseCurrencyRateToEuro = BigDecimal.valueOf(1.0),
+                timeLastUpdateUnix = 0,
+                timeNextUpdateUnix = 0,
+                rates = ArrayList()
+            )
+        }
+    }
+}
 
 data class Rate(
     val currency: Currency,
-    val value: BigDecimal,
+    val rateToBase: BigDecimal,
+    val rateToEur: BigDecimal,
+    val sum: BigDecimal,
+    val priorityPosition: Int = 0,
     val flagRes: Int?
 )

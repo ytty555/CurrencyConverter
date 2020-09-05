@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -14,6 +15,9 @@ import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import ru.okcode.currencyconverter.R
 import ru.okcode.currencyconverter.databinding.FragmentCurrencyRatesBinding
+import ru.okcode.currencyconverter.model.Rates
+
+private const val TAG = "OverviewFragment"
 
 @AndroidEntryPoint
 class OverviewFragment : Fragment() {
@@ -22,6 +26,7 @@ class OverviewFragment : Fragment() {
     private val viewModel: OverviewViewModel by viewModels()
     private lateinit var ratesRecyclerVeiw: RecyclerView
     private lateinit var coordinatorLayout: CoordinatorLayout
+    private lateinit var rates: Rates
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -41,16 +46,19 @@ class OverviewFragment : Fragment() {
             showMessage(errorMessage)
         })
 
+
         // RecyclerView Rates
         val ratesLayoutManager: RecyclerView.LayoutManager = LinearLayoutManager(context)
-        val ratesAdaptor = CurrencyRecyclerViewAdaptor()
+        val ratesAdaptor = OverviewAdaptor(RatesListListener {
+            viewModel.onBaseCurrencyChange(it)
+        })
+
         ratesRecyclerVeiw = binding.currencyRatesRecycleview
         ratesRecyclerVeiw.layoutManager = ratesLayoutManager
         ratesRecyclerVeiw.adapter = ratesAdaptor
-        viewModel.rates.observe(viewLifecycleOwner, { ratesList ->
+        viewModel.readyRatesDataSource.observe(viewLifecycleOwner, { ratesList ->
             ratesList?.let {
-                ratesAdaptor.submitList(ratesList.rates)
-                ratesAdaptor.notifyDataSetChanged()
+                ratesAdaptor.setData(it)
             }
         })
 

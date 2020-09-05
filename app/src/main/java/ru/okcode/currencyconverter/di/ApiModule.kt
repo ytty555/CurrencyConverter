@@ -10,7 +10,7 @@ import dagger.hilt.android.components.ApplicationComponent
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import ru.okcode.currencyconverter.BuildConfig
-import ru.okcode.currencyconverter.model.api.ApiService
+import ru.okcode.currencyconverter.model.network.ApiService
 import ru.okcode.currencyconverter.util.BASE_URL
 
 @Module

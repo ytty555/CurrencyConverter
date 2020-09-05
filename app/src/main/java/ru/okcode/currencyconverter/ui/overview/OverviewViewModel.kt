@@ -1,42 +1,94 @@
 package ru.okcode.currencyconverter.ui.overview
 
+import android.icu.util.Currency
 import androidx.hilt.Assisted
 import androidx.hilt.lifecycle.ViewModelInject
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import ru.okcode.currencyconverter.model.Config
 import ru.okcode.currencyconverter.model.Rates
-import ru.okcode.currencyconverter.model.Repository
+import ru.okcode.currencyconverter.model.repositories.CacheRepository
+import ru.okcode.currencyconverter.model.repositories.ConfigRepository
+import ru.okcode.currencyconverter.model.repositories.ReadyRepository
 
 class OverviewViewModel @ViewModelInject constructor(
-    private val repository: Repository,
+    private val cacheRepository: CacheRepository,
+    private val configRepository: ConfigRepository,
+    private val readyRepository: ReadyRepository,
     @Assisted private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
+    // Coroutines scope
     private val job = Job()
     private val scope = CoroutineScope(Dispatchers.Main + job)
 
-    // Messages
+    // Messages ---------------------------------------------------------------------
     private val _message = MutableLiveData<String>()
     val message: LiveData<String>
         get() = _message
 
-    // Rates data
-    val rates: LiveData<Rates> = repository.cachedRates
+    //Cache data ---------------------------------------------------------------------
+    private val cacheDataSource: LiveData<Rates>
+        get() = cacheRepository.cacheDataSource
+
+    private val cacheObserver: Observer<Rates> = Observer {
+        updateReadyRates()
+    }
+
+    //Config data ---------------------------------------------------------------------
+    private val configDataSource: LiveData<Config>
+        get() = configRepository.configDataSource
+
+    private val configObserver: Observer<Config> = Observer {
+        updateReadyRates()
+    }
+
+    // ReadyRates
+    val readyRatesDataSource: LiveData<Rates>
+        get() = readyRepository.readyRatesDataSource
 
     init {
-        scope.launch {
-            repository.refreshCacheRates(true)
-        }
+        startObserve()
     }
 
     override fun onCleared() {
-        super.onCleared()
+        stopObserve()
         job.cancel()
+        super.onCleared()
+    }
+
+    private fun startObserve() {
+        cacheDataSource.observeForever(cacheObserver)
+        configDataSource.observeForever(configObserver)
+    }
+
+    private fun stopObserve() {
+        cacheDataSource.removeObserver(cacheObserver)
+        configDataSource.removeObserver(configObserver)
+    }
+
+    fun onBaseCurrencyChange(baseCurrency: Currency) {
+        val baseCurrencyCode = baseCurrency.currencyCode
+        scope.launch {
+            configRepository.changeBaseCurrency(baseCurrencyCode)
+        }
+    }
+
+    private fun updateReadyRates() {
+        scope.launch {
+            val config: Config =
+                configRepository.getConfigAsync().await() ?: Config.getDefaultConfig()
+
+            val cachedRates: Rates? = cacheRepository.getCacheRatesAsync().await()
+
+            if (cachedRates != null) {
+                readyRepository.updateReadyRates(cachedRates, config)
+            } else {
+                cacheRepository.refreshCacheRates()
+            }
+        }
     }
 }

@@ -1,21 +1,24 @@
 package ru.okcode.currencyconverter.ui.overview
 
+import android.icu.util.Currency
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import ru.okcode.currencyconverter.databinding.RateItemBinding
 import ru.okcode.currencyconverter.model.Rate
+import ru.okcode.currencyconverter.model.Rates
 
-class CurrencyRecyclerViewAdaptor :
-    ListAdapter<Rate, CurrencyRecyclerViewAdaptor.ViewHolder>(RateDiff()) {
+class OverviewAdaptor(private val rateListListener: RatesListListener) :
+    RecyclerView.Adapter<OverviewAdaptor.ViewHolder>() {
 
+    private var ratesData: Rates = Rates.getEmptyInstance()
 
     class ViewHolder private constructor(private val binding: RateItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(item: Rate) {
-            binding.rate = item
+        fun bind(ratesData: Rates, position: Int, rateListListener: RatesListListener) {
+            binding.clickListener = rateListListener
+            binding.fullRates = ratesData
+            binding.rate = ratesData.rates[position]
             binding.executePendingBindings()
         }
 
@@ -34,18 +37,25 @@ class CurrencyRecyclerViewAdaptor :
 
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(getItem(position))
+        if (!ratesData.rates.isNullOrEmpty()) {
+            holder.bind(ratesData, position, rateListListener)
+        }
+    }
+
+    override fun getItemCount(): Int {
+        return if (!ratesData.rates.isNullOrEmpty()) {
+            ratesData.rates.size
+        } else {
+            0
+        }
+    }
+
+    fun setData(data: Rates) {
+        ratesData = data
+        notifyDataSetChanged()
     }
 }
 
-class RateDiff : DiffUtil.ItemCallback<Rate>() {
-    override fun areItemsTheSame(oldItem: Rate, newItem: Rate): Boolean {
-        return oldItem.currency == newItem.currency
-    }
-
-    override fun areContentsTheSame(oldItem: Rate, newItem: Rate): Boolean {
-        return oldItem == newItem
-    }
-
+class RatesListListener(val clickListener: (currency: Currency) -> Unit) {
+    fun onClick(rate: Rate) = clickListener(rate.currency)
 }
-
