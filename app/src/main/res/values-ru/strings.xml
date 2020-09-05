@@ -9,4 +9,5 @@
     <string name="base_currency_label">Базовая валюта</string>
     <string name="amount_label">Количество</string>
     <string name="updated_label">Обновлено:</string>
+    <string name="convert">Конвертировать</string>
 </resources>

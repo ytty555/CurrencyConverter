@@ -9,4 +9,6 @@
     <string name="base_currency_label">Base currency</string>
     <string name="amount_label">Amount</string>
     <string name="updated_label">Updated:</string>
+    <string name="baseChooserButtonRatio" translatable="false">1:0.6</string>
+    <string name="convert">Convert</string>
 </resources>

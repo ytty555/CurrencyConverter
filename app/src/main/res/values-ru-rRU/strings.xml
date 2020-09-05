@@ -9,4 +9,5 @@
     <string name="err_loading_from_remote_api">Ошибка загрузки курсов валют из удаленного API</string>
     <string name="country_flag_of_the_currency">Государственный флаг валюты</string>
     <string name="noName">Без имени</string>
+    <string name="convert">Конвертировать</string>
 </resources>

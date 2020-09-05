@@ -14,4 +14,11 @@
         <item name="android:textSize">14sp</item>
     </style>
 
+    <style name="baseChooserButton">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">0dp</item>
+        <item name="android:layout_margin">@dimen/margin_between_buttons</item>
+        <item name="android:background">@color/colorPrimary</item>
+    </style>
+
 </resources>
