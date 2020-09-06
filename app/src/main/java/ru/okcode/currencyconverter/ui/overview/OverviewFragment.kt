@@ -1,21 +1,24 @@
 package ru.okcode.currencyconverter.ui.overview
 
+import android.icu.util.Currency
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import ru.okcode.currencyconverter.R
 import ru.okcode.currencyconverter.databinding.FragmentCurrencyRatesBinding
-import ru.okcode.currencyconverter.model.Rates
+import ru.okcode.currencyconverter.ui.basechooser.BaseChooserFragment
 
 private const val TAG = "OverviewFragment"
 
@@ -24,9 +27,8 @@ class OverviewFragment : Fragment() {
 
     private lateinit var binding: FragmentCurrencyRatesBinding
     private val viewModel: OverviewViewModel by viewModels()
-    private lateinit var ratesRecyclerVeiw: RecyclerView
+    private lateinit var ratesRecyclerView: RecyclerView
     private lateinit var coordinatorLayout: CoordinatorLayout
-    private lateinit var rates: Rates
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -46,16 +48,20 @@ class OverviewFragment : Fragment() {
             showMessage(errorMessage)
         })
 
-
         // RecyclerView Rates
         val ratesLayoutManager: RecyclerView.LayoutManager = LinearLayoutManager(context)
-        val ratesAdaptor = OverviewAdaptor(RatesListListener {
-            viewModel.onBaseCurrencyChange(it)
+        val ratesAdaptor = OverviewAdaptor(RatesListListener { currency ->
+            val baseCurrencyCode = currency.currencyCode
+            val action =
+                OverviewFragmentDirections.actionCurrencyRatesFragmentToBaseChooserFragment(
+                    baseCurrencyCode
+                )
+            findNavController().navigate(action)
         })
 
-        ratesRecyclerVeiw = binding.currencyRatesRecycleview
-        ratesRecyclerVeiw.layoutManager = ratesLayoutManager
-        ratesRecyclerVeiw.adapter = ratesAdaptor
+        ratesRecyclerView = binding.currencyRatesRecycleview
+        ratesRecyclerView.layoutManager = ratesLayoutManager
+        ratesRecyclerView.adapter = ratesAdaptor
         viewModel.readyRatesDataSource.observe(viewLifecycleOwner, { ratesList ->
             ratesList?.let {
                 ratesAdaptor.setData(it)

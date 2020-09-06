@@ -25,13 +25,16 @@ interface ConfigDao {
     fun clear()
 
     @Transaction
-    suspend fun updateBaseCurrency(baseCurrencyCode: String) {
+    suspend fun updateBaseCurrency(baseCurrencyCode: String, amount: Float) {
         val configEntity = getConfigEntityAsync().await()
 
-        if (configEntity.baseCurrencyCode == baseCurrencyCode) {
+        if (configEntity.baseCurrencyCode == baseCurrencyCode
+            && configEntity.baseCurrencyAmount == amount
+        ) {
             return
         } else {
             configEntity.baseCurrencyCode = baseCurrencyCode
+            configEntity.baseCurrencyAmount = amount
         }
 
         clear()

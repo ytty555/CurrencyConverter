@@ -34,7 +34,7 @@ class BaseCurrencyCodeChanger(
                 currency = oldRate.currency,
                 rateToBase = newRateToBase,
                 rateToEur = oldRate.rateToEur,
-                sum = newRateToBase.multiply(BigDecimal.valueOf(newBaseCurrencyAmount)),
+                sum = newRateToBase.multiply(BigDecimal.valueOf(newBaseCurrencyAmount.toDouble())),
                 priorityPosition = oldRate.priorityPosition,
                 flagRes = oldRate.flagRes
             )

@@ -9,25 +9,16 @@
         <action
             android:id="@+id/action_currencyRatesFragment_to_baseChooserFragment"
             app:destination="@id/baseChooserFragment" />
-        <argument
-            android:name="baseCurrencyCode"
-            app:argType="string" />
-        <argument
-            android:name="baseCurrencyAmount"
-            app:argType="float" />
     </fragment>
     <fragment
         android:id="@+id/baseChooserFragment"
         android:name="ru.okcode.currencyconverter.ui.basechooser.BaseChooserFragment"
         android:label="BaseChooserFragment" >
-        <action
-            android:id="@+id/action_baseChooserFragment_to_currencyRatesFragment"
-            app:destination="@id/currencyRatesFragment" />
         <argument
             android:name="baseCurrencyCode"
             app:argType="string" />
-        <argument
-            android:name="baseCurrencyAmount"
-            app:argType="float" />
+        <action
+            android:id="@+id/action_baseChooserFragment_to_currencyRatesFragment"
+            app:destination="@id/currencyRatesFragment" />
     </fragment>
 </navigation>

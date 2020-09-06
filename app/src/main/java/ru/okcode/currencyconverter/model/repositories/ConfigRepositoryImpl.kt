@@ -1,5 +1,6 @@
 package ru.okcode.currencyconverter.model.repositories
 
+import android.icu.util.CurrencyAmount
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Transformations
 import kotlinx.coroutines.Deferred
@@ -34,8 +35,8 @@ class ConfigRepositoryImpl @Inject constructor(
             }
         }
 
-    override suspend fun changeBaseCurrency(baseCurrencyCode: String) {
-        configDao.updateBaseCurrency(baseCurrencyCode)
+    override suspend fun changeBase(baseCurrencyCode: String, amount: Float) {
+        configDao.updateBaseCurrency(baseCurrencyCode, amount)
     }
 
     override fun getConfigAsync(): Deferred<Config?> {

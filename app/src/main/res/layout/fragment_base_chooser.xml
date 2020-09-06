@@ -5,7 +5,15 @@
 
     <data>
 
+        <variable
+            name="clickListener"
+            type="ru.okcode.currencyconverter.ui.basechooser.BaseChooserListener" />
+
+        <variable
+            name="viewModel"
+            type="ru.okcode.currencyconverter.ui.basechooser.BaseChooserViewModel" />
     </data>
+
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -25,6 +33,7 @@
                 android:id="@+id/currency_flag"
                 android:layout_width="132dp"
                 android:layout_height="76dp"
+                app:srcVector="@{viewModel.currencyFlag}"
                 android:contentDescription="@string/country_flag_of_the_currency"
                 android:scaleType="fitCenter" />
 
@@ -50,6 +59,7 @@
                 android:layout_marginTop="5dp"
                 android:layout_marginEnd="16dp"
                 android:fontFamily="@font/roboto"
+                android:text="@{viewModel.currencyAmountDateSource}"
                 android:textAlignment="viewEnd"
                 android:textColor="@color/colorBlack"
                 android:textSize="35sp"
@@ -65,8 +75,9 @@
             android:layout_marginStart="32dp"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="32dp"
-            android:singleLine="true"
             android:fontFamily="@font/roboto"
+            android:singleLine="true"
+            android:text="@{viewModel.currencyDataSource.displayName}"
             android:textAlignment="center"
             android:textColor="@color/colorBlack"
             android:textSize="22sp"
@@ -80,12 +91,28 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/roboto"
+            android:text="@{viewModel.currencyDataSource.symbol}"
             android:textColor="@color/colorLightGray"
             android:textSize="45sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="@+id/cardView"
             app:layout_constraintEnd_toEndOf="@+id/cardView"
             app:layout_constraintStart_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/cardView"
+            tools:text="RUB" />
+
+        <TextView
+            android:id="@+id/currency_code"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/roboto"
+            android:text="@{viewModel.currencyDataSource.currencyCode}"
+            android:textColor="@color/colorLightGray"
+            android:textSize="45sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@+id/cardView"
+            app:layout_constraintEnd_toStartOf="@+id/cardView"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/cardView"
             tools:text="RUB" />
 
@@ -106,9 +133,11 @@
                 android:layout_height="match_parent"
                 android:layout_margin="16dp">
 
-                <ImageButton
+                <Button
                     android:id="@+id/b_07"
+                    android:text="@string/_7"
                     style="@style/baseChooserButton"
+                    android:onClick="@{() -> viewModel.onClickDigit(7)}"
                     app:layout_constraintBottom_toTopOf="@+id/b_04"
                     app:layout_constraintDimensionRatio="@string/baseChooserButtonRatio"
                     app:layout_constraintEnd_toStartOf="@+id/b_08"
@@ -116,9 +145,11 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <ImageButton
+                <Button
                     android:id="@+id/b_08"
+                    android:text="@string/_8"
                     style="@style/baseChooserButton"
+                    android:onClick="@{() -> viewModel.onClickDigit(8)}"
                     app:layout_constraintBottom_toTopOf="@+id/b_05"
                     app:layout_constraintDimensionRatio="@string/baseChooserButtonRatio"
                     app:layout_constraintEnd_toStartOf="@+id/b_09"
@@ -126,9 +157,11 @@
                     app:layout_constraintStart_toEndOf="@+id/b_07"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <ImageButton
+                <Button
                     android:id="@+id/b_09"
                     style="@style/baseChooserButton"
+                    android:text="@string/_9"
+                    android:onClick="@{() -> viewModel.onClickDigit(9)}"
                     app:layout_constraintBottom_toTopOf="@+id/b_06"
                     app:layout_constraintDimensionRatio="@string/baseChooserButtonRatio"
                     app:layout_constraintEnd_toStartOf="@+id/b_ok_1000"
@@ -136,9 +169,11 @@
                     app:layout_constraintStart_toEndOf="@+id/b_08"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <ImageButton
+                <Button
                     android:id="@+id/b_ok_1000"
-                    style="@style/baseChooserButton"
+                    style="@style/baseChooserButton.ok"
+                    android:text="@string/_1000"
+                    android:onClick="@{() -> clickListener.onOkClick(viewModel.currencyDataSource.currencyCode, 1000f)}"
                     app:layout_constraintBottom_toTopOf="@+id/b_ok_100"
                     app:layout_constraintDimensionRatio="@string/baseChooserButtonRatio"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -146,9 +181,10 @@
                     app:layout_constraintStart_toEndOf="@+id/b_09"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <ImageButton
+                <Button
                     android:id="@+id/b_04"
                     style="@style/baseChooserButton"
+                    android:text="@string/_4"
                     app:layout_constraintBottom_toTopOf="@+id/b_01"
                     app:layout_constraintDimensionRatio="@string/baseChooserButtonRatio"
                     app:layout_constraintEnd_toStartOf="@+id/b_05"
@@ -156,9 +192,10 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/b_07" />
 
-                <ImageButton
+                <Button
                     android:id="@+id/b_05"
                     style="@style/baseChooserButton"
+                    android:text="@string/_5"
                     app:layout_constraintBottom_toTopOf="@+id/b_02"
                     app:layout_constraintDimensionRatio="@string/baseChooserButtonRatio"
                     app:layout_constraintEnd_toStartOf="@+id/b_06"
@@ -166,9 +203,10 @@
                     app:layout_constraintStart_toEndOf="@+id/b_04"
                     app:layout_constraintTop_toBottomOf="@+id/b_08" />
 
-                <ImageButton
+                <Button
                     android:id="@+id/b_06"
                     style="@style/baseChooserButton"
+                    android:text="@string/_6"
                     app:layout_constraintBottom_toTopOf="@+id/b_03"
                     app:layout_constraintDimensionRatio="@string/baseChooserButtonRatio"
                     app:layout_constraintEnd_toStartOf="@+id/b_ok_100"
@@ -176,9 +214,11 @@
                     app:layout_constraintStart_toEndOf="@+id/b_05"
                     app:layout_constraintTop_toBottomOf="@+id/b_09" />
 
-                <ImageButton
+                <Button
                     android:id="@+id/b_ok_100"
-                    style="@style/baseChooserButton"
+                    style="@style/baseChooserButton.ok"
+                    android:text="@string/_100"
+                    android:onClick="@{() -> clickListener.onOkClick(viewModel.currencyDataSource.currencyCode, 100f)}"
                     app:layout_constraintBottom_toTopOf="@+id/b_ok_10"
                     app:layout_constraintDimensionRatio="@string/baseChooserButtonRatio"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -186,9 +226,10 @@
                     app:layout_constraintStart_toEndOf="@+id/b_06"
                     app:layout_constraintTop_toBottomOf="@+id/b_ok_1000" />
 
-                <ImageButton
+                <Button
                     android:id="@+id/b_01"
                     style="@style/baseChooserButton"
+                    android:text="@string/_1"
                     app:layout_constraintBottom_toTopOf="@+id/b_0"
                     app:layout_constraintDimensionRatio="@string/baseChooserButtonRatio"
                     app:layout_constraintEnd_toStartOf="@+id/b_02"
@@ -196,9 +237,10 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/b_04" />
 
-                <ImageButton
+                <Button
                     android:id="@+id/b_02"
                     style="@style/baseChooserButton"
+                    android:text="@string/_2"
                     app:layout_constraintBottom_toTopOf="@+id/b_comma"
                     app:layout_constraintDimensionRatio="@string/baseChooserButtonRatio"
                     app:layout_constraintEnd_toStartOf="@+id/b_03"
@@ -206,9 +248,10 @@
                     app:layout_constraintStart_toEndOf="@+id/b_01"
                     app:layout_constraintTop_toBottomOf="@+id/b_05" />
 
-                <ImageButton
+                <Button
                     android:id="@+id/b_03"
                     style="@style/baseChooserButton"
+                    android:text="3"
                     app:layout_constraintBottom_toTopOf="@+id/b_erase"
                     app:layout_constraintDimensionRatio="@string/baseChooserButtonRatio"
                     app:layout_constraintEnd_toStartOf="@+id/b_ok_10"
@@ -216,9 +259,11 @@
                     app:layout_constraintStart_toEndOf="@+id/b_02"
                     app:layout_constraintTop_toBottomOf="@+id/b_06" />
 
-                <ImageButton
+                <Button
                     android:id="@+id/b_ok_10"
-                    style="@style/baseChooserButton"
+                    style="@style/baseChooserButton.ok"
+                    android:text="@string/_10"
+                    android:onClick="@{() -> clickListener.onOkClick(viewModel.currencyDataSource.currencyCode, 10f)}"
                     app:layout_constraintBottom_toTopOf="@+id/b_ok_1"
                     app:layout_constraintDimensionRatio="@string/baseChooserButtonRatio"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -226,9 +271,10 @@
                     app:layout_constraintStart_toEndOf="@+id/b_03"
                     app:layout_constraintTop_toBottomOf="@+id/b_ok_100" />
 
-                <ImageButton
+                <Button
                     android:id="@+id/b_0"
                     style="@style/baseChooserButton"
+                    android:text="@string/_0"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintDimensionRatio="@string/baseChooserButtonRatio"
                     app:layout_constraintEnd_toStartOf="@+id/b_comma"
@@ -236,9 +282,10 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/b_01" />
 
-                <ImageButton
+                <Button
                     android:id="@+id/b_comma"
                     style="@style/baseChooserButton"
+                    android:text="@string/comma"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintDimensionRatio="@string/baseChooserButtonRatio"
                     app:layout_constraintEnd_toStartOf="@+id/b_erase"
@@ -246,9 +293,10 @@
                     app:layout_constraintStart_toEndOf="@+id/b_0"
                     app:layout_constraintTop_toBottomOf="@+id/b_02" />
 
-                <ImageButton
+                <Button
                     android:id="@+id/b_erase"
                     style="@style/baseChooserButton"
+                    android:text="C"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintDimensionRatio="@string/baseChooserButtonRatio"
                     app:layout_constraintEnd_toStartOf="@+id/b_ok_1"
@@ -256,9 +304,11 @@
                     app:layout_constraintStart_toEndOf="@+id/b_comma"
                     app:layout_constraintTop_toBottomOf="@+id/b_03" />
 
-                <ImageButton
+                <Button
                     android:id="@+id/b_ok_1"
-                    style="@style/baseChooserButton"
+                    style="@style/baseChooserButton.ok"
+                    android:text="@string/_1"
+                    android:onClick="@{() -> clickListener.onOkClick(viewModel.currencyDataSource.currencyCode, 1f)}"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintDimensionRatio="@string/baseChooserButtonRatio"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -272,11 +322,14 @@
 
         <Button
             android:id="@+id/b_convert"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:backgroundTint="@color/colorPrimary"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="32dp"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="32dp"
+            android:onClick="@{() -> clickListener.onOkClick(viewModel.currencyDataSource.currencyCode}"
             android:text="@string/convert"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -284,4 +337,5 @@
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
 </layout>

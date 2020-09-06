@@ -9,7 +9,7 @@ import androidx.room.Relation
 @Entity
 data class ReadyHeader(
     val baseCurrencyCode: String,
-    val baseCurrencyAmount: Double = 1.0,
+    val baseCurrencyAmount: Float = 1f,
     val baseCurrencyRateToEuro: BigDecimal,
     @PrimaryKey val timeLastUpdateUnix: Long,
     val timeNextUpdateUnix: Long
