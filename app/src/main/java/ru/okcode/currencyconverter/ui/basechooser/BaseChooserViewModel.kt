@@ -6,7 +6,7 @@ import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
 import kotlinx.coroutines.*
 import ru.okcode.currencyconverter.model.repositories.ConfigRepository
-import ru.okcode.currencyconverter.util.TextProcessor
+import ru.okcode.currencyconverter.model.processor.TextProcessor
 import ru.okcode.currencyconverter.util.getFlagRes
 
 class BaseChooserViewModel @ViewModelInject constructor(

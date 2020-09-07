@@ -1,9 +1,9 @@
-package ru.okcode.currencyconverter.util
+package ru.okcode.currencyconverter.model.processor
 
 import androidx.lifecycle.LiveData
 
 interface TextProcessor {
-    val resultDataSource: LiveData<String>
+    val displayValueDataSource: LiveData<String>
 
     fun pressDigit(digit: Int)
 
@@ -11,6 +11,6 @@ interface TextProcessor {
 
     fun pressErase()
 
-    fun getResultAsNumber(): Float
+    fun getNumberValue(): Float
 
 }
