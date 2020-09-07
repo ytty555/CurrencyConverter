@@ -5,8 +5,8 @@ import androidx.hilt.Assisted
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
 import kotlinx.coroutines.*
-import ru.okcode.currencyconverter.model.repositories.ConfigRepository
 import ru.okcode.currencyconverter.model.processor.TextProcessor
+import ru.okcode.currencyconverter.model.repositories.ConfigRepository
 import ru.okcode.currencyconverter.util.getFlagRes
 
 class BaseChooserViewModel @ViewModelInject constructor(
@@ -24,10 +24,19 @@ class BaseChooserViewModel @ViewModelInject constructor(
             Currency.getInstance(currencyCode)
         }
 
-    val currencyAmountDateSource = textProcessor.resultDataSource
+    val currencyAmountDateSource: LiveData<String> = textProcessor.displayValueDataSource
 
-    val currencyFlag: LiveData<Int> = Transformations.map(currencyDataSource) {currency ->
+    val currencyFlag: LiveData<Int> = Transformations.map(currencyDataSource) { currency ->
         currency.getFlagRes()
+    }
+
+    private val _closeBaseChooser = MutableLiveData<Boolean>()
+    val closeBaseChooser: LiveData<Boolean>
+        get() = _closeBaseChooser
+
+    init {
+        _closeBaseChooser.value = false
+        textProcessor.setDisplayValue("0")
     }
 
     fun setCurrencyCode(currencyCode: String) {
@@ -39,27 +48,36 @@ class BaseChooserViewModel @ViewModelInject constructor(
         super.onCleared()
     }
 
-    fun updateBase(currencyCode: String, amount: Float) {
+    private fun updateBase(currencyCode: String) {
+        val resultValue: Float = textProcessor.getNumberValue()
+
         scope.launch {
             withContext(Dispatchers.IO) {
-                configRepository.changeBase(currencyCode, amount)
+                configRepository.changeBase(currencyCode, resultValue)
             }
         }
     }
 
     fun onClickDigit(digit: Int) {
-
+        textProcessor.pressDigit(digit)
     }
 
     fun onClickComma() {
-
+        textProcessor.pressComma()
     }
 
     fun onClickErase() {
-
+        textProcessor.pressErase()
     }
 
-    fun onClickOk(currencyCode: String, amount: Float? = null) {
+    fun onClickOkFixedValue(currencyCode: String, amount: Float) {
+        textProcessor.setDisplayValue(amount.toString())
+        updateBase(currencyCode)
+        _closeBaseChooser.value = true
+    }
 
+    fun onClickOk(currencyCode: String) {
+        updateBase(currencyCode)
+        _closeBaseChooser.value = true
     }
 }

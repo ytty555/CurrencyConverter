@@ -24,4 +24,6 @@
     <string name="_10">10</string>
     <string name="_0">0</string>
     <string name="comma">,</string>
+    <string name="_3">3</string>
+    <string name="erase">C</string>
 </resources>

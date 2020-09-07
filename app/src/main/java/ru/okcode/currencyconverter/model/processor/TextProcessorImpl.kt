@@ -2,15 +2,15 @@ package ru.okcode.currencyconverter.model.processor
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import dagger.hilt.android.scopes.FragmentScoped
+import dagger.hilt.android.scopes.ActivityRetainedScoped
 import javax.inject.Inject
 
 /**
  * Текстовый процессор предназначен для генерации числа
  * путем обработки вводимых значений: цифровых символов, знаков и сервисных функций
  */
-@FragmentScoped
-class TextProcessorImpl @Inject constructor(): TextProcessor {
+@ActivityRetainedScoped
+class TextProcessorImpl @Inject constructor() : TextProcessor {
 
     /**
      * Хранит текстовое представление генерируемого чилсла
@@ -21,48 +21,77 @@ class TextProcessorImpl @Inject constructor(): TextProcessor {
     override val displayValueDataSource: LiveData<String>
         get() = _displayValueDataSource
 
-    init {
-        setDisplayValue("1")
-    }
-
     companion object {
         const val COMMA = ","
+        const val POINT = "."
     }
 
     /**
      * Функция обработки ввода цифр (0..9)
      */
     override fun pressDigit(digit: Int) {
-        TODO("Not yet implemented")
+        if (digit < 0 || digit > 9) {
+            return
+        }
+
+        val displayValue = getDisplayValue()
+
+        if (displayValue != "0") {
+            setDisplayValue("$displayValue$digit")
+        } else {
+            setDisplayValue("$digit")
+        }
     }
 
     /**
      * Функция обработки ввода запятой
      */
     override fun pressComma() {
-        TODO("Not yet implemented")
+        val displayValue = getDisplayValue()
+        if (!displayValue.contains(COMMA)) {
+            setDisplayValue("$displayValue$COMMA")
+        }
     }
 
     /**
      * Функция удаления последнего введеного символа
      */
     override fun pressErase() {
-        TODO("Not yet implemented")
+        val displayValue = getDisplayValue()
+
+        if (displayValue.length == 1) {
+            setDisplayValue("0")
+        } else {
+            setDisplayValue(displayValue.substring(0, displayValue.lastIndex))
+        }
+
     }
 
     /**
      * Функция, возвращающая генерируемое значение числовом виде
      */
     override fun getNumberValue(): Float {
-        val displayValue = getDisplayValue()
-        return convertToFloat(displayValue)
+        var displayValue = getDisplayValue()
+
+        if (displayValue.contains(COMMA)) {
+            displayValue = displayValue.replace(COMMA, POINT)
+        }
+
+        val resultValue = displayValue.toFloat()
+
+        return if (resultValue == 0f) {
+            1f
+        } else {
+            resultValue
+        }
+
     }
 
-    private fun convertToFloat(value: String): Float {
-        TODO("Not yet implemented")
-    }
-
-    private fun setDisplayValue(value: String) {
+    /**
+     * Функция полностью перезаписывает значение строкового
+     * представления генерируемого числа
+     */
+    override fun setDisplayValue(value: String) {
         _displayValueDataSource.value = value
     }
 

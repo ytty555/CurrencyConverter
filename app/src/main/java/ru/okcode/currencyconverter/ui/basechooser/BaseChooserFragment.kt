@@ -21,12 +21,6 @@ class BaseChooserFragment : Fragment() {
 
     private val args: BaseChooserFragmentArgs by navArgs()
 
-    companion object {
-        private const val DEFAULT_CURRENCY_AMOUNT: Float = 1.0f
-        const val CURRENCY_CODE = "currencyCode"
-        const val CURRENCY_AMOUNT = "currencyAmount"
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -39,19 +33,16 @@ class BaseChooserFragment : Fragment() {
 
         binding.viewModel = viewModel
 
-        binding.clickListener = BaseChooserListener { currencyCode, amount ->
-            viewModel.updateBase(currencyCode, amount)
-            val action =
-                BaseChooserFragmentDirections.actionBaseChooserFragmentToCurrencyRatesFragment()
-            findNavController().navigate(action)
-        }
-
         viewModel.setCurrencyCode(args.baseCurrencyCode)
+
+        viewModel.closeBaseChooser.observe(viewLifecycleOwner, { closeBaseChooser ->
+            if (closeBaseChooser) {
+                val action =
+                    BaseChooserFragmentDirections.actionBaseChooserFragmentToCurrencyRatesFragment()
+                findNavController().navigate(action)
+            }
+        })
 
         return binding.root
     }
-}
-
-class BaseChooserListener(val listener: (currencyCode: String, amount: Float?) -> Unit) {
-    fun onOkClick(currencyCode: String, amount: Float?) = listener(currencyCode, amount)
 }
