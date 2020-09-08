@@ -7,13 +7,13 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
-import org.w3c.dom.Text
+import ru.okcode.currencyconverter.model.repositories.Status
 import ru.okcode.currencyconverter.util.convertUnixToDateString
 import kotlin.math.round
 
 @BindingAdapter("srcVector")
 fun ImageView.setVectorResource(resource: Int) {
-        setImageResource(resource)
+    setImageResource(resource)
 
 }
 
@@ -55,5 +55,32 @@ fun TextView.displayAmountSymbolEqual(symbol: String, amount: Float) {
         amountAsString = amountAsString.substring(0, amountAsString.lastIndex - 1)
     }
 
-    text ="$amountAsString $symbol ="
+    text = "$amountAsString $symbol ="
+}
+
+@BindingAdapter("showWhenLoading")
+fun setShowWhenLoading(view: View, status: Status) {
+    if (status == Status.LOADING) {
+        view.visibility = View.VISIBLE
+    } else {
+        view.visibility = View.GONE
+    }
+}
+
+@BindingAdapter("showWhenError")
+fun setShowWhenError(view: View, status: Status) {
+    if (status == Status.ERROR) {
+        view.visibility = View.VISIBLE
+    } else {
+        view.visibility = View.GONE
+    }
+}
+
+@BindingAdapter("showWhenDone")
+fun setShowWhenDone(view: View, status: Status) {
+    if (status == Status.DONE) {
+        view.visibility = View.VISIBLE
+    } else {
+        view.visibility = View.GONE
+    }
 }

@@ -49,6 +49,9 @@ class OverviewViewModel @ViewModelInject constructor(
     val readyRatesDataSource: LiveData<Rates>
         get() = readyRepository.readyRatesDataSource
 
+    // Getting data status
+    val statusDataSource = cacheRepository.apiStatusDataSource
+
     init {
         startObserve()
     }

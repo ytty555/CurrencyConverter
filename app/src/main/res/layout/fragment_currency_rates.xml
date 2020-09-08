@@ -7,6 +7,8 @@
 
         <import type="android.view.View" />
 
+        <import type="ru.okcode.currencyconverter.model.repositories.Status" />
+
         <variable
             name="viewModel"
             type="ru.okcode.currencyconverter.ui.overview.OverviewViewModel" />
@@ -28,25 +30,31 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-<!--            <androidx.appcompat.widget.Toolbar-->
-<!--                android:id="@+id/toolbar"-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                app:layout_scrollFlags="scroll|enterAlways">-->
+            <!--            <androidx.appcompat.widget.Toolbar-->
+            <!--                android:id="@+id/toolbar"-->
+            <!--                android:layout_width="match_parent"-->
+            <!--                android:layout_height="wrap_content"-->
+            <!--                app:layout_scrollFlags="scroll|enterAlways">-->
 
-<!--                <androidx.appcompat.widget.SearchView-->
-<!--                    android:layout_width="match_parent"-->
-<!--                    android:layout_height="?attr/actionBarSize"/>-->
+            <!--                <androidx.appcompat.widget.SearchView-->
+            <!--                    android:layout_width="match_parent"-->
+            <!--                    android:layout_height="?attr/actionBarSize"/>-->
 
-<!--            </androidx.appcompat.widget.Toolbar>-->
+            <!--            </androidx.appcompat.widget.Toolbar>-->
 
-                <include
-                    android:id="@+id/include"
-                    layout="@layout/base_currency"
-                    app:layout_scrollFlags="scroll|enterAlways"
-                    app:rates="@{viewModel.readyRatesDataSource}" />
+            <include
+                android:id="@+id/include"
+                layout="@layout/base_currency"
+                android:visibility="gone"
+                app:showWhenDone="@{viewModel.statusDataSource}"
+                app:layout_scrollFlags="scroll|enterAlways"
+                app:rates="@{viewModel.readyRatesDataSource}" />
 
         </com.google.android.material.appbar.AppBarLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/currency_rates_recycleview"
@@ -54,17 +62,32 @@
             android:layout_height="match_parent"
             app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
-<!--                    <ImageView-->
-<!--                        android:id="@+id/status_image"-->
-<!--                        android:layout_width="150dp"-->
-<!--                        android:layout_height="150dp"-->
-<!--                        app:layout_constraintBottom_toBottomOf="parent"-->
-<!--                        app:layout_constraintEnd_toEndOf="parent"-->
-<!--                        app:layout_constraintStart_toStartOf="parent"-->
-<!--                        app:layout_constraintTop_toTopOf="parent"-->
-<!--                        app:loadingApiStatus="@{viewModel.status}" />-->
+        <ProgressBar
+            android:id="@+id/status_loading"
+            android:layout_width="70dp"
+            android:visibility="gone"
+            android:layout_height="70dp"
+            style="@style/Widget.AppCompat.ProgressBar"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:showWhenLoading="@{viewModel.statusDataSource}"
+             />
 
+        <ImageView
+            android:id="@+id/status_error"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:background="@drawable/ic_connection_error"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:showWhenError="@{viewModel.statusDataSource}" />
 
+        </androidx.constraintlayout.widget.ConstraintLayout>
+¶
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
 
