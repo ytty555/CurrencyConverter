@@ -76,6 +76,7 @@
                 android:id="@+id/status_error"
                 android:layout_width="70dp"
                 android:layout_height="70dp"
+                android:contentDescription="@string/error_loading_data_from_remote_api"
                 android:background="@drawable/ic_connection_error"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -84,8 +85,6 @@
                 app:showWhenError="@{viewModel.statusDataSource}" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
-        ¶
+
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
-
-
 </layout>

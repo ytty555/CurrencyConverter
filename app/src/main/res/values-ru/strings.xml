@@ -11,4 +11,5 @@
     <string name="updated_label">Обновлено:</string>
     <string name="convert">Конвертировать</string>
     <string name="base_currency_settings">Настройка базовой валюты</string>
+    <string name="error_loading_data_from_remote_api">Ошибка загрузки курсов валют</string>
 </resources>
