@@ -28,17 +28,17 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <androidx.appcompat.widget.Toolbar
-                android:id="@+id/toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_scrollFlags="scroll|enterAlways">
+<!--            <androidx.appcompat.widget.Toolbar-->
+<!--                android:id="@+id/toolbar"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                app:layout_scrollFlags="scroll|enterAlways">-->
 
-                <androidx.appcompat.widget.SearchView
-                    android:layout_width="match_parent"
-                    android:layout_height="?attr/actionBarSize"/>
+<!--                <androidx.appcompat.widget.SearchView-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="?attr/actionBarSize"/>-->
 
-            </androidx.appcompat.widget.Toolbar>
+<!--            </androidx.appcompat.widget.Toolbar>-->
 
                 <include
                     android:id="@+id/include"
@@ -54,15 +54,15 @@
             android:layout_height="match_parent"
             app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
-        <!--            <ImageView-->
-        <!--                android:id="@+id/status_image"-->
-        <!--                android:layout_width="150dp"-->
-        <!--                android:layout_height="150dp"-->
-        <!--                app:layout_constraintBottom_toBottomOf="parent"-->
-        <!--                app:layout_constraintEnd_toEndOf="parent"-->
-        <!--                app:layout_constraintStart_toStartOf="parent"-->
-        <!--                app:layout_constraintTop_toTopOf="parent"-->
-        <!--                app:loadingApiStatus="@{viewModel.status}" />-->
+<!--                    <ImageView-->
+<!--                        android:id="@+id/status_image"-->
+<!--                        android:layout_width="150dp"-->
+<!--                        android:layout_height="150dp"-->
+<!--                        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                        app:layout_constraintEnd_toEndOf="parent"-->
+<!--                        app:layout_constraintStart_toStartOf="parent"-->
+<!--                        app:layout_constraintTop_toTopOf="parent"-->
+<!--                        app:loadingApiStatus="@{viewModel.status}" />-->
 
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
