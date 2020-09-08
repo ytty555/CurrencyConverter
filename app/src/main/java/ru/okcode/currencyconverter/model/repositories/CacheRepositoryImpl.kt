@@ -1,6 +1,7 @@
 package ru.okcode.currencyconverter.model.repositories
 
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import kotlinx.coroutines.*
 import ru.okcode.currencyconverter.model.Rates
@@ -10,6 +11,7 @@ import ru.okcode.currencyconverter.model.network.ApiService
 import ru.okcode.currencyconverter.model.network.RatesDto
 import ru.okcode.currencyconverter.model.network.toCacheCurrencyRatesList
 import ru.okcode.currencyconverter.model.network.toCacheRatesHeader
+import ru.okcode.currencyconverter.util.LOADING_TIMEOUT
 import javax.inject.Inject
 
 class CacheRepositoryImpl @Inject constructor(
@@ -25,6 +27,14 @@ class CacheRepositoryImpl @Inject constructor(
             }
         }
 
+    private var _apiStatusDataSource = MutableLiveData<Status>()
+    override val apiStatusDataSource: LiveData<Status>
+        get() = _apiStatusDataSource
+
+    init {
+        _apiStatusDataSource.value = Status.DONE
+    }
+
     override suspend fun refreshCacheRates(immediately: Boolean) {
         val isActualDataInCache = cacheDao.isActualAsync().await()
 
@@ -32,24 +42,34 @@ class CacheRepositoryImpl @Inject constructor(
             return
         }
 
+        _apiStatusDataSource.value = Status.LOADING
+
         withContext(Dispatchers.IO) {
             try {
-                val apiRates: RatesDto = api.getRatesAsync().await()
-                cacheDao.insertToCache(
-                    apiRates.toCacheRatesHeader(),
-                    apiRates.toCacheCurrencyRatesList()
-                )
+                val apiRates: RatesDto? =withTimeoutOrNull(LOADING_TIMEOUT) {
+                     api.getRatesAsync().await()
+                }
+
+                if (apiRates != null) {
+                    cacheDao.insertToCache(
+                        apiRates.toCacheRatesHeader(),
+                        apiRates.toCacheCurrencyRatesList()
+                    )
+                    _apiStatusDataSource.postValue(Status.DONE)
+                } else {
+                    _apiStatusDataSource.postValue(Status.ERROR)
+                }
 
             } catch (e: Exception) {
-
+                _apiStatusDataSource.postValue(Status.ERROR)
             }
         }
     }
 
     override fun getCacheRatesAsync(): Deferred<Rates?> {
-       return GlobalScope.async {
-           cacheMapper.mapToModel(cacheDao.getCacheRates())
-       }
+        return GlobalScope.async {
+            cacheMapper.mapToModel(cacheDao.getCacheRates())
+        }
     }
 
 }

@@ -1,6 +1,5 @@
 package ru.okcode.currencyconverter.ui.overview
 
-import android.icu.util.Currency
 import androidx.hilt.Assisted
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
@@ -50,6 +49,9 @@ class OverviewViewModel @ViewModelInject constructor(
     val readyRatesDataSource: LiveData<Rates>
         get() = readyRepository.readyRatesDataSource
 
+    // Getting data status
+    val statusDataSource = cacheRepository.apiStatusDataSource
+
     init {
         startObserve()
     }
@@ -68,13 +70,6 @@ class OverviewViewModel @ViewModelInject constructor(
     private fun stopObserve() {
         cacheDataSource.removeObserver(cacheObserver)
         configDataSource.removeObserver(configObserver)
-    }
-
-    fun onBaseCurrencyChange(baseCurrency: Currency) {
-        val baseCurrencyCode = baseCurrency.currencyCode
-        scope.launch {
-            configRepository.changeBaseCurrency(baseCurrencyCode)
-        }
     }
 
     private fun updateReadyRates() {

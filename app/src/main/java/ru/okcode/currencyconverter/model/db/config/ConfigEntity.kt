@@ -10,14 +10,14 @@ data class ConfigEntity(
     @PrimaryKey(autoGenerate = true)
     var id: Long = 0,
     var baseCurrencyCode: String,
-    var baseCurrencyAmount: Double,
+    var baseCurrencyAmount: Float,
     var visibleCurrencies: List<String>
 ) {
     companion object {
         fun createDefaultConfig(): ConfigEntity {
             return ConfigEntity(
                 baseCurrencyCode = "EUR",
-                baseCurrencyAmount = 1.0,
+                baseCurrencyAmount = 1f,
                 visibleCurrencies = ArrayList()
             )
         }

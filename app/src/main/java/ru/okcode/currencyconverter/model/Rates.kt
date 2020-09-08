@@ -5,7 +5,7 @@ import android.icu.util.Currency
 
 data class Rates(
     val baseCurrency: Currency,
-    val baseCurrencyAmount: Double = 1.0,
+    val baseCurrencyAmount: Float = 1f,
     val baseCurrencyRateToEuro: BigDecimal,
     val rates: List<Rate>,
     val timeLastUpdateUnix: Long,
@@ -15,7 +15,7 @@ data class Rates(
         fun getEmptyInstance(): Rates {
             return Rates(
                 baseCurrency = Currency.getInstance("EUR"),
-                baseCurrencyAmount = 1.0,
+                baseCurrencyAmount = 1f,
                 baseCurrencyRateToEuro = BigDecimal.valueOf(1.0),
                 timeLastUpdateUnix = 0,
                 timeNextUpdateUnix = 0,

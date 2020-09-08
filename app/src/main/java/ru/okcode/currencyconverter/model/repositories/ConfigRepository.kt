@@ -8,7 +8,7 @@ import ru.okcode.currencyconverter.model.Rates
 interface ConfigRepository {
     val configDataSource: LiveData<Config>
 
-    suspend fun changeBaseCurrency(baseCurrencyCode: String)
+    suspend fun changeBase(baseCurrencyCode: String, amount: Float)
 
     fun getConfigAsync(): Deferred<Config?>
 }
