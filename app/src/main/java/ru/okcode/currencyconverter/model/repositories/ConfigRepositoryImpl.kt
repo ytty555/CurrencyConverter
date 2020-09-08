@@ -1,6 +1,5 @@
 package ru.okcode.currencyconverter.model.repositories
 
-import android.icu.util.CurrencyAmount
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Transformations
 import kotlinx.coroutines.Deferred
@@ -12,8 +11,6 @@ import ru.okcode.currencyconverter.model.db.config.ConfigDao
 import ru.okcode.currencyconverter.model.db.config.ConfigEntity
 import ru.okcode.currencyconverter.model.db.config.ConfigMapper
 import javax.inject.Inject
-
-private const val TAG = "ConfigRepositoryImpl"
 
 class ConfigRepositoryImpl @Inject constructor(
     private val configDao: ConfigDao,
