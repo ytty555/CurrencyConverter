@@ -10,4 +10,5 @@
     <string name="country_flag_of_the_currency">Государственный флаг валюты</string>
     <string name="noName">Без имени</string>
     <string name="convert">Конвертировать</string>
+    <string name="base_currency_settings">Настройка базовой валюты</string>
 </resources>

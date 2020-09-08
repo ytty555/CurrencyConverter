@@ -11,7 +11,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="?attr/actionBarSize"
         android:background="@color/colorLightGray"
         android:padding="2dp"
         android:paddingStart="16dp"
@@ -34,7 +34,7 @@
             android:layout_height="wrap_content"
             android:text="@string/amount_label"
             app:layout_constraintBaseline_toBaselineOf="@+id/currency_label"
-            app:layout_constraintStart_toStartOf="@+id/currency_amount" />
+            app:layout_constraintEnd_toEndOf="parent" />
 
         <TextView
             android:id="@+id/currency_codeAndName"
