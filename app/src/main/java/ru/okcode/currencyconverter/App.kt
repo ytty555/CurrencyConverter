@@ -1,23 +1,22 @@
 package ru.okcode.currencyconverter
 
 import android.app.Application
-import android.content.Context
+import com.yandex.metrica.YandexMetrica
+import com.yandex.metrica.YandexMetricaConfig
+import com.yandex.metrica.push.YandexMetricaPush
+import dagger.hilt.android.HiltAndroidApp
 
+@HiltAndroidApp
 class App : Application() {
-
-
     override fun onCreate() {
         super.onCreate()
-
-        appContext = applicationContext
-
-    }
-
-    companion object {
-        private lateinit var appContext: Context
-
-        fun getAppContext(): Context {
-            return appContext
-        }
+        // Creating an extended library configuration.
+        val config: YandexMetricaConfig = YandexMetricaConfig.newConfigBuilder(BuildConfig.YA_KEY).build()
+        // Initializing the AppMetrica SDK.
+        YandexMetrica.activate(applicationContext, config)
+        // Automatic tracking of user activity.
+        YandexMetrica.enableActivityAutoTracking(this)
+        // Yandex Push init
+        YandexMetricaPush.init(applicationContext)
     }
 }
