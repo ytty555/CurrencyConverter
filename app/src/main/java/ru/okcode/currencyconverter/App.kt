@@ -3,6 +3,7 @@ package ru.okcode.currencyconverter
 import android.app.Application
 import com.yandex.metrica.YandexMetrica
 import com.yandex.metrica.YandexMetricaConfig
+import com.yandex.metrica.push.YandexMetricaPush
 import dagger.hilt.android.HiltAndroidApp
 
 @HiltAndroidApp
@@ -15,5 +16,7 @@ class App : Application() {
         YandexMetrica.activate(applicationContext, config)
         // Automatic tracking of user activity.
         YandexMetrica.enableActivityAutoTracking(this)
+        // Yandex Push init
+        YandexMetricaPush.init(applicationContext);
     }
 }
