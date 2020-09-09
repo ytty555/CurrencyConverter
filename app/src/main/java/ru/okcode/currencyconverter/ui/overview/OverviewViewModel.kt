@@ -1,6 +1,5 @@
 package ru.okcode.currencyconverter.ui.overview
 
-import androidx.hilt.Assisted
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
 import kotlinx.coroutines.CoroutineScope
@@ -16,8 +15,7 @@ import ru.okcode.currencyconverter.model.repositories.ReadyRepository
 class OverviewViewModel @ViewModelInject constructor(
     private val cacheRepository: CacheRepository,
     private val configRepository: ConfigRepository,
-    private val readyRepository: ReadyRepository,
-    @Assisted private val savedStateHandle: SavedStateHandle
+    private val readyRepository: ReadyRepository
 ) : ViewModel() {
 
     // Coroutines scope

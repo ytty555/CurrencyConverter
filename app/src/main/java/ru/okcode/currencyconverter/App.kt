@@ -17,6 +17,6 @@ class App : Application() {
         // Automatic tracking of user activity.
         YandexMetrica.enableActivityAutoTracking(this)
         // Yandex Push init
-        YandexMetricaPush.init(applicationContext);
+        YandexMetricaPush.init(applicationContext)
     }
 }
