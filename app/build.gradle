@@ -141,4 +141,7 @@ dependencies {
     implementation "android.arch.work:work-runtime-ktx:$work_version"
     androidTestImplementation "androidx.work:work-testing:$work_version"
 
+    // Google Mobile Ads SDK
+    implementation 'com.google.android.gms:play-services-ads:19.4.0'
+
 }
