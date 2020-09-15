@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "103994790133",
+    "firebase_url": "https://currencyconverter-f8f30.firebaseio.com",
+    "project_id": "currencyconverter-f8f30",
+    "storage_bucket": "currencyconverter-f8f30.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:103994790133:android:c000d4355fa8a8a63475bc",
+        "android_client_info": {
+          "package_name": "ru.okcode.currencyconverter"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "103994790133-87hc6q6l0la8lebreoef0ueot1r80kkt.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAQyDU1TzKWIiRty-aUgutCrjX8bIy-oD8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "103994790133-87hc6q6l0la8lebreoef0ueot1r80kkt.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
