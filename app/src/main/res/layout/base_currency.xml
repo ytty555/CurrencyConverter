@@ -6,7 +6,7 @@
     <data>
         <variable
             name="rates"
-            type="ru.okcode.currencyconverter.model.Rates" />
+            type="ru.okcode.currencyconverter.data.model.Rates" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

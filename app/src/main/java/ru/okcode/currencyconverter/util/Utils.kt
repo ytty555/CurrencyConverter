@@ -2,7 +2,7 @@ package ru.okcode.currencyconverter.util
 
 import android.icu.text.SimpleDateFormat
 import android.icu.util.Currency
-import ru.okcode.currencyconverter.model.CurrencyEnum
+import ru.okcode.currencyconverter.data.model.CurrencyEnum
 import java.util.*
 
 fun getFlagRes(currencyCode: String): Int? {

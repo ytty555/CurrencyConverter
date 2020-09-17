@@ -7,11 +7,11 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import ru.okcode.currencyconverter.model.Config
-import ru.okcode.currencyconverter.model.Rates
-import ru.okcode.currencyconverter.model.repositories.CacheRepository
-import ru.okcode.currencyconverter.model.repositories.ConfigRepository
-import ru.okcode.currencyconverter.model.repositories.ReadyRepository
+import ru.okcode.currencyconverter.data.model.Config
+import ru.okcode.currencyconverter.data.model.Rates
+import ru.okcode.currencyconverter.data.repository.CacheRepository
+import ru.okcode.currencyconverter.data.repository.ConfigRepository
+import ru.okcode.currencyconverter.data.repository.ReadyRepository
 
 class OverviewViewModel @ViewModelInject constructor(
     private val cacheRepository: CacheRepository,

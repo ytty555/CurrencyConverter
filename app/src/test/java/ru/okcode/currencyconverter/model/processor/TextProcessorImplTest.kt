@@ -7,6 +7,7 @@ import org.junit.*
 import org.junit.Assert.assertEquals
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
+import ru.okcode.currencyconverter.ui.basechooser.TextProcessorImpl
 
 @RunWith(Parameterized::class)
 class TextProcessorImplTest(

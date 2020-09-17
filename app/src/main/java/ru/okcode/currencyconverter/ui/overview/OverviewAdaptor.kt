@@ -5,8 +5,8 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import ru.okcode.currencyconverter.databinding.RateItemBinding
-import ru.okcode.currencyconverter.model.Rate
-import ru.okcode.currencyconverter.model.Rates
+import ru.okcode.currencyconverter.data.model.Rate
+import ru.okcode.currencyconverter.data.model.Rates
 
 class OverviewAdaptor(private val rateListListener: RatesListListener) :
     RecyclerView.Adapter<OverviewAdaptor.ViewHolder>() {

@@ -12,11 +12,11 @@
 
         <variable
             name="fullRates"
-            type="ru.okcode.currencyconverter.model.Rates" />
+            type="ru.okcode.currencyconverter.data.model.Rates" />
 
         <variable
             name="rate"
-            type="ru.okcode.currencyconverter.model.Rate" />
+            type="ru.okcode.currencyconverter.data.model.Rate" />
     </data>
 
     <androidx.cardview.widget.CardView

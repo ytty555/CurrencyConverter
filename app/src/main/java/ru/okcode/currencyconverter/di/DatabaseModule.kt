@@ -7,12 +7,12 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ApplicationComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
-import ru.okcode.currencyconverter.model.db.cache.CacheDao
-import ru.okcode.currencyconverter.model.db.cache.CacheDatabase
-import ru.okcode.currencyconverter.model.db.config.ConfigDao
-import ru.okcode.currencyconverter.model.db.config.ConfigDatabase
-import ru.okcode.currencyconverter.model.db.ready.ReadyDao
-import ru.okcode.currencyconverter.model.db.ready.ReadyDatabase
+import ru.okcode.currencyconverter.data.db.cache.CacheDao
+import ru.okcode.currencyconverter.data.db.cache.CacheDatabase
+import ru.okcode.currencyconverter.data.db.config.ConfigDao
+import ru.okcode.currencyconverter.data.db.config.ConfigDatabase
+import ru.okcode.currencyconverter.data.db.ready.ReadyDao
+import ru.okcode.currencyconverter.data.db.ready.ReadyDatabase
 import javax.inject.Singleton
 
 @Module

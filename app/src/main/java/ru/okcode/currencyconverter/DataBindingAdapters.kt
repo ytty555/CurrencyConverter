@@ -7,7 +7,7 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
-import ru.okcode.currencyconverter.model.repositories.Status
+import ru.okcode.currencyconverter.data.repository.Status
 import ru.okcode.currencyconverter.util.convertUnixToDateString
 import kotlin.math.round
 
