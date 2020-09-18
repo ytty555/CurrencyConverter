@@ -1,90 +1,155 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/coordinator"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="false">
 
-    <data>
 
-        <import type="android.view.View" />
-
-        <import type="ru.okcode.currencyconverter.model.repositories.Status" />
-
-        <variable
-            name="viewModel"
-            type="ru.okcode.currencyconverter.ui.overview.OverviewViewModel" />
-
-    </data>
-
-    <androidx.coordinatorlayout.widget.CoordinatorLayout
-        android:id="@+id/coordinator"
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBar"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fitsSystemWindows="false">
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-
-        <com.google.android.material.appbar.AppBarLayout
-            android:id="@+id/appBar"
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_scrollFlags="scroll|enterAlways"
+            app:title="@string/app_name"
+            app:titleTextColor="@android:color/white">
 
-            <androidx.appcompat.widget.Toolbar
-                android:id="@+id/toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_scrollFlags="scroll|enterAlways"
-                app:title="@string/app_name"
-                app:titleTextColor="@android:color/white">
+        </androidx.appcompat.widget.Toolbar>
 
-            </androidx.appcompat.widget.Toolbar>
 
-            <include
-                android:id="@+id/include"
-                layout="@layout/base_currency"
-                android:visibility="gone"
-                app:layout_scrollFlags="scroll|enterAlways"
-                app:rates="@{viewModel.readyRatesDataSource}"
-                app:showWhenDone="@{viewModel.statusDataSource}" />
+    </com.google.android.material.appbar.AppBarLayout>
 
-        </com.google.android.material.appbar.AppBarLayout>
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/rates_data"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+            android:layout_height="match_parent">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/base_info_bar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="@color/colorLightGray"
+                android:padding="2dp"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <TextView
+                    android:id="@+id/currency_label"
+                    style="@style/Text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/base_currency_label"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/amount_label"
+                    style="@style/Text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/amount_label"
+                    app:layout_constraintBaseline_toBaselineOf="@+id/currency_label"
+                    app:layout_constraintEnd_toEndOf="parent" />
+
+                <TextView
+                    android:id="@+id/currency_codeAndName"
+                    style="@style/Text"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:singleLine="true"
+                    android:text="1111111111111"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:textSize="18sp"
+                    app:layout_constraintEnd_toStartOf="@+id/currency_amount"
+                    app:layout_constraintStart_toStartOf="@+id/currency_label"
+                    app:layout_constraintTop_toBottomOf="@+id/currency_label" />
+
+                <TextView
+                    android:id="@+id/currency_amount"
+                    style="@style/Text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="4dp"
+                    android:textColor="@color/colorRed"
+                    android:textSize="22sp"
+                    app:layout_constraintBaseline_toBaselineOf="@+id/currency_codeAndName"
+                    app:layout_constraintEnd_toStartOf="@+id/currency_symbol"
+                    tools:text="88888888" />
+
+                <TextView
+                    android:id="@+id/currency_symbol"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/colorRed"
+                    android:textSize="16sp"
+                    app:layout_constraintBaseline_toBaselineOf="@+id/currency_amount"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    tools:text="RUB" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/currency_rates_recycleview"
+                android:id="@+id/rates_recyclerview"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
-
-            <ProgressBar
-                android:id="@+id/status_loading"
-                style="@style/Widget.AppCompat.ProgressBar"
-                android:layout_width="70dp"
-                android:layout_height="70dp"
-                android:visibility="gone"
+                android:layout_height="0dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:showWhenLoading="@{viewModel.statusDataSource}" />
-
-            <ImageView
-                android:id="@+id/status_error"
-                android:layout_width="70dp"
-                android:layout_height="70dp"
-                android:contentDescription="@string/error_loading_data_from_remote_api"
-                android:background="@drawable/ic_connection_error"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:showWhenError="@{viewModel.statusDataSource}" />
+                app:layout_constraintTop_toBottomOf="@id/base_info_bar" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-    </androidx.coordinatorlayout.widget.CoordinatorLayout>
-</layout>
+        <TextView
+            android:id="@+id/empty_data"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/no_data_received"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ProgressBar
+            android:id="@+id/loading_data"
+            style="@style/Widget.AppCompat.ProgressBar"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/error_data"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:background="@drawable/ic_connection_error"
+            android:contentDescription="@string/error_loading_data_from_remote_api"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

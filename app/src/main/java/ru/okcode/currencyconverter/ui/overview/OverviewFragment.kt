@@ -37,11 +37,6 @@ class OverviewFragment : Fragment() {
 
         binding.viewModel = viewModel
 
-        // Handle messages
-        viewModel.message.observe(viewLifecycleOwner, { errorMessage ->
-            showMessage(errorMessage)
-        })
-
         // RecyclerView Rates
         val ratesLayoutManager: RecyclerView.LayoutManager = LinearLayoutManager(context)
         val ratesAdaptor = OverviewAdaptor(RatesListListener { currency ->
@@ -53,21 +48,6 @@ class OverviewFragment : Fragment() {
             findNavController().navigate(action)
         })
 
-        ratesRecyclerView = binding.currencyRatesRecycleview
-        ratesRecyclerView.layoutManager = ratesLayoutManager
-        ratesRecyclerView.adapter = ratesAdaptor
-        viewModel.readyRatesDataSource.observe(viewLifecycleOwner, { ratesList ->
-            ratesList?.let {
-                ratesAdaptor.setData(it)
-            }
-        })
-
         return binding.root
-    }
-
-    private fun showMessage(text: String) {
-        Snackbar.make(coordinatorLayout, text, Snackbar.LENGTH_SHORT)
-            .setDuration(7000)
-            .show()
     }
 }

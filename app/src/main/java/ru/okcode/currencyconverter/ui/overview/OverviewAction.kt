@@ -1,0 +1,8 @@
+package ru.okcode.currencyconverter.ui.overview
+
+import ru.okcode.currencyconverter.mvibase.MviAction
+
+sealed class OverviewAction: MviAction {
+    object LoadAllRatesAction: OverviewAction()
+    data class ChangeBaseCurrencyAction(val currencyCode: String): OverviewAction()
+}

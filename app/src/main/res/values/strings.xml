@@ -28,4 +28,5 @@
     <string name="erase" translatable="false">C</string>
     <string name="base_currency_settings">Base currency settings</string>
     <string name="error_loading_data_from_remote_api">Error loading data from remote API</string>
+    <string name="no_data_received">No data received</string>
 </resources>
