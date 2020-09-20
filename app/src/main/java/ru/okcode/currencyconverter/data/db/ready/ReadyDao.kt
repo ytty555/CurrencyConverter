@@ -2,15 +2,16 @@ package ru.okcode.currencyconverter.data.db.ready
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
+import io.reactivex.Observable
 
 @Dao
 interface ReadyDao {
     @Transaction
     @Query("SELECT * FROM ReadyHeader")
-    fun getReadyRates(): LiveData<ReadyHeaderWithRates?>
+    fun getReadyRates(): Observable<ReadyHeaderWithRates>
 
     @Transaction
-    suspend fun insertToReadyRates(readyHeaderWithRates: ReadyHeaderWithRates) {
+    fun insertToReadyRates(readyHeaderWithRates: ReadyHeaderWithRates) {
         clearReadyHeader()
         clearReadyRates()
         insertReadyHeader(readyHeaderWithRates.readyHeader)
@@ -18,14 +19,14 @@ interface ReadyDao {
     }
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertReadyHeader(readyHeader: ReadyHeader)
+    fun insertReadyHeader(readyHeader: ReadyHeader)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertReadyRates(ratesList: List<ReadyRate>)
+    fun insertReadyRates(ratesList: List<ReadyRate>)
 
     @Query("DELETE FROM ReadyHeader")
-    suspend fun clearReadyHeader()
+    fun clearReadyHeader()
 
     @Query("DELETE FROM ReadyRate")
-    suspend fun clearReadyRates()
+    fun clearReadyRates()
 }

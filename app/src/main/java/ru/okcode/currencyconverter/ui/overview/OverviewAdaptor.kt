@@ -11,7 +11,7 @@ import ru.okcode.currencyconverter.data.model.Rates
 class OverviewAdaptor(private val rateListListener: RatesListListener) :
     RecyclerView.Adapter<OverviewAdaptor.ViewHolder>() {
 
-    private var ratesData: Rates = Rates.getEmptyInstance()
+    private var ratesData: Rates = Rates.idle()
 
     class ViewHolder private constructor(private val binding: RateItemBinding) :
         RecyclerView.ViewHolder(binding.root) {

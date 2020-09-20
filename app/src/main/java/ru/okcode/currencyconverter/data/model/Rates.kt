@@ -12,14 +12,14 @@ data class Rates(
     val timeNextUpdateUnix: Long
 ) {
     companion object {
-        fun getEmptyInstance(): Rates {
+        fun idle(): Rates {
             return Rates(
                 baseCurrency = Currency.getInstance("EUR"),
                 baseCurrencyAmount = 1f,
                 baseCurrencyRateToEuro = BigDecimal.valueOf(1.0),
                 timeLastUpdateUnix = 0,
                 timeNextUpdateUnix = 0,
-                rates = ArrayList()
+                rates = emptyList()
             )
         }
     }
@@ -31,5 +31,6 @@ data class Rate(
     val rateToEur: BigDecimal,
     val sum: BigDecimal,
     val priorityPosition: Int = 0,
-    val flagRes: Int?
+    val flagRes: Int?,
+    val isVisible: Boolean = true
 )
