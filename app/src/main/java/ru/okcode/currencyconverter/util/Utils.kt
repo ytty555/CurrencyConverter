@@ -2,12 +2,12 @@ package ru.okcode.currencyconverter.util
 
 import android.icu.text.SimpleDateFormat
 import android.icu.util.Currency
-import ru.okcode.currencyconverter.data.model.CurrencyEnum
+import ru.okcode.currencyconverter.data.model.CurrencyFlagsStore
 import java.util.*
 
 fun getFlagRes(currencyCode: String): Int? {
     return try {
-        CurrencyEnum.valueOf(currencyCode).flagRes
+        CurrencyFlagsStore.valueOf(currencyCode).flagRes
     } catch (e: IllegalArgumentException) {
         null
     }

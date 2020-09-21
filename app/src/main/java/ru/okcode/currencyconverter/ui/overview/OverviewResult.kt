@@ -13,13 +13,15 @@ sealed class OverviewResult : MviResult {
 
     sealed class EditCurrencyListResult : OverviewResult() {
         object Processing : EditCurrencyListResult()
-        data class Success(val rates: Rates) : EditCurrencyListResult()
+        object Success : EditCurrencyListResult()
         data class Failure(val error: Throwable) : EditCurrencyListResult()
     }
 
     sealed class ChangeBaseCurrencyResult : OverviewResult() {
         object Processing : ChangeBaseCurrencyResult()
-        data class Success(val rates: Rates) : ChangeBaseCurrencyResult()
+        data class Success(val currencyCode: String, val currentCurrencyAmount: Float) :
+            ChangeBaseCurrencyResult()
+
         data class Failure(val error: Throwable) : ChangeBaseCurrencyResult()
     }
 }

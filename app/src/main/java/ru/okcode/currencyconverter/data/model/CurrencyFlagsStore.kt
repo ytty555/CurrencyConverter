@@ -3,7 +3,7 @@ package ru.okcode.currencyconverter.data.model
 import androidx.annotation.DrawableRes
 import ru.okcode.currencyconverter.R
 
-enum class CurrencyEnum(
+enum class CurrencyFlagsStore(
     @DrawableRes val flagRes: Int,
 ) {
     RUB(flagRes = R.drawable.ic_rub),

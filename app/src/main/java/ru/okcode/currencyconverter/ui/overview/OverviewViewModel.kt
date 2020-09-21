@@ -8,6 +8,7 @@ import io.reactivex.Observable
 import io.reactivex.functions.BiFunction
 import io.reactivex.subjects.PublishSubject
 import ru.okcode.currencyconverter.mvibase.MviViewModel
+import ru.okcode.currencyconverter.ui.Destinations
 import ru.okcode.currencyconverter.ui.overview.OverviewAction.*
 import ru.okcode.currencyconverter.ui.overview.OverviewIntent.*
 import ru.okcode.currencyconverter.ui.overview.OverviewResult.*
@@ -57,12 +58,17 @@ class OverviewViewModel @ViewModelInject constructor(
                         is LoadAllRatesResult.Success -> {
                             previousState.copy(
                                 isLoading = false,
+                                switchingTo = null,
                                 rates = result.rates,
                                 error = null
                             )
                         }
                         is LoadAllRatesResult.Failure -> {
-                            previousState.copy(isLoading = false, error = result.error)
+                            previousState.copy(
+                                isLoading = false,
+                                switchingTo = null,
+                                error = result.error
+                            )
                         }
                     }
                     is EditCurrencyListResult -> when (result) {
@@ -72,12 +78,16 @@ class OverviewViewModel @ViewModelInject constructor(
                         is EditCurrencyListResult.Success -> {
                             previousState.copy(
                                 isLoading = false,
-                                rates = result.rates,
+                                switchingTo = Destinations.EditCurrencyListDestination,
                                 error = null
                             )
                         }
                         is EditCurrencyListResult.Failure -> {
-                            previousState.copy(isLoading = false, error = result.error)
+                            previousState.copy(
+                                isLoading = false,
+                                switchingTo = null,
+                                error = result.error
+                            )
                         }
                     }
                     is ChangeBaseCurrencyResult -> when (result) {
@@ -87,12 +97,19 @@ class OverviewViewModel @ViewModelInject constructor(
                         is ChangeBaseCurrencyResult.Success -> {
                             previousState.copy(
                                 isLoading = false,
-                                rates = result.rates,
+                                switchingTo = Destinations.ChangeBaseCurrencyDestination(
+                                    currencyCode = result.currencyCode,
+                                    currentCurrencyAmount = result.currentCurrencyAmount
+                                ),
                                 error = null
                             )
                         }
                         is ChangeBaseCurrencyResult.Failure -> {
-                            previousState.copy(isLoading = false, error = result.error)
+                            previousState.copy(
+                                isLoading = false,
+                                switchingTo = null,
+                                error = result.error
+                            )
                         }
                     }
                 }

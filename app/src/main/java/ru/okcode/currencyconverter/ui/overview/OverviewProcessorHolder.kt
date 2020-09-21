@@ -54,9 +54,30 @@ class OverviewProcessorHolder(
 
     private val editCurrencyListProcessor:
             ObservableTransformer<EditCurrencyListAction, EditCurrencyListResult> =
-        TODO()
+        ObservableTransformer { actions ->
+            actions.map {
+                EditCurrencyListResult.Success
+            }
+                .cast(EditCurrencyListResult::class.java)
+                .onErrorReturn(EditCurrencyListResult::Failure)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .startWith(EditCurrencyListResult.Processing)
+        }
 
     private val changeBaseCurrencyProcessor:
             ObservableTransformer<ChangeBaseCurrencyAction, ChangeBaseCurrencyResult> =
-        TODO()
+        ObservableTransformer { actions ->
+            actions.map { action ->
+                ChangeBaseCurrencyResult.Success(
+                    currencyCode = action.currencyCode,
+                    currentCurrencyAmount = action.currentCurrencyAmount
+                )
+            }
+                .cast(ChangeBaseCurrencyResult::class.java)
+                .onErrorReturn(ChangeBaseCurrencyResult::Failure)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .startWith(ChangeBaseCurrencyResult.Processing)
+        }
 }
