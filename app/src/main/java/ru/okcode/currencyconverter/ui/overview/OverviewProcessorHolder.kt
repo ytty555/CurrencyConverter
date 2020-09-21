@@ -7,8 +7,9 @@ import io.reactivex.schedulers.Schedulers
 import ru.okcode.currencyconverter.data.repository.ReadyRepository
 import ru.okcode.currencyconverter.ui.overview.OverviewAction.*
 import ru.okcode.currencyconverter.ui.overview.OverviewResult.*
+import javax.inject.Inject
 
-class OverviewProcessorHolder(
+class OverviewProcessorHolder @Inject constructor(
     private val readyRepository: ReadyRepository
 ) {
     internal val actionProcessor:

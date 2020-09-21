@@ -2,6 +2,7 @@ package ru.okcode.currencyconverter.data.repository
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Transformations
+import io.reactivex.Observable
 import ru.okcode.currencyconverter.data.model.Config
 import ru.okcode.currencyconverter.data.model.Rates
 import ru.okcode.currencyconverter.data.db.ready.ReadyDao
@@ -17,17 +18,18 @@ class ReadyRepositoryImpl @Inject constructor(
     private val readyMapper: ReadyMapper
 ) : ReadyRepository {
 
-    override val readyRatesDataSource: LiveData<Rates> =
-        Transformations.map(readyDao.getReadyRates()) { readyHeaderWithRates ->
-            readyHeaderWithRates?.let {
+
+//    override suspend fun updateReadyRates(rates: Rates, config: Config) {
+//        val readyRatesController: ReadyRates = ReadyRatesController(readyDao, readyMapper)
+//        val decorator: RatesDecorator =
+//            BaseCurrencyCodeChanger(readyRatesController, config)
+//        decorator.writeRates(rates)
+//    }
+
+    override fun getAllRates(): Observable<Rates> {
+        return readyDao.getReadyRates()
+            .map {
                 readyMapper.mapToModel(it)
             }
-        }
-
-    override suspend fun updateReadyRates(rates: Rates, config: Config) {
-        val readyRatesController: ReadyRates = ReadyRatesController(readyDao, readyMapper)
-        val decorator: RatesDecorator =
-            BaseCurrencyCodeChanger(readyRatesController, config)
-        decorator.writeRates(rates)
     }
 }

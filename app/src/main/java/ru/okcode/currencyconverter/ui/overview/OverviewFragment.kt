@@ -5,21 +5,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.coordinatorlayout.widget.CoordinatorLayout
-import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import ru.okcode.currencyconverter.R
-import ru.okcode.currencyconverter.databinding.FragmentCurrencyRatesBinding
 
 @AndroidEntryPoint
 class OverviewFragment : Fragment() {
 
-    private lateinit var binding: FragmentCurrencyRatesBinding
     private val viewModel: OverviewViewModel by viewModels()
     private lateinit var ratesRecyclerView: RecyclerView
     private lateinit var coordinatorLayout: CoordinatorLayout
@@ -29,13 +25,6 @@ class OverviewFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding =
-            DataBindingUtil.inflate(inflater, R.layout.fragment_currency_rates, container, false)
-
-        binding.lifecycleOwner = this
-        coordinatorLayout = binding.coordinator
-
-        binding.viewModel = viewModel
 
         // RecyclerView Rates
         val ratesLayoutManager: RecyclerView.LayoutManager = LinearLayoutManager(context)
@@ -48,6 +37,6 @@ class OverviewFragment : Fragment() {
             findNavController().navigate(action)
         })
 
-        return binding.root
+        return inflater.inflate(R.layout.fragment_currency_rates, container, false)
     }
 }

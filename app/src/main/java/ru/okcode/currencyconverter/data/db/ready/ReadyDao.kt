@@ -1,6 +1,5 @@
 package ru.okcode.currencyconverter.data.db.ready
 
-import androidx.lifecycle.LiveData
 import androidx.room.*
 import io.reactivex.Observable
 
