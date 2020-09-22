@@ -1,13 +1,14 @@
 package ru.okcode.currencyconverter.data.db.ready
 
 import androidx.room.*
+import io.reactivex.Maybe
 import io.reactivex.Observable
 
 @Dao
 interface ReadyDao {
     @Transaction
     @Query("SELECT * FROM ReadyHeader")
-    fun getReadyRates(): Observable<ReadyHeaderWithRates>
+    fun getReadyRates(): Maybe<ReadyHeaderWithRates>
 
     @Transaction
     fun insertToReadyRates(readyHeaderWithRates: ReadyHeaderWithRates) {

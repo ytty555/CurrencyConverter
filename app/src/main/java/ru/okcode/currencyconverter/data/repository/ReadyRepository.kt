@@ -1,5 +1,6 @@
 package ru.okcode.currencyconverter.data.repository
 
+import io.reactivex.Maybe
 import io.reactivex.Observable
 import ru.okcode.currencyconverter.data.model.Config
 import ru.okcode.currencyconverter.data.model.Rates
