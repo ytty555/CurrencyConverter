@@ -2,7 +2,6 @@ package ru.okcode.currencyconverter.data.db.ready
 
 import androidx.room.*
 import io.reactivex.Maybe
-import io.reactivex.Observable
 
 @Dao
 interface ReadyDao {

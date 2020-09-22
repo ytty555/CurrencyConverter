@@ -22,7 +22,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_scrollFlags="scroll|enterAlways"
-            app:title="@string/app_name"
             app:titleTextColor="@android:color/white">
 
         </androidx.appcompat.widget.Toolbar>
@@ -134,17 +133,6 @@
             style="@style/Widget.AppCompat.ProgressBar"
             android:layout_width="70dp"
             android:layout_height="70dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <ImageView
-            android:id="@+id/error_data"
-            android:layout_width="70dp"
-            android:layout_height="70dp"
-            android:background="@drawable/ic_connection_error"
-            android:contentDescription="@string/error_loading_data_from_remote_api"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

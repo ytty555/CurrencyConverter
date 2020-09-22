@@ -2,6 +2,7 @@ package ru.okcode.currencyconverter.util
 
 import android.icu.text.SimpleDateFormat
 import android.icu.util.Currency
+import android.view.View
 import ru.okcode.currencyconverter.data.model.CurrencyFlagsStore
 import java.util.*
 
@@ -22,3 +23,9 @@ fun Long.convertUnixToDateString() : String {
     val date = Date(this * 1000)
     return simpleDateFormat.format(date)
 }
+
+var View.visible: Boolean
+    get() = visibility == View.VISIBLE
+    set(value) {
+        visibility = if (value) View.VISIBLE else View.GONE
+    }

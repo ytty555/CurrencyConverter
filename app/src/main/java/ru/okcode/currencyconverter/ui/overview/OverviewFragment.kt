@@ -1,24 +1,60 @@
 package ru.okcode.currencyconverter.ui.overview
 
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import androidx.coordinatorlayout.widget.CoordinatorLayout
+import android.view.*
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import dagger.hilt.android.AndroidEntryPoint
+import io.reactivex.Observable
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.subjects.PublishSubject
+import kotlinx.android.synthetic.main.fragment_currency_rates.*
 import ru.okcode.currencyconverter.R
+import ru.okcode.currencyconverter.mvibase.MviView
+import ru.okcode.currencyconverter.util.visible
 
 @AndroidEntryPoint
-class OverviewFragment : Fragment() {
+class OverviewFragment : Fragment(), MviView<OverviewIntent, OverviewViewState>, RatesListListener {
 
     private val viewModel: OverviewViewModel by viewModels()
-    private lateinit var ratesRecyclerView: RecyclerView
-    private lateinit var coordinatorLayout: CoordinatorLayout
+    private val disposables = CompositeDisposable()
+    private val adaptor = OverviewAdaptor(this)
+
+    private val changeBaseCurrencySubject =
+        PublishSubject.create<OverviewIntent.ChangeBaseCurrencyIntent>()
+
+    override fun onStart() {
+        super.onStart()
+        bind()
+    }
+
+    private fun bind() {
+        disposables.add(viewModel.states().subscribe(this::render))
+        viewModel.processIntents(intents())
+    }
+
+    override fun onStop() {
+        super.onStop()
+        disposables.clear()
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+//        setHasOptionsMenu(true)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.overview_rates_menu, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return super.onOptionsItemSelected(item)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -26,17 +62,72 @@ class OverviewFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
 
+        val view = inflater.inflate(R.layout.fragment_currency_rates, container, false)
+
         // RecyclerView Rates
         val ratesLayoutManager: RecyclerView.LayoutManager = LinearLayoutManager(context)
-        val ratesAdaptor = OverviewAdaptor(RatesListListener { currency ->
-            val baseCurrencyCode = currency.currencyCode
-            val action =
-                OverviewFragmentDirections.actionCurrencyRatesFragmentToBaseChooserFragment(
-                    baseCurrencyCode
-                )
-            findNavController().navigate(action)
-        })
+        val recyclerView: RecyclerView = view.findViewById(R.id.rates_recyclerview)
+        recyclerView.layoutManager = ratesLayoutManager
+        recyclerView.adapter = adaptor
 
-        return inflater.inflate(R.layout.fragment_currency_rates, container, false)
+        return view
     }
+
+    override fun intents(): Observable<OverviewIntent> {
+        return Observable.merge(
+            loadRatesIntent(),
+            editCurrencyListIntent(),
+            changeBaseCurrencyIntent()
+        )
+    }
+
+    private fun loadRatesIntent(): Observable<OverviewIntent.LoadAllRatesIntent> {
+        return Observable.just(OverviewIntent.LoadAllRatesIntent)
+    }
+
+    private fun editCurrencyListIntent(): Observable<OverviewIntent.EditCurrencyListIntent> {
+        return Observable.just(OverviewIntent.EditCurrencyListIntent)
+    }
+
+    private fun changeBaseCurrencyIntent(): Observable<OverviewIntent.ChangeBaseCurrencyIntent> {
+        return changeBaseCurrencySubject
+    }
+
+
+    override fun render(state: OverviewViewState) {
+        loading_data.visible = state.isLoading
+
+        if (state.rates.rates.isNullOrEmpty()) {
+            empty_data.visible = true
+            rates_data.visible = false
+        } else {
+            empty_data.visible = false
+            adaptor.setData(state.rates)
+            rates_data.visible = true
+        }
+
+        if (state.error != null) {
+            Toast.makeText(
+                activity,
+                "Error loading data: ${state.error.localizedMessage}",
+                Toast.LENGTH_LONG
+            ).show()
+        }
+    }
+
+    override fun onClickRateItem(currencyCode: String, currencyAmount: Float) {
+        Toast.makeText(
+            activity,
+            "Click changeBaseCurrency: $currencyCode, $currencyAmount",
+            Toast.LENGTH_SHORT
+        ).show()
+        changeBaseCurrencySubject.onNext(
+            OverviewIntent.ChangeBaseCurrencyIntent(
+                currencyCode,
+                currencyAmount
+            )
+        )
+    }
+
+
 }

@@ -1,6 +1,5 @@
 package ru.okcode.currencyconverter.ui.overview
 
-import android.icu.util.Currency
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,34 +7,39 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import ru.okcode.currencyconverter.R
-import ru.okcode.currencyconverter.data.model.Rate
 import ru.okcode.currencyconverter.data.model.Rates
-import ru.okcode.currencyconverter.util.getFlagRes
 
-class OverviewAdaptor(private val rateListListener: RatesListListener) :
+class OverviewAdaptor(val rateListListener: RatesListListener) :
     RecyclerView.Adapter<OverviewAdaptor.ViewHolder>() {
 
     private var ratesData: Rates = Rates.idle()
 
     class ViewHolder private constructor(view: View) :
         RecyclerView.ViewHolder(view) {
-        val currencyCodeTextView: TextView = itemView.findViewById(R.id.currency_code)
-        val currencyNameTextView: TextView = itemView.findViewById(R.id.currency_name)
-        val baseCurrencyAmountSymbolEqualTextView: TextView =
-            itemView.findViewById(R.id.base_currency_amount_symbol_equal)
-        val currencyRateTextView: TextView = itemView.findViewById(R.id.currency_rate)
-        val currencySymbolTextView: TextView = itemView.findViewById(R.id.currency_symbol)
-        val currencyFlagImageView: ImageView = itemView.findViewById(R.id.currency_flag)
+
+        val currencyCodeTextView = view.findViewById<TextView>(R.id.currency_code)
+        val currencyNameTextView = view.findViewById<TextView>(R.id.currency_name)
+        val currencyRateTextView = view.findViewById<TextView>(R.id.currency_rate)
+        val currencySymbolTextView = view.findViewById<TextView>(R.id.currency_symbol)
+        val baseCurrencyAmountSymbolEqualTextView =
+            view.findViewById<TextView>(R.id.base_currency_amount_symbol_equal)
+        val currencyFlagImageView = view.findViewById<ImageView>(R.id.currency_flag)
+
 
         fun bind(ratesData: Rates, position: Int, rateListListener: RatesListListener) {
             val rate = ratesData.rates[position]
+
+            itemView.setOnClickListener {
+                rateListListener.onClickRateItem(rate.currency.currencyCode, rate.sum.toFloat())
+            }
+
             currencyCodeTextView.text = rate.currency.currencyCode
             currencyNameTextView.text = rate.currency.displayName
-            baseCurrencyAmountSymbolEqualTextView.text =
-                "${ratesData.baseCurrencyAmount} ${ratesData.baseCurrency.symbol} ="
             currencyRateTextView.text = rate.sum.toString()
             currencySymbolTextView.text = rate.currency.symbol
-            rate.currency.getFlagRes()?.let { currencyFlagImageView.setImageResource(it) }
+            baseCurrencyAmountSymbolEqualTextView.text =
+                "${ratesData.baseCurrencyAmount} ${ratesData.baseCurrency.symbol} ="
+            rate.flagRes?.let { currencyFlagImageView.setImageResource(it) }
         }
 
         companion object {
@@ -72,6 +76,6 @@ class OverviewAdaptor(private val rateListListener: RatesListListener) :
     }
 }
 
-class RatesListListener(val clickListener: (currency: Currency) -> Unit) {
-    fun onClick(rate: Rate) = clickListener(rate.currency)
+interface RatesListListener {
+    fun onClickRateItem(currencyCode: String, currencyAmount: Float)
 }
