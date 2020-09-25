@@ -1,7 +1,6 @@
 package ru.okcode.currencyconverter.ui.overview
 
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -34,6 +33,9 @@ class OverviewFragment : Fragment(), MviView<OverviewIntent, OverviewViewState>,
     private val editRatesListSubject =
         PublishSubject.create<OverviewIntent.EditCurrencyListIntent>()
 
+    private val loadRatesSubject =
+        PublishSubject.create<OverviewIntent.LoadAllRatesIntent>()
+
 
     override fun onStart() {
         super.onStart()
@@ -62,7 +64,11 @@ class OverviewFragment : Fragment(), MviView<OverviewIntent, OverviewViewState>,
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.edit_currency_list -> {
-                onClickEditRatesList()
+                editRatesListSubject.onNext(OverviewIntent.EditCurrencyListIntent)
+                true
+            }
+            R.id.update_rates -> {
+                loadRatesSubject.onNext(OverviewIntent.LoadAllRatesIntent)
                 true
             }
             else -> {
@@ -101,7 +107,7 @@ class OverviewFragment : Fragment(), MviView<OverviewIntent, OverviewViewState>,
     }
 
     private fun loadRatesIntent(): Observable<OverviewIntent.LoadAllRatesIntent> {
-        return Observable.just(OverviewIntent.LoadAllRatesIntent)
+        return loadRatesSubject
     }
 
     private fun editCurrencyListIntent(): Observable<OverviewIntent.EditCurrencyListIntent> {
@@ -114,7 +120,6 @@ class OverviewFragment : Fragment(), MviView<OverviewIntent, OverviewViewState>,
 
 
     override fun render(state: OverviewViewState) {
-        Log.e("qq", "render state.switchTo ${state.switchingTo}")
         loading_data.visible = state.isLoading
 
         if (state.rates.rates.isNullOrEmpty()) {
@@ -163,14 +168,5 @@ class OverviewFragment : Fragment(), MviView<OverviewIntent, OverviewViewState>,
             )
         )
     }
-
-    override fun onClickEditRatesList() {
-        editRatesListSubject.onNext(OverviewIntent.EditCurrencyListIntent)
-    }
-
-    override fun onUpdateRates() {
-        TODO("Not yet implemented")
-    }
-
 
 }

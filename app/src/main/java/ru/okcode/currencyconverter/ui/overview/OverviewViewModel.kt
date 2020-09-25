@@ -1,6 +1,5 @@
 package ru.okcode.currencyconverter.ui.overview
 
-import android.util.Log
 import androidx.hilt.Assisted
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.SavedStateHandle
@@ -32,7 +31,6 @@ class OverviewViewModel @ViewModelInject constructor(
             .map(this::actionFromIntent)
             .compose(actionProcessorHolder.actionProcessor)
             .scan(OverviewViewState.idle(), reducer)
-            .distinctUntilChanged()
             .replay()
             .autoConnect(0)
     }
