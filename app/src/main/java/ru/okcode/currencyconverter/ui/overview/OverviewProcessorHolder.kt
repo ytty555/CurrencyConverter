@@ -1,5 +1,6 @@
 package ru.okcode.currencyconverter.ui.overview
 
+import android.util.Log
 import io.reactivex.Observable
 import io.reactivex.ObservableTransformer
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -29,7 +30,7 @@ class OverviewProcessorHolder @Inject constructor(
                                 && action !is LoadAllRatesAction
                                 && action !is ChangeBaseCurrencyAction
                     }.flatMap { action ->
-                        Observable.error<OverviewResult>(
+                        Observable.error(
                             IllegalArgumentException("Unknown Action type: $action")
                         )
                     }

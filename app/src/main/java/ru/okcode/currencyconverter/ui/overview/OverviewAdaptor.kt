@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import ru.okcode.currencyconverter.R
 import ru.okcode.currencyconverter.data.model.Rates
 
-class OverviewAdaptor(val rateListListener: RatesListListener) :
+class OverviewAdaptor(val rateListListener: OverviewListener) :
     RecyclerView.Adapter<OverviewAdaptor.ViewHolder>() {
 
     private var ratesData: Rates = Rates.idle()
@@ -26,7 +26,7 @@ class OverviewAdaptor(val rateListListener: RatesListListener) :
         val currencyFlagImageView = view.findViewById<ImageView>(R.id.currency_flag)
 
 
-        fun bind(ratesData: Rates, position: Int, rateListListener: RatesListListener) {
+        fun bind(ratesData: Rates, position: Int, rateListListener: OverviewListener) {
             val rate = ratesData.rates[position]
 
             itemView.setOnClickListener {
@@ -74,8 +74,4 @@ class OverviewAdaptor(val rateListListener: RatesListListener) :
         ratesData = data
         notifyDataSetChanged()
     }
-}
-
-interface RatesListListener {
-    fun onClickRateItem(currencyCode: String, currencyAmount: Float)
 }

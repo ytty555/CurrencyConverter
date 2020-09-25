@@ -1,12 +1,14 @@
 package ru.okcode.currencyconverter.ui.overview
 
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import dagger.hilt.android.AndroidEntryPoint
@@ -16,10 +18,11 @@ import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.fragment_currency_rates.*
 import ru.okcode.currencyconverter.R
 import ru.okcode.currencyconverter.mvibase.MviView
+import ru.okcode.currencyconverter.ui.Destinations
 import ru.okcode.currencyconverter.util.visible
 
 @AndroidEntryPoint
-class OverviewFragment : Fragment(), MviView<OverviewIntent, OverviewViewState>, RatesListListener {
+class OverviewFragment : Fragment(), MviView<OverviewIntent, OverviewViewState>, OverviewListener {
 
     private val viewModel: OverviewViewModel by viewModels()
     private val disposables = CompositeDisposable()
@@ -27,6 +30,10 @@ class OverviewFragment : Fragment(), MviView<OverviewIntent, OverviewViewState>,
 
     private val changeBaseCurrencySubject =
         PublishSubject.create<OverviewIntent.ChangeBaseCurrencyIntent>()
+
+    private val editRatesListSubject =
+        PublishSubject.create<OverviewIntent.EditCurrencyListIntent>()
+
 
     override fun onStart() {
         super.onStart()
@@ -45,7 +52,7 @@ class OverviewFragment : Fragment(), MviView<OverviewIntent, OverviewViewState>,
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-//        setHasOptionsMenu(true)
+        setHasOptionsMenu(true)
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -53,7 +60,15 @@ class OverviewFragment : Fragment(), MviView<OverviewIntent, OverviewViewState>,
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return super.onOptionsItemSelected(item)
+        return when (item.itemId) {
+            R.id.edit_currency_list -> {
+                onClickEditRatesList()
+                true
+            }
+            else -> {
+                super.onOptionsItemSelected(item)
+            }
+        }
     }
 
     override fun onCreateView(
@@ -63,6 +78,10 @@ class OverviewFragment : Fragment(), MviView<OverviewIntent, OverviewViewState>,
     ): View? {
 
         val view = inflater.inflate(R.layout.fragment_currency_rates, container, false)
+
+        val toolbar = view.findViewById<Toolbar>(R.id.toolbar)
+        val activity = activity as AppCompatActivity
+        activity.setSupportActionBar(toolbar)
 
         // RecyclerView Rates
         val ratesLayoutManager: RecyclerView.LayoutManager = LinearLayoutManager(context)
@@ -86,7 +105,7 @@ class OverviewFragment : Fragment(), MviView<OverviewIntent, OverviewViewState>,
     }
 
     private fun editCurrencyListIntent(): Observable<OverviewIntent.EditCurrencyListIntent> {
-        return Observable.just(OverviewIntent.EditCurrencyListIntent)
+        return editRatesListSubject
     }
 
     private fun changeBaseCurrencyIntent(): Observable<OverviewIntent.ChangeBaseCurrencyIntent> {
@@ -95,6 +114,7 @@ class OverviewFragment : Fragment(), MviView<OverviewIntent, OverviewViewState>,
 
 
     override fun render(state: OverviewViewState) {
+        Log.e("qq", "render state.switchTo ${state.switchingTo}")
         loading_data.visible = state.isLoading
 
         if (state.rates.rates.isNullOrEmpty()) {
@@ -113,6 +133,21 @@ class OverviewFragment : Fragment(), MviView<OverviewIntent, OverviewViewState>,
                 Toast.LENGTH_LONG
             ).show()
         }
+
+        if (state.switchingTo != null) {
+            when (state.switchingTo) {
+                is Destinations.ChangeBaseCurrencyDestination -> {
+                    val action =
+                        OverviewFragmentDirections.actionCurrencyRatesFragmentToBaseChooserFragment(
+                            state.switchingTo.currencyCode, state.switchingTo.currentCurrencyAmount
+                        )
+                    findNavController().navigate(action)
+                }
+                is Destinations.EditCurrencyListDestination -> {
+                    Toast.makeText(activity, "Click Edit rates list", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
     }
 
     override fun onClickRateItem(currencyCode: String, currencyAmount: Float) {
@@ -127,6 +162,14 @@ class OverviewFragment : Fragment(), MviView<OverviewIntent, OverviewViewState>,
                 currencyAmount
             )
         )
+    }
+
+    override fun onClickEditRatesList() {
+        editRatesListSubject.onNext(OverviewIntent.EditCurrencyListIntent)
+    }
+
+    override fun onUpdateRates() {
+        TODO("Not yet implemented")
     }
 
 

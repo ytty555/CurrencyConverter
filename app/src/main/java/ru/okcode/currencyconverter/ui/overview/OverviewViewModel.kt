@@ -1,5 +1,6 @@
 package ru.okcode.currencyconverter.ui.overview
 
+import android.util.Log
 import androidx.hilt.Assisted
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.SavedStateHandle
@@ -73,7 +74,7 @@ class OverviewViewModel @ViewModelInject constructor(
                     }
                     is EditCurrencyListResult -> when (result) {
                         is EditCurrencyListResult.Processing -> {
-                            previousState.copy(isLoading = true, error = null)
+                            previousState.copy(isLoading = true, switchingTo = null, error = null)
                         }
                         is EditCurrencyListResult.Success -> {
                             previousState.copy(
@@ -92,7 +93,7 @@ class OverviewViewModel @ViewModelInject constructor(
                     }
                     is ChangeBaseCurrencyResult -> when (result) {
                         is ChangeBaseCurrencyResult.Processing -> {
-                            previousState.copy(isLoading = true, error = null)
+                            previousState.copy(isLoading = true, switchingTo = null, error = null)
                         }
                         is ChangeBaseCurrencyResult.Success -> {
                             previousState.copy(
