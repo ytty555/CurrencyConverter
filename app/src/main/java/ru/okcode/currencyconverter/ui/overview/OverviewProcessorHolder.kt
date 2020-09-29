@@ -5,13 +5,15 @@ import io.reactivex.Observable
 import io.reactivex.ObservableTransformer
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import ru.okcode.currencyconverter.data.repository.RawRatesRepository
 import ru.okcode.currencyconverter.data.repository.ReadyRepository
 import ru.okcode.currencyconverter.ui.overview.OverviewAction.*
 import ru.okcode.currencyconverter.ui.overview.OverviewResult.*
 import javax.inject.Inject
 
 class OverviewProcessorHolder @Inject constructor(
-    private val readyRepository: ReadyRepository
+    private val readyRepository: ReadyRepository,
+    private val rawRepository: RawRatesRepository
 ) {
     internal val actionProcessor:
             ObservableTransformer<OverviewAction, OverviewResult> =
@@ -42,14 +44,14 @@ class OverviewProcessorHolder @Inject constructor(
             ObservableTransformer<LoadAllRatesAction, LoadAllRatesResult> =
         ObservableTransformer { actions ->
             actions.flatMap {
-                readyRepository.getAllRates()
+                rawRepository.getRates()
                     .map { rates ->
                         LoadAllRatesResult.Success(rates)
                     }
                     .cast(LoadAllRatesResult::class.java)
                     .onErrorReturn(LoadAllRatesResult::Failure)
                     .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
+                    .observeOn(AndroidSchedulers.mainThread(), true)
                     .startWith(LoadAllRatesResult.Processing)
             }
         }
@@ -63,7 +65,7 @@ class OverviewProcessorHolder @Inject constructor(
                 .cast(EditCurrencyListResult::class.java)
                 .onErrorReturn(EditCurrencyListResult::Failure)
                 .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
+                .observeOn(AndroidSchedulers.mainThread(), true)
                 .startWith(EditCurrencyListResult.Processing)
         }
 

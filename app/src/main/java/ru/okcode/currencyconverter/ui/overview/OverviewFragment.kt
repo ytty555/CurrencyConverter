@@ -1,6 +1,7 @@
 package ru.okcode.currencyconverter.ui.overview
 
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -55,6 +56,11 @@ class OverviewFragment : Fragment(), MviView<OverviewIntent, OverviewViewState>,
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        loadRatesSubject.onNext(OverviewIntent.LoadAllRatesIntent)
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

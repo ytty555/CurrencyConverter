@@ -13,15 +13,7 @@ class ReadyRepositoryImpl @Inject constructor(
     private val readyMapper: ReadyMapper
 ) : ReadyRepository {
 
-
-//    override suspend fun updateReadyRates(rates: Rates, config: Config) {
-//        val readyRatesController: ReadyRates = ReadyRatesController(readyDao, readyMapper)
-//        val decorator: RatesDecorator =
-//            BaseCurrencyCodeChanger(readyRatesController, config)
-//        decorator.writeRates(rates)
-//    }
-
-    override fun getAllRates(): Observable<Rates> {
+    override fun ratesObservable(): Observable<Rates> {
           return Observable.create { ratesEmitter ->
               readyDao.getReadyRates()
                   .subscribeBy(

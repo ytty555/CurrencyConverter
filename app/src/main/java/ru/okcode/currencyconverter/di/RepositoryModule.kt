@@ -23,4 +23,11 @@ abstract class RepositoryModule {
     @Singleton
     abstract fun bindRepositoryReady(impl: ReadyRepositoryImpl): ReadyRepository
 
+    @Binds
+    @Singleton
+    abstract fun bindRepositoryNetwork(impl: NetworkRepositoryImpl): NetworkRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindRepositoryRaw(impl: RawRatesRepositoryImpl): RawRatesRepository
 }

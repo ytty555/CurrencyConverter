@@ -4,6 +4,7 @@ import android.icu.text.SimpleDateFormat
 import android.icu.util.Currency
 import android.view.View
 import ru.okcode.currencyconverter.data.model.CurrencyFlagsStore
+import java.time.Instant
 import java.util.*
 
 fun getFlagRes(currencyCode: String): Int? {
@@ -29,3 +30,8 @@ var View.visible: Boolean
     set(value) {
         visibility = if (value) View.VISIBLE else View.GONE
     }
+
+fun isActualByDate(startDateUnix: Long, endDateUnix: Long): Boolean {
+    val nowDateUnix: Long = System.currentTimeMillis() / 1000L
+    return nowDateUnix in (startDateUnix + 1)..endDateUnix
+}

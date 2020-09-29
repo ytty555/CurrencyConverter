@@ -15,18 +15,4 @@ data class RatesDto(
     @Json(name = "conversion_rates") val conversionRates: Map<String, Double>
 )
 
-fun RatesDto.toCacheRatesHeader() =
-    CacheRatesHeader(
-        timeLastUpdateUnix = this.timeLastUpdateUnix,
-        timeNextUpdateUnix = this.timeNextUpdateUnix,
-        baseCode = this.baseCode
-    )
 
-fun RatesDto.toCacheCurrencyRatesList(): List<CacheCurrencyRate> =
-    this.conversionRates.map {
-        CacheCurrencyRate(
-            currencyCode = it.key,
-            rateToBase = BigDecimal.valueOf(it.value),
-            timeLastUpdateUnix = this.timeLastUpdateUnix
-        )
-    }

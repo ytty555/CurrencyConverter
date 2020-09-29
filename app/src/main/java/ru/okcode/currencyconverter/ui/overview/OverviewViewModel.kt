@@ -1,5 +1,6 @@
 package ru.okcode.currencyconverter.ui.overview
 
+import android.util.Log
 import androidx.hilt.Assisted
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.SavedStateHandle
@@ -52,9 +53,11 @@ class OverviewViewModel @ViewModelInject constructor(
                 when (result) {
                     is LoadAllRatesResult -> when (result) {
                         is LoadAllRatesResult.Processing -> {
+                            Log.e("qq", "OverviewViewModel LoadAllRatesResult.Processing")
                             previousState.copy(isLoading = true, error = null)
                         }
                         is LoadAllRatesResult.Success -> {
+                            Log.e("qq", "OverviewViewModel LoadAllRatesResult.Success ${result.rates}")
                             previousState.copy(
                                 isLoading = false,
                                 switchingTo = null,
@@ -63,6 +66,7 @@ class OverviewViewModel @ViewModelInject constructor(
                             )
                         }
                         is LoadAllRatesResult.Failure -> {
+                            Log.e("qq", "OverviewViewModel LoadAllRatesResult.Failure ${result.error.localizedMessage}")
                             previousState.copy(
                                 isLoading = false,
                                 switchingTo = null,
