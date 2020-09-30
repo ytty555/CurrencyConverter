@@ -1,6 +1,5 @@
 package ru.okcode.currencyconverter.data.db.ready
 
-import android.icu.util.Currency
 import ru.okcode.currencyconverter.data.model.ModelMapper
 import ru.okcode.currencyconverter.data.model.Rate
 import ru.okcode.currencyconverter.data.model.Rates
@@ -16,7 +15,7 @@ class ReadyMapper @Inject constructor() : ModelMapper<ReadyHeaderWithRates, Rate
 
         val rates: List<Rate> = entity.rates.map { readyRate ->
             Rate(
-                currency = Currency.getInstance(readyRate.currencyCode),
+                currencyCode = readyRate.currencyCode,
                 rateToBase = readyRate.rateToBase,
                 rateToEur = readyRate.rateToEuro,
                 sum = readyRate.sum,
@@ -26,7 +25,7 @@ class ReadyMapper @Inject constructor() : ModelMapper<ReadyHeaderWithRates, Rate
         }
 
         return Rates(
-            baseCurrency = Currency.getInstance(entity.readyHeader.baseCurrencyCode),
+            baseCurrencyCode = entity.readyHeader.baseCurrencyCode,
             baseCurrencyAmount = entity.readyHeader.baseCurrencyAmount,
             baseCurrencyRateToEuro = entity.readyHeader.baseCurrencyRateToEuro,
             rates = rates,
@@ -37,7 +36,7 @@ class ReadyMapper @Inject constructor() : ModelMapper<ReadyHeaderWithRates, Rate
 
     override fun mapToEntity(model: Rates): ReadyHeaderWithRates {
         val readyHeader = ReadyHeader(
-            baseCurrencyCode = model.baseCurrency.currencyCode,
+            baseCurrencyCode = model.baseCurrencyCode,
             baseCurrencyAmount = model.baseCurrencyAmount,
             baseCurrencyRateToEuro = model.baseCurrencyRateToEuro,
             timeLastUpdateUnix = model.timeLastUpdateUnix,
@@ -46,7 +45,7 @@ class ReadyMapper @Inject constructor() : ModelMapper<ReadyHeaderWithRates, Rate
 
         val rates: List<ReadyRate> = model.rates.map { rate ->
             ReadyRate(
-                currencyCode = rate.currency.currencyCode,
+                currencyCode = rate.currencyCode,
                 rateToBase = rate.rateToBase,
                 rateToEuro = rate.rateToEur,
                 sum = rate.sum,

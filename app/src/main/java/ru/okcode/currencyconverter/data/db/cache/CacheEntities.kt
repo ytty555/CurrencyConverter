@@ -1,6 +1,5 @@
 package ru.okcode.currencyconverter.data.db.cache
 
-import android.icu.math.BigDecimal
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -18,7 +17,7 @@ data class CacheRatesHeader(
 data class CacheCurrencyRate(
     @PrimaryKey
     var currencyCode: String,
-    var rateToBase: BigDecimal,
+    var rateToBase: Float,
     var timeLastUpdateUnix: Long,
 )
 

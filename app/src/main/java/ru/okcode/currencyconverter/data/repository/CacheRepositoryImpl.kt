@@ -14,15 +14,11 @@ class CacheRepositoryImpl @Inject constructor(
 ) : CacheRepository {
 
     override fun getRates(): Single<Rates> {
-        return Single.create { emitter ->
-            cacheDao.getCache()
-                .subscribeBy(
-                    onSuccess = {
-                        val rates = cacheMapper.mapToModel(it)!!
-                        emitter.onSuccess(rates)
-                    }
-                )
-        }
+        return cacheDao.getCache()
+            .flatMap {
+                val rates = cacheMapper.mapToModel(it)!!
+                Single.just(rates)
+            }
     }
 
     override fun saveCache(rates: Rates): Completable {

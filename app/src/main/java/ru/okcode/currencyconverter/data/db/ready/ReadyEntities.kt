@@ -1,6 +1,5 @@
 package ru.okcode.currencyconverter.data.db.ready
 
-import android.icu.math.BigDecimal
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -10,7 +9,7 @@ import androidx.room.Relation
 data class ReadyHeader(
     val baseCurrencyCode: String,
     val baseCurrencyAmount: Float = 1f,
-    val baseCurrencyRateToEuro: BigDecimal,
+    val baseCurrencyRateToEuro: Float,
     @PrimaryKey val timeLastUpdateUnix: Long,
     val timeNextUpdateUnix: Long
 )
@@ -18,9 +17,9 @@ data class ReadyHeader(
 @Entity
 data class ReadyRate(
     @PrimaryKey val currencyCode: String,
-    val rateToBase: BigDecimal,
-    val rateToEuro: BigDecimal,
-    val sum: BigDecimal,
+    val rateToBase: Float,
+    val rateToEuro: Float,
+    val sum: Float,
     val timeLastUpdateUnix: Long,
     val priorityPosition: Int
 )

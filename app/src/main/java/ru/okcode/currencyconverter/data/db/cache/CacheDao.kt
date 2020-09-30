@@ -9,7 +9,7 @@ import io.reactivex.Single
 interface CacheDao {
     @Transaction
     @Query("SELECT * FROM CacheRatesHeader")
-    fun getCache(): Maybe<CacheHeaderWithRates>
+    fun getCache(): Single<CacheHeaderWithRates>
 
     @Transaction
     fun insertToCache(cacheRatesHeaderWithRates: CacheHeaderWithRates) {

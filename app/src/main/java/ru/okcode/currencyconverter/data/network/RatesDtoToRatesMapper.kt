@@ -1,11 +1,10 @@
 package ru.okcode.currencyconverter.data.network
 
-import android.icu.math.BigDecimal
-import android.icu.util.Currency
 import ru.okcode.currencyconverter.data.model.ModelMapper
 import ru.okcode.currencyconverter.data.model.Rate
 import ru.okcode.currencyconverter.data.model.Rates
 import ru.okcode.currencyconverter.util.getFlagRes
+import ru.okcode.currencyconverter.util.getRateToEuro
 import javax.inject.Inject
 
 class RatesDtoToRatesMapper @Inject constructor() : ModelMapper<RatesDto, Rates> {
@@ -15,18 +14,20 @@ class RatesDtoToRatesMapper @Inject constructor() : ModelMapper<RatesDto, Rates>
         }
 
         val rates = entity.conversionRates.map { pair ->
+            val currencyCode = pair.key
+            val currencyRate = pair.value
             Rate(
-                currency = Currency.getInstance(pair.key),
-                rateToBase = BigDecimal.valueOf(pair.value),
-                rateToEur = BigDecimal.valueOf(1.0),
-                sum = BigDecimal.valueOf(pair.value),
-                flagRes = getFlagRes(pair.key)
+                currencyCode = currencyCode,
+                rateToBase = currencyRate,
+                rateToEur = getRateToEuro(entity, currencyCode),
+                sum = currencyRate,
+                flagRes = getFlagRes(currencyCode)
             )
         }
 
         return Rates(
-            baseCurrency = Currency.getInstance(entity.baseCode),
-            baseCurrencyRateToEuro = BigDecimal.valueOf(1.0),
+            baseCurrencyCode = entity.baseCode,
+            baseCurrencyRateToEuro = 1f,
             timeNextUpdateUnix = entity.timeNextUpdateUnix,
             timeLastUpdateUnix = entity.timeLastUpdateUnix,
             rates = rates

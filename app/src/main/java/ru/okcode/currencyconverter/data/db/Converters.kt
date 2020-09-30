@@ -6,15 +6,6 @@ import java.util.*
 import java.util.stream.Collectors
 
 class Converters {
-    @TypeConverter
-    fun fromDoubleToBigDecimal(value: Double?): BigDecimal? {
-        return value?.let { BigDecimal.valueOf(value) }
-    }
-
-    @TypeConverter
-    fun fromBigDecimalToDouble(value: BigDecimal?): Double? {
-        return value?.let { value.toDouble() }
-    }
 
     @TypeConverter
     fun fromListStringToString(value: List<String>): String {

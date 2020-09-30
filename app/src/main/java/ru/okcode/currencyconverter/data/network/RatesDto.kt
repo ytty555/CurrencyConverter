@@ -12,7 +12,7 @@ data class RatesDto(
     @Json(name = "time_last_update_unix") val timeLastUpdateUnix: Long,
     @Json(name = "time_next_update_unix") val timeNextUpdateUnix: Long,
     @Json(name = "base_code") val baseCode: String,
-    @Json(name = "conversion_rates") val conversionRates: Map<String, Double>
+    @Json(name = "conversion_rates") val conversionRates: Map<String, Float>
 )
 
 

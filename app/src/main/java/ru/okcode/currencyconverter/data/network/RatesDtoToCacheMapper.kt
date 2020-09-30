@@ -1,6 +1,5 @@
 package ru.okcode.currencyconverter.data.network
 
-import android.icu.math.BigDecimal
 import ru.okcode.currencyconverter.data.db.cache.CacheCurrencyRate
 import ru.okcode.currencyconverter.data.db.cache.CacheHeaderWithRates
 import ru.okcode.currencyconverter.data.db.cache.CacheRatesHeader
@@ -22,7 +21,7 @@ class RatesDtoToCacheMapper @Inject constructor(): ModelMapper<RatesDto, CacheHe
         val rates = entity.conversionRates.map {
             CacheCurrencyRate(
                 currencyCode = it.key,
-                rateToBase = BigDecimal.valueOf(it.value),
+                rateToBase = it.value,
                 timeLastUpdateUnix = entity.timeLastUpdateUnix
             )
         }

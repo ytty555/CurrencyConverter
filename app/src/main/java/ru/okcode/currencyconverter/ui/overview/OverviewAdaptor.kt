@@ -1,5 +1,6 @@
 package ru.okcode.currencyconverter.ui.overview
 
+import android.icu.util.Currency
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import ru.okcode.currencyconverter.R
 import ru.okcode.currencyconverter.data.model.Rates
 
-class OverviewAdaptor(val rateListListener: OverviewListener) :
+class OverviewAdaptor(private val rateListListener: OverviewListener) :
     RecyclerView.Adapter<OverviewAdaptor.ViewHolder>() {
 
     private var ratesData: Rates = Rates.idle()
@@ -30,15 +31,16 @@ class OverviewAdaptor(val rateListListener: OverviewListener) :
             val rate = ratesData.rates[position]
 
             itemView.setOnClickListener {
-                rateListListener.onClickRateItem(rate.currency.currencyCode, rate.sum.toFloat())
+                rateListListener.onClickRateItem(rate.currencyCode, rate.sum.toFloat())
             }
-
-            currencyCodeTextView.text = rate.currency.currencyCode
-            currencyNameTextView.text = rate.currency.displayName
+            val currency = Currency.getInstance(rate.currencyCode)
+            val baseCurrency = Currency.getInstance(ratesData.baseCurrencyCode)
+            currencyCodeTextView.text = currency.currencyCode
+            currencyNameTextView.text = currency.displayName
             currencyRateTextView.text = rate.sum.toString()
-            currencySymbolTextView.text = rate.currency.symbol
+            currencySymbolTextView.text = currency.symbol
             baseCurrencyAmountSymbolEqualTextView.text =
-                "${ratesData.baseCurrencyAmount} ${ratesData.baseCurrency.symbol} ="
+                "${ratesData.baseCurrencyAmount} ${baseCurrency.symbol} ="
             rate.flagRes?.let { currencyFlagImageView.setImageResource(it) }
         }
 
