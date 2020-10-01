@@ -41,6 +41,7 @@ class OverviewFragment : Fragment(), MviView<OverviewIntent, OverviewViewState>,
     override fun onStart() {
         super.onStart()
         bind()
+        loadRatesSubject.onNext(OverviewIntent.LoadAllRatesIntent)
     }
 
     private fun bind() {
@@ -60,7 +61,6 @@ class OverviewFragment : Fragment(), MviView<OverviewIntent, OverviewViewState>,
 
     override fun onResume() {
         super.onResume()
-        loadRatesSubject.onNext(OverviewIntent.LoadAllRatesIntent)
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

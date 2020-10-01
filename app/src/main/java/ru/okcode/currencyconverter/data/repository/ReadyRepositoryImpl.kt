@@ -1,8 +1,11 @@
 package ru.okcode.currencyconverter.data.repository
 
+import android.util.Log
 import io.reactivex.Completable
 import io.reactivex.Single
+import io.reactivex.functions.Predicate
 import io.reactivex.rxkotlin.subscribeBy
+import kotlinx.coroutines.delay
 import ru.okcode.currencyconverter.data.model.Rates
 import ru.okcode.currencyconverter.data.ready.ReadyRates
 import ru.okcode.currencyconverter.data.ready.decorator.BaseChangeDecorator
@@ -16,6 +19,13 @@ class ReadyRepositoryImpl @Inject constructor(
     private val cacheRepository: CacheRepository
 ) : ReadyRepository {
 
+    private val configuredRates: ReadyRatesDecorator =
+        CurrencyVisibilityChangeDecorator(
+            CurrencyPriorityChangeDecorator(
+                BaseChangeDecorator(readyRates)
+            )
+        )
+
     override fun getRates(): Single<Rates> {
         // TODO FIX IT
         // TODO Need to test
@@ -24,24 +34,18 @@ class ReadyRepositoryImpl @Inject constructor(
                 val disposable = cacheRepository.getRates()
                     .subscribeBy(
                         onSuccess = {
-                            saveRates(it)
+                            Log.e("ee", "--> doOnError rate $it")
+                            configuredRates.setReadyRates(it)
                         },
                         onError = {
                             // Do nothing
                         }
                     )
             }
-            .repeat(2)
-            .firstOrError()
+            .retry(1)
     }
 
     override fun saveRates(rates: Rates): Completable {
-        val configuredRates: ReadyRatesDecorator =
-            CurrencyVisibilityChangeDecorator(
-                CurrencyPriorityChangeDecorator(
-                    BaseChangeDecorator(readyRates)
-                )
-            )
         return configuredRates.setReadyRates(rates)
     }
 
