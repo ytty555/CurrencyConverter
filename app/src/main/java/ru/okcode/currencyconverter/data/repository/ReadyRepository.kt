@@ -1,11 +1,12 @@
 package ru.okcode.currencyconverter.data.repository
 
-import io.reactivex.Flowable
-import io.reactivex.Maybe
-import io.reactivex.Observable
-import ru.okcode.currencyconverter.data.model.Config
+import io.reactivex.Completable
+import io.reactivex.Single
 import ru.okcode.currencyconverter.data.model.Rates
 
 interface ReadyRepository {
-    fun ratesObservable(): Observable<Rates>
+
+    fun getRates(): Single<Rates>
+
+    fun saveRates(rates: Rates): Completable
 }

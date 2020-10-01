@@ -4,6 +4,8 @@ import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ApplicationComponent
+import ru.okcode.currencyconverter.data.ready.ReadyRates
+import ru.okcode.currencyconverter.data.ready.ReadyRatesImpl
 import ru.okcode.currencyconverter.data.repository.*
 import javax.inject.Singleton
 
@@ -30,4 +32,8 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindRepositoryRaw(impl: RawRatesRepositoryImpl): RawRatesRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindReadyRates(impl: ReadyRatesImpl): ReadyRates
 }

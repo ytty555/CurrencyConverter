@@ -1,37 +1,48 @@
 package ru.okcode.currencyconverter.data.repository
 
-import io.reactivex.Maybe
-import io.reactivex.Observable
+import io.reactivex.Completable
+import io.reactivex.Single
 import io.reactivex.rxkotlin.subscribeBy
-import ru.okcode.currencyconverter.data.db.ready.ReadyDao
-import ru.okcode.currencyconverter.data.db.ready.ReadyMapper
 import ru.okcode.currencyconverter.data.model.Rates
+import ru.okcode.currencyconverter.data.ready.ReadyRates
+import ru.okcode.currencyconverter.data.ready.decorator.BaseChangeDecorator
+import ru.okcode.currencyconverter.data.ready.decorator.CurrencyPriorityChangeDecorator
+import ru.okcode.currencyconverter.data.ready.decorator.CurrencyVisibilityChangeDecorator
+import ru.okcode.currencyconverter.data.ready.decorator.ReadyRatesDecorator
 import javax.inject.Inject
 
 class ReadyRepositoryImpl @Inject constructor(
-    private val readyDao: ReadyDao,
-    private val readyMapper: ReadyMapper
+    private val readyRates: ReadyRates,
+    private val cacheRepository: CacheRepository
 ) : ReadyRepository {
 
-    override fun ratesObservable(): Observable<Rates> {
-          return Observable.create { ratesEmitter ->
-              readyDao.getReadyRates()
-                  .subscribeBy(
-                      onSuccess = {
-                          ratesEmitter.onNext(readyMapper.mapToModel(it)?: Rates.idle())
-                          ratesEmitter.onComplete()
-                      },
-                      onComplete = {
-                          ratesEmitter.onNext(Rates.idle())
-                          ratesEmitter.onComplete()
-                      },
-                      onError = {
-                          ratesEmitter.onError(it)
-                      }
-                  )
-          }
-
-
-
+    override fun getRates(): Single<Rates> {
+        // TODO FIX IT
+        // TODO Need to test
+        return readyRates.getReadyRates()
+            .doOnError {
+                val disposable = cacheRepository.getRates()
+                    .subscribeBy(
+                        onSuccess = {
+                            saveRates(it)
+                        },
+                        onError = {
+                            // Do nothing
+                        }
+                    )
+            }
+            .repeat(2)
+            .firstOrError()
     }
+
+    override fun saveRates(rates: Rates): Completable {
+        val configuredRates: ReadyRatesDecorator =
+            CurrencyVisibilityChangeDecorator(
+                CurrencyPriorityChangeDecorator(
+                    BaseChangeDecorator(readyRates)
+                )
+            )
+        return configuredRates.setReadyRates(rates)
+    }
+
 }

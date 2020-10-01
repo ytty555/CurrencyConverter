@@ -13,7 +13,6 @@ import javax.inject.Inject
 
 class OverviewProcessorHolder @Inject constructor(
     private val readyRepository: ReadyRepository,
-    private val rawRepository: RawRatesRepository
 ) {
     internal val actionProcessor:
             ObservableTransformer<OverviewAction, OverviewResult> =
@@ -44,7 +43,7 @@ class OverviewProcessorHolder @Inject constructor(
             ObservableTransformer<LoadAllRatesAction, LoadAllRatesResult> =
         ObservableTransformer { actions ->
             actions.flatMap {
-                rawRepository.getRates()
+                readyRepository.getRates()
                     .toObservable()
                     .map { rates ->
                         LoadAllRatesResult.Success(rates)
