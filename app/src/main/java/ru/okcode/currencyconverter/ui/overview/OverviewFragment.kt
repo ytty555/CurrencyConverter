@@ -126,18 +126,25 @@ class OverviewFragment : Fragment(), MviView<OverviewIntent, OverviewViewState>,
 
 
     override fun render(state: OverviewViewState) {
+
         loading_data.visible = state.isLoading
 
-        if (state.rates.rates.isNullOrEmpty()) {
-            empty_data.visible = true
-            rates_data.visible = false
-        } else {
-            empty_data.visible = false
+        if (state.isLoading) {
+            error_data.visible = false
+        }
+
+        if (state.rates.rates.isNotEmpty()) {
+            loading_data.visible = false
+            error_data.visible = false
             adaptor.setData(state.rates)
             rates_data.visible = true
         }
 
         if (state.error != null) {
+            loading_data.visible = false
+            rates_data.visible = false
+            error_data.visible = true
+
             Toast.makeText(
                 activity,
                 "Error loading data: ${state.error.localizedMessage}",

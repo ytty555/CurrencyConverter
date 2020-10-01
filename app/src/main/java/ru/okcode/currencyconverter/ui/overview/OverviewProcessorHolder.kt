@@ -45,6 +45,7 @@ class OverviewProcessorHolder @Inject constructor(
         ObservableTransformer { actions ->
             actions.flatMap {
                 rawRepository.getRates()
+                    .toObservable()
                     .map { rates ->
                         LoadAllRatesResult.Success(rates)
                     }

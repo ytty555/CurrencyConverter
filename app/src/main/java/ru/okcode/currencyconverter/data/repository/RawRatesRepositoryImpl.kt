@@ -1,6 +1,5 @@
 package ru.okcode.currencyconverter.data.repository
 
-import io.reactivex.Observable
 import io.reactivex.Single
 import ru.okcode.currencyconverter.data.model.Rates
 import ru.okcode.currencyconverter.util.isActualByDate
@@ -11,25 +10,28 @@ class RawRatesRepositoryImpl @Inject constructor(
     private val cache: CacheRepository
 ) : RawRatesRepository {
 
-    override fun getRates(): Observable<Rates> {
+    override fun getRates(): Single<Rates> {
+        return fetchCacheRates()
+            .onErrorResumeNext(fetchNetworkRates())
+    }
 
-        val networkDataSource = network.getRates()
+    private fun fetchNetworkRates(): Single<Rates> {
+        return network.getRates()
+            .flatMap { rates ->
+                cache
+                    .saveCache(rates)
+                    .andThen(Single.just(rates))
+            }
+    }
 
-        val cacheDataSource = cache.getRates()
-
-        return Single.merge(
-            cacheDataSource
-                .filter {
-                    isActualByDate(it.timeLastUpdateUnix, it.timeNextUpdateUnix)
+    private fun fetchCacheRates(): Single<Rates> {
+        return cache.getRates()
+            .flatMap { rates ->
+                if (isActualByDate(rates.timeLastUpdateUnix, rates.timeNextUpdateUnix)) {
+                    Single.just(rates)
+                } else {
+                    Single.error(Throwable("Cache has old data"))
                 }
-                .toSingle(),
-            networkDataSource
-                .flatMap {
-                    cache
-                        .saveCache(it)
-                        .andThen(Single.just(it))
-                }
-        )
-            .toObservable()
+            }
     }
 }
