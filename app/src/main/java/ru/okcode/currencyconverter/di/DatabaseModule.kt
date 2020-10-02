@@ -11,6 +11,8 @@ import ru.okcode.currencyconverter.data.db.cache.CacheDao
 import ru.okcode.currencyconverter.data.db.cache.CacheDatabase
 import ru.okcode.currencyconverter.data.db.config.ConfigDao
 import ru.okcode.currencyconverter.data.db.config.ConfigDatabase
+import ru.okcode.currencyconverter.data.db.ready.ReadyDao
+import ru.okcode.currencyconverter.data.db.ready.ReadyDatabase
 import javax.inject.Singleton
 
 @Module
@@ -49,5 +51,22 @@ object DatabaseModule {
     @Singleton
     fun provideConfigDao(database: ConfigDatabase): ConfigDao {
         return database.configDao()
+    }
+
+    // ReadyDatabase -------------------------------------------------------------------
+    @Provides
+    @Singleton
+    fun provideReadyDatabase(@ApplicationContext context: Context): ReadyDatabase {
+        return Room.databaseBuilder(
+            context,
+            ReadyDatabase::class.java,
+            "ready"
+        ).build()
+    }
+
+    @Provides
+    @Singleton
+    fun provideReadyDao(database: ReadyDatabase): ReadyDao {
+        return database.readyDao()
     }
 }

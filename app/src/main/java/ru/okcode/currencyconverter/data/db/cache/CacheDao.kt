@@ -27,10 +27,10 @@ interface CacheDao {
     fun insertCacheRates(ratesList: List<CacheCurrencyRate>)
 
     @Query("DELETE FROM CacheRatesHeader")
-    fun clearCacheHeader(): Completable
+    fun clearCacheHeader()
 
     @Query("DELETE FROM CacheCurrencyRate")
-    fun clearCacheCurrencyRates(): Completable
+    fun clearCacheCurrencyRates()
 
 
 }

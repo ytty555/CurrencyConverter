@@ -4,8 +4,8 @@ import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ApplicationComponent
-import ru.okcode.currencyconverter.data.ready.ReadyRates
-import ru.okcode.currencyconverter.data.ready.ReadyRatesImpl
+import ru.okcode.currencyconverter.data.db.ready.ReadyRates
+import ru.okcode.currencyconverter.data.db.ready.ReadyRatesImpl
 import ru.okcode.currencyconverter.data.repository.*
 import javax.inject.Singleton
 

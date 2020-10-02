@@ -7,7 +7,7 @@ import com.yandex.metrica.push.YandexMetricaPush
 import dagger.hilt.android.HiltAndroidApp
 
 @HiltAndroidApp
-class CCApp : Application() {
+class CurrencyConverterApplication : Application() {
     override fun onCreate() {
         super.onCreate()
 //        // Creating an extended library configuration.

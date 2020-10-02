@@ -1,4 +1,4 @@
-package ru.okcode.currencyconverter.data.ready
+package ru.okcode.currencyconverter.data.db.ready
 
 import io.reactivex.Completable
 import io.reactivex.Single

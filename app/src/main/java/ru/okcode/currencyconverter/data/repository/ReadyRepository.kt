@@ -8,5 +8,5 @@ interface ReadyRepository {
 
     fun getRates(): Single<Rates>
 
-    fun saveRates(rates: Rates): Completable
+    fun saveRates(rates: Rates): Single<Rates>
 }
