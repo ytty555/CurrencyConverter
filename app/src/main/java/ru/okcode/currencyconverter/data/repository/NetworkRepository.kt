@@ -1,8 +1,8 @@
 package ru.okcode.currencyconverter.data.repository
 
-import io.reactivex.Single
+import io.reactivex.Observable
 import ru.okcode.currencyconverter.data.model.Rates
 
 interface NetworkRepository {
-    fun getRates(): Single<Rates>
+    fun getRates(): Observable<Rates>
 }

@@ -1,56 +1,48 @@
 package ru.okcode.currencyconverter.data.repository
 
-import io.reactivex.Completable
-import io.reactivex.Single
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.disposables.Disposable
-import io.reactivex.rxkotlin.subscribeBy
+import io.reactivex.Observable
+import io.reactivex.functions.BiFunction
 import ru.okcode.currencyconverter.data.db.ready.ReadyRates
 import ru.okcode.currencyconverter.data.db.ready.decorator.BaseChangeDecorator
 import ru.okcode.currencyconverter.data.db.ready.decorator.CurrencyPriorityChangeDecorator
 import ru.okcode.currencyconverter.data.db.ready.decorator.CurrencyVisibilityChangeDecorator
-import ru.okcode.currencyconverter.data.db.ready.decorator.ReadyRatesDecorator
+import ru.okcode.currencyconverter.data.model.Config
 import ru.okcode.currencyconverter.data.model.Rates
 import javax.inject.Inject
 
 class ReadyRepositoryImpl @Inject constructor(
-    readyRates: ReadyRates,
-    private val rawRatesRepository: RawRatesRepository
+    private val readyRates: ReadyRates,
+    rawRatesRepository: RawRatesRepository,
+    configRepository: ConfigRepository
 
 ) : ReadyRepository {
 
-    private val decoratedReadyRates: ReadyRatesDecorator =
-        CurrencyVisibilityChangeDecorator(
-            CurrencyPriorityChangeDecorator(
-                BaseChangeDecorator(readyRates)
-            )
+    private val rawRatesDataSource = rawRatesRepository.getRatesObservable()
+    private val configDataSource = configRepository.getConfigObservable()
+
+    override fun getReadyRates(): Observable<Rates> {
+        return Observable.combineLatest(
+            rawRatesDataSource,
+            configDataSource,
+            conversion()
         )
-
-    private val disposables = CompositeDisposable()
-
-    override fun subscribeReady() {
-        val rawRatesDisposable: Disposable =
-            rawRatesRepository.getRatesObservable()
-                .subscribeBy(
-                    onNext = {
-                        saveRates(it)
-                    }
-                )
-        disposables.add(rawRatesDisposable)
     }
 
-    override fun unSubscribeReady() {
-        disposables.clear()
+    private fun conversion() = BiFunction { rawRates: Rates, config: Config ->
+        createReadyRates(rawRates, config)
     }
 
+    private fun createReadyRates(rawRates: Rates, config: Config): Rates {
+        val readyRatesDecorator =
+            CurrencyVisibilityChangeDecorator(
+                CurrencyPriorityChangeDecorator(
+                    BaseChangeDecorator(
+                        readyRates,
+                        config
+                    ), config
+                ), config
+            )
 
-    override fun getRates(): Single<Rates> {
-        return decoratedReadyRates.getReadyRates()
+        return readyRatesDecorator.createReadyRates(rawRates)
     }
-
-    override fun saveRates(rates: Rates): Completable {
-        return decoratedReadyRates.setReadyRates(rates)
-    }
-
-
 }

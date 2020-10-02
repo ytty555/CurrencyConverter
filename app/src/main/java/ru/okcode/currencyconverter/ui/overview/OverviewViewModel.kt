@@ -1,14 +1,11 @@
 package ru.okcode.currencyconverter.ui.overview
 
 import android.util.Log
-import androidx.hilt.Assisted
 import androidx.hilt.lifecycle.ViewModelInject
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import io.reactivex.Observable
 import io.reactivex.functions.BiFunction
 import io.reactivex.subjects.PublishSubject
-import ru.okcode.currencyconverter.data.repository.ReadyRepository
 import ru.okcode.currencyconverter.mvibase.MviViewModel
 import ru.okcode.currencyconverter.ui.Destinations
 import ru.okcode.currencyconverter.ui.overview.OverviewAction.*
@@ -17,13 +14,7 @@ import ru.okcode.currencyconverter.ui.overview.OverviewResult.*
 
 class OverviewViewModel @ViewModelInject constructor(
     private val actionProcessorHolder: OverviewProcessorHolder,
-    private val readyRepository: ReadyRepository,
-    @Assisted private val savedStateHandle: SavedStateHandle
 ) : ViewModel(), MviViewModel<OverviewIntent, OverviewViewState> {
-
-    init {
-        readyRepository.subscribeReady()
-    }
 
     private val intentsSubject: PublishSubject<OverviewIntent> = PublishSubject.create()
 
@@ -53,11 +44,6 @@ class OverviewViewModel @ViewModelInject constructor(
         }
     }
 
-    override fun onCleared() {
-        readyRepository.unSubscribeReady()
-        super.onCleared()
-    }
-
     companion object {
         private val reducer =
             BiFunction { previousState: OverviewViewState, result: OverviewResult ->
@@ -68,7 +54,10 @@ class OverviewViewModel @ViewModelInject constructor(
                             previousState.copy(isLoading = true, error = null)
                         }
                         is LoadAllRatesResult.Success -> {
-                            Log.e("qq", "OverviewViewModel LoadAllRatesResult.Success ${result.rates}")
+                            Log.e(
+                                "qq",
+                                "OverviewViewModel LoadAllRatesResult.Success ${result.rates}"
+                            )
                             previousState.copy(
                                 isLoading = false,
                                 switchingTo = null,
@@ -77,7 +66,10 @@ class OverviewViewModel @ViewModelInject constructor(
                             )
                         }
                         is LoadAllRatesResult.Failure -> {
-                            Log.e("qq", "OverviewViewModel LoadAllRatesResult.Failure ${result.error.localizedMessage}")
+                            Log.e(
+                                "qq",
+                                "OverviewViewModel LoadAllRatesResult.Failure ${result.error.localizedMessage}"
+                            )
                             previousState.copy(
                                 isLoading = false,
                                 switchingTo = null,

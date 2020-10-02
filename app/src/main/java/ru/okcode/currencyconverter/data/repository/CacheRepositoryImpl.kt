@@ -1,8 +1,7 @@
 package ru.okcode.currencyconverter.data.repository
 
 import io.reactivex.Completable
-import io.reactivex.Single
-import io.reactivex.rxkotlin.subscribeBy
+import io.reactivex.Observable
 import ru.okcode.currencyconverter.data.db.cache.CacheDao
 import ru.okcode.currencyconverter.data.db.cache.CacheMapper
 import ru.okcode.currencyconverter.data.model.Rates
@@ -13,11 +12,12 @@ class CacheRepositoryImpl @Inject constructor(
     private val cacheMapper: CacheMapper,
 ) : CacheRepository {
 
-    override fun getRates(): Single<Rates> {
+    override fun getRates(): Observable<Rates> {
         return cacheDao.getCache()
+            .toObservable()
             .flatMap {
                 val rates = cacheMapper.mapToModel(it)!!
-                Single.just(rates)
+                Observable.just(rates)
             }
     }
 

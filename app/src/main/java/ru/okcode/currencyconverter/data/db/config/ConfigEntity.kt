@@ -5,8 +5,8 @@ import androidx.room.PrimaryKey
 
 @Entity
 data class ConfigEntity(
-    @PrimaryKey(autoGenerate = true)
-    var id: Long = 0,
+    @PrimaryKey(autoGenerate = false)
+    var id: Long = 777,
     var baseCurrencyCode: String,
     var baseCurrencyAmount: Float,
     var visibleCurrencies: List<String>

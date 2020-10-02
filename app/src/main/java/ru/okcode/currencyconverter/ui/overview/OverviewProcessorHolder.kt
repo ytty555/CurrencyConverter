@@ -1,12 +1,9 @@
 package ru.okcode.currencyconverter.ui.overview
 
-import android.util.Log
 import io.reactivex.Observable
 import io.reactivex.ObservableTransformer
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import ru.okcode.currencyconverter.data.repository.CacheRepository
-import ru.okcode.currencyconverter.data.repository.RawRatesRepository
 import ru.okcode.currencyconverter.data.repository.ReadyRepository
 import ru.okcode.currencyconverter.ui.overview.OverviewAction.*
 import ru.okcode.currencyconverter.ui.overview.OverviewResult.*
@@ -14,7 +11,6 @@ import javax.inject.Inject
 
 class OverviewProcessorHolder @Inject constructor(
     private val readyRepository: ReadyRepository,
-    private val cacheRepository: CacheRepository
 ) {
     internal val actionProcessor:
             ObservableTransformer<OverviewAction, OverviewResult> =
@@ -45,8 +41,7 @@ class OverviewProcessorHolder @Inject constructor(
             ObservableTransformer<LoadAllRatesAction, LoadAllRatesResult> =
         ObservableTransformer { actions ->
             actions.flatMap {
-                readyRepository.getRates()
-                    .toObservable()
+                readyRepository.getReadyRates()
                     .map { rates ->
                         LoadAllRatesResult.Success(rates)
                     }

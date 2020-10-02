@@ -6,7 +6,7 @@ import ru.okcode.currencyconverter.data.model.Config
 import ru.okcode.currencyconverter.data.model.Rates
 
 interface ConfigRepository {
-    fun getConfigSingle(): Single<Config>
+    fun getConfigObservable(): Observable<Config>
 
-    fun getConfigObservable(): Observable<Rates>
+    fun saveConfig(config: Config)
 }

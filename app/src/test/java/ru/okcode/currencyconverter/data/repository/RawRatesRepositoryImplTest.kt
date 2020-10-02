@@ -37,7 +37,7 @@ class RawRatesRepositoryImplTest {
         )
 
         // when
-        val testObserver = sut.getRatesSingle().test()
+        val testObserver = sut.update().test()
 
 
         // then
@@ -69,7 +69,7 @@ class RawRatesRepositoryImplTest {
         )
 
         // when
-        val testObserver = sut.getRatesSingle().test()
+        val testObserver = sut.update().test()
 
 
         // then
@@ -103,7 +103,7 @@ class RawRatesRepositoryImplTest {
         )
 
         // when
-        val testObserver = sut.getRatesSingle().test()
+        val testObserver = sut.update().test()
 
 
         // then
@@ -137,7 +137,7 @@ class RawRatesRepositoryImplTest {
         )
 
         // when
-        val testObserver = sut.getRatesSingle().test()
+        val testObserver = sut.update().test()
 
 
         // then
@@ -170,7 +170,7 @@ class RawRatesRepositoryImplTest {
         )
 
         // when
-        val testObserver = sut.getRatesSingle().test()
+        val testObserver = sut.update().test()
 
 
         // then
@@ -204,7 +204,7 @@ class RawRatesRepositoryImplTest {
         )
 
         // when
-        val testObserver = sut.getRatesSingle().test()
+        val testObserver = sut.update().test()
 
 
         // then
@@ -237,7 +237,7 @@ class RawRatesRepositoryImplTest {
         )
 
         // when
-        val testObserver = sut.getRatesSingle().test()
+        val testObserver = sut.update().test()
 
 
         // then

@@ -2,6 +2,7 @@ package ru.okcode.currencyconverter.data.db.cache
 
 import androidx.room.*
 import io.reactivex.Completable
+import io.reactivex.Flowable
 import io.reactivex.Maybe
 import io.reactivex.Single
 
@@ -9,7 +10,7 @@ import io.reactivex.Single
 interface CacheDao {
     @Transaction
     @Query("SELECT * FROM CacheRatesHeader")
-    fun getCache(): Single<CacheHeaderWithRates>
+    fun getCache(): Flowable<CacheHeaderWithRates>
 
     @Transaction
     fun insertToCache(cacheRatesHeaderWithRates: CacheHeaderWithRates) {
