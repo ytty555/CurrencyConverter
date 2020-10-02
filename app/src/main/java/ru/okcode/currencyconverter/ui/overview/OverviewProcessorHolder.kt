@@ -5,6 +5,7 @@ import io.reactivex.Observable
 import io.reactivex.ObservableTransformer
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import ru.okcode.currencyconverter.data.repository.CacheRepository
 import ru.okcode.currencyconverter.data.repository.RawRatesRepository
 import ru.okcode.currencyconverter.data.repository.ReadyRepository
 import ru.okcode.currencyconverter.ui.overview.OverviewAction.*
@@ -13,6 +14,7 @@ import javax.inject.Inject
 
 class OverviewProcessorHolder @Inject constructor(
     private val readyRepository: ReadyRepository,
+    private val cacheRepository: CacheRepository
 ) {
     internal val actionProcessor:
             ObservableTransformer<OverviewAction, OverviewResult> =

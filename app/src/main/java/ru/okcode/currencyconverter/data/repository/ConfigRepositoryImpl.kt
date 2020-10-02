@@ -18,7 +18,7 @@ class ConfigRepositoryImpl @Inject constructor(
     private val configMapper: ConfigMapper
 ) : ConfigRepository {
 
-    override fun getConfig(): Single<Config> {
+    override fun getConfigSingle(): Single<Config> {
         TODO("Not yet implemented")
     }
 }

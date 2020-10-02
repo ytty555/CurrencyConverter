@@ -10,7 +10,7 @@ class RawRatesRepositoryImpl @Inject constructor(
     private val cache: CacheRepository
 ) : RawRatesRepository {
 
-    override fun getRates(): Single<Rates> {
+    override fun getRatesSingle(): Single<Rates> {
         return fetchCacheRates()
             .onErrorResumeNext(fetchNetworkRates())
     }

@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import io.reactivex.Observable
 import io.reactivex.functions.BiFunction
 import io.reactivex.subjects.PublishSubject
+import ru.okcode.currencyconverter.data.repository.ReadyRepository
 import ru.okcode.currencyconverter.mvibase.MviViewModel
 import ru.okcode.currencyconverter.ui.Destinations
 import ru.okcode.currencyconverter.ui.overview.OverviewAction.*
@@ -16,8 +17,13 @@ import ru.okcode.currencyconverter.ui.overview.OverviewResult.*
 
 class OverviewViewModel @ViewModelInject constructor(
     private val actionProcessorHolder: OverviewProcessorHolder,
+    private val readyRepository: ReadyRepository,
     @Assisted private val savedStateHandle: SavedStateHandle
 ) : ViewModel(), MviViewModel<OverviewIntent, OverviewViewState> {
+
+    init {
+        readyRepository.subscribeReady()
+    }
 
     private val intentsSubject: PublishSubject<OverviewIntent> = PublishSubject.create()
 
@@ -45,6 +51,11 @@ class OverviewViewModel @ViewModelInject constructor(
                 intent.currentAmount
             )
         }
+    }
+
+    override fun onCleared() {
+        readyRepository.unSubscribeReady()
+        super.onCleared()
     }
 
     companion object {

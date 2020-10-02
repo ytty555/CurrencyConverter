@@ -3,6 +3,7 @@ package ru.okcode.currencyconverter.data.db.ready
 import androidx.room.*
 import io.reactivex.Flowable
 import io.reactivex.Single
+import org.jetbrains.annotations.TestOnly
 
 @Dao
 interface ReadyDao{
@@ -32,5 +33,10 @@ interface ReadyDao{
 
     @Query("DELETE FROM ReadyRate")
     fun clearRates()
+
+    // For test only
+    @TestOnly
+    @Query("SELECT * FROM ReadyHeader")
+    fun getEntityForTest(): ReadyHeaderWithRates
 }
 

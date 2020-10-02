@@ -6,7 +6,11 @@ import ru.okcode.currencyconverter.data.model.Rates
 
 interface ReadyRepository {
 
+    fun subscribeReady()
+
+    fun unSubscribeReady()
+
     fun getRates(): Single<Rates>
 
-    fun saveRates(rates: Rates): Single<Rates>
+    fun saveRates(rates: Rates): Completable
 }
