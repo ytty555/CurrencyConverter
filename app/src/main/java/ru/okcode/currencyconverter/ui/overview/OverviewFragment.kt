@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
@@ -22,7 +23,8 @@ import ru.okcode.currencyconverter.ui.basechooser.BaseChooserFragment
 import ru.okcode.currencyconverter.util.visible
 
 @AndroidEntryPoint
-class OverviewFragment : Fragment(), MviView<OverviewIntent, OverviewViewState>, OverviewListener {
+class OverviewFragment : Fragment(), MviView<OverviewIntent, OverviewViewState>, OverviewListener,
+    SwipeRefreshLayout.OnRefreshListener {
 
     private val viewModel: OverviewViewModel by viewModels()
     private val disposables = CompositeDisposable()
@@ -37,11 +39,13 @@ class OverviewFragment : Fragment(), MviView<OverviewIntent, OverviewViewState>,
     private val updateRawRatesSubject =
         PublishSubject.create<OverviewIntent.UpdateRawRatesIntent>()
 
+    lateinit var swipeRefreshLayout: SwipeRefreshLayout
+
 
     override fun onStart() {
         super.onStart()
         bind()
-        updateRawRatesSubject.onNext(OverviewIntent.UpdateRawRatesIntent)
+        updateRawRatesSubject.onNext(OverviewIntent.UpdateRawRatesIntent(false))
     }
 
     private fun bind() {
@@ -57,6 +61,7 @@ class OverviewFragment : Fragment(), MviView<OverviewIntent, OverviewViewState>,
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
+
     }
 
 
@@ -71,7 +76,7 @@ class OverviewFragment : Fragment(), MviView<OverviewIntent, OverviewViewState>,
                 true
             }
             R.id.update_rates -> {
-                updateRawRatesSubject.onNext(OverviewIntent.UpdateRawRatesIntent)
+                updateRawRatesSubject.onNext(OverviewIntent.UpdateRawRatesIntent(true))
                 true
             }
             else -> {
@@ -98,7 +103,19 @@ class OverviewFragment : Fragment(), MviView<OverviewIntent, OverviewViewState>,
         recyclerView.layoutManager = ratesLayoutManager
         recyclerView.adapter = adaptor
 
+        // SwipeRefreshLayout
+        swipeRefreshLayout = view.findViewById(R.id.swipe_container)
+        swipeRefreshLayout.setOnRefreshListener(this)
+        swipeRefreshLayout.isRefreshing = false
+
+
         return view
+    }
+
+    override fun onRefresh() {
+        swipeRefreshLayout.isRefreshing = true
+        updateRawRatesSubject.onNext(OverviewIntent.UpdateRawRatesIntent(true))
+        swipeRefreshLayout.isRefreshing = false
     }
 
     override fun intents(): Observable<OverviewIntent> {
@@ -126,6 +143,7 @@ class OverviewFragment : Fragment(), MviView<OverviewIntent, OverviewViewState>,
     override fun render(state: OverviewViewState) {
 
         loading_data.visible = state.isLoading
+        swipeRefreshLayout.isRefreshing = state.isLoading
 
         if (state.isLoading) {
             error_data.visible = false

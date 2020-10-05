@@ -45,7 +45,7 @@ class OverviewProcessorHolder @Inject constructor(
             ObservableTransformer<UpdateRawRatesAction, UpdateRawRatesResult> =
         ObservableTransformer { actions ->
             actions.flatMap {
-                rawRatesRepository.updateRawRates()
+                rawRatesRepository.updateRawRates(it.nothingToUpdateMessageShow)
                     .toObservable()
                     .map { updateStatus ->
                         when (updateStatus) {
@@ -53,7 +53,7 @@ class OverviewProcessorHolder @Inject constructor(
                                 UpdateRawRatesResult.Success
                             }
                             is UpdateStatus.NotNeededToUpdate -> {
-                                UpdateRawRatesResult.NoNeedUpdate
+                                UpdateRawRatesResult.NoNeedUpdate(updateStatus.nothingToUpdateMessageShow)
                             }
                         }
                     }

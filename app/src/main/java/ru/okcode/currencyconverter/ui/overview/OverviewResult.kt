@@ -7,7 +7,7 @@ sealed class OverviewResult : MviResult {
     sealed class UpdateRawRatesResult : OverviewResult() {
         object Processing : UpdateRawRatesResult()
         object Success : UpdateRawRatesResult()
-        object NoNeedUpdate : UpdateRawRatesResult()
+        data class NoNeedUpdate(val nothingToUpdateMessageShow: Boolean) : UpdateRawRatesResult()
         data class Failure(val error: Throwable) : UpdateRawRatesResult()
     }
 

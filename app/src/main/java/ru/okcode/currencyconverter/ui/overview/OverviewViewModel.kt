@@ -63,7 +63,7 @@ class OverviewViewModel @ViewModelInject constructor(
 
     private fun actionFromIntent(intent: OverviewIntent): OverviewAction {
         return when (intent) {
-            is UpdateRawRatesIntent -> UpdateRawRatesAction
+            is UpdateRawRatesIntent -> UpdateRawRatesAction(intent.nothingToUpdateMessageShow)
             is EditCurrencyListIntent -> EditCurrencyListAction
             is ChangeBaseCurrencyIntent -> ChangeBaseCurrencyAction(
                 intent.currencyCode,
@@ -97,7 +97,7 @@ class OverviewViewModel @ViewModelInject constructor(
                             previousState.copy(
                                 isLoading = false,
                                 switchingTo = null,
-                                message = "Nothing to update",
+                                message = if (result.nothingToUpdateMessageShow) "Nothing to update" else null,
                                 error = null
                             )
                         }
