@@ -7,7 +7,7 @@ import io.reactivex.Single
 import io.reactivex.subjects.BehaviorSubject
 import ru.okcode.currencyconverter.data.model.Rates
 
-interface CacheRepository: Closeable {
+interface CacheRepository {
 
     fun getRatesObservable(): Flowable<Rates>
 

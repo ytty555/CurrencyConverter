@@ -1,6 +1,5 @@
 package ru.okcode.currencyconverter.ui.overview
 
-import android.util.Log
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.ViewModel
 import io.reactivex.Observable
@@ -9,7 +8,6 @@ import io.reactivex.functions.BiFunction
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
-import ru.okcode.currencyconverter.data.repository.RawRatesRepository
 import ru.okcode.currencyconverter.data.repository.ReadyRepository
 import ru.okcode.currencyconverter.mvibase.MviViewModel
 import ru.okcode.currencyconverter.ui.Destinations
@@ -19,27 +17,23 @@ import ru.okcode.currencyconverter.ui.overview.OverviewResult.*
 
 class OverviewViewModel @ViewModelInject constructor(
     private val actionProcessorHolder: OverviewProcessorHolder,
-    private val rawRatesRepository: RawRatesRepository,
-    private val readyRepository: ReadyRepository
+    readyRepository: ReadyRepository
 ) : ViewModel(), MviViewModel<OverviewIntent, OverviewViewState> {
 
     private val intentsSubject: PublishSubject<OverviewIntent> = PublishSubject.create()
     private val rawRatesChangedSubject =
         BehaviorSubject.create<OverviewViewState>()
 
-    private val ready = readyRepository.getReadyRates()
 
     init {
-        ready
-            .doOnNext {
-                Log.e(">>> 777 >>>", "$it")
-            }
+        readyRepository
+            .getReadyRates()
             .map {
                 OverviewViewState(
                     isLoading = false,
                     switchingTo = null,
                     rates = it,
-                    message = "Rates !!!!!!!!!!!!!!",
+                    message = null,
                     error = null
                 )
             }
@@ -69,7 +63,6 @@ class OverviewViewModel @ViewModelInject constructor(
 
     private fun actionFromIntent(intent: OverviewIntent): OverviewAction {
         return when (intent) {
-            is LoadAllRatesIntent -> LoadAllRatesAction
             is UpdateRawRatesIntent -> UpdateRawRatesAction
             is EditCurrencyListIntent -> EditCurrencyListAction
             is ChangeBaseCurrencyIntent -> ChangeBaseCurrencyAction(
@@ -83,48 +76,8 @@ class OverviewViewModel @ViewModelInject constructor(
         private val reducer =
             BiFunction { previousState: OverviewViewState, result: OverviewResult ->
                 when (result) {
-                    is LoadAllRatesResult -> when (result) {
-                        is LoadAllRatesResult.Processing -> {
-                            Log.e("qq", "OverviewViewModel LoadAllRatesResult.Processing")
-                            previousState.copy(
-                                isLoading = true,
-                                switchingTo = null,
-                                message = null,
-                                error = null
-                            )
-                        }
-                        is LoadAllRatesResult.Success -> {
-                            Log.e(
-                                "qq",
-                                "OverviewViewModel LoadAllRatesResult.Success ${result.rates}"
-                            )
-                            previousState.copy(
-                                isLoading = false,
-                                switchingTo = null,
-                                rates = result.rates,
-                                message = null,
-                                error = null
-                            )
-                        }
-                        is LoadAllRatesResult.Failure -> {
-                            Log.e(
-                                "qq",
-                                "OverviewViewModel LoadAllRatesResult.Failure ${result.error.localizedMessage}"
-                            )
-                            previousState.copy(
-                                isLoading = false,
-                                switchingTo = null,
-                                message = null,
-                                error = result.error
-                            )
-                        }
-                    }
                     is UpdateRawRatesResult -> when (result) {
                         is UpdateRawRatesResult.Processing -> {
-                            Log.e(
-                                "qq",
-                                "OverviewViewModel UpdateRawRatesResult.Processing"
-                            )
                             previousState.copy(
                                 isLoading = true,
                                 switchingTo = null,
@@ -133,10 +86,6 @@ class OverviewViewModel @ViewModelInject constructor(
                             )
                         }
                         is UpdateRawRatesResult.Success -> {
-                            Log.e(
-                                "qq",
-                                "OverviewViewModel UpdateRawRatesResult.Success"
-                            )
                             previousState.copy(
                                 isLoading = false,
                                 switchingTo = null,
@@ -145,10 +94,6 @@ class OverviewViewModel @ViewModelInject constructor(
                             )
                         }
                         is UpdateRawRatesResult.NoNeedUpdate -> {
-                            Log.e(
-                                "qq",
-                                "OverviewViewModel UpdateRawRatesResult.NoNeedUpdate"
-                            )
                             previousState.copy(
                                 isLoading = false,
                                 switchingTo = null,
@@ -157,10 +102,6 @@ class OverviewViewModel @ViewModelInject constructor(
                             )
                         }
                         is UpdateRawRatesResult.Failure -> {
-                            Log.e(
-                                "qq",
-                                "OverviewViewModel UpdateRawRatesResult.Failure"
-                            )
                             previousState.copy(
                                 isLoading = false,
                                 switchingTo = null,

@@ -7,7 +7,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import dagger.hilt.android.AndroidEntryPoint
@@ -18,6 +17,8 @@ import kotlinx.android.synthetic.main.fragment_currency_rates.*
 import ru.okcode.currencyconverter.R
 import ru.okcode.currencyconverter.mvibase.MviView
 import ru.okcode.currencyconverter.ui.Destinations
+import ru.okcode.currencyconverter.ui.FragmentHelper
+import ru.okcode.currencyconverter.ui.basechooser.BaseChooserFragment
 import ru.okcode.currencyconverter.util.visible
 
 @AndroidEntryPoint
@@ -33,9 +34,6 @@ class OverviewFragment : Fragment(), MviView<OverviewIntent, OverviewViewState>,
     private val editRatesListSubject =
         PublishSubject.create<OverviewIntent.EditCurrencyListIntent>()
 
-    private val loadRatesSubject =
-        PublishSubject.create<OverviewIntent.LoadAllRatesIntent>()
-
     private val updateRawRatesSubject =
         PublishSubject.create<OverviewIntent.UpdateRawRatesIntent>()
 
@@ -44,7 +42,6 @@ class OverviewFragment : Fragment(), MviView<OverviewIntent, OverviewViewState>,
         super.onStart()
         bind()
         updateRawRatesSubject.onNext(OverviewIntent.UpdateRawRatesIntent)
-//        loadRatesSubject.onNext(OverviewIntent.LoadAllRatesIntent)
     }
 
     private fun bind() {
@@ -74,7 +71,7 @@ class OverviewFragment : Fragment(), MviView<OverviewIntent, OverviewViewState>,
                 true
             }
             R.id.update_rates -> {
-                loadRatesSubject.onNext(OverviewIntent.LoadAllRatesIntent)
+                updateRawRatesSubject.onNext(OverviewIntent.UpdateRawRatesIntent)
                 true
             }
             else -> {
@@ -106,16 +103,12 @@ class OverviewFragment : Fragment(), MviView<OverviewIntent, OverviewViewState>,
 
     override fun intents(): Observable<OverviewIntent> {
         return Observable.merge(
-            loadRatesIntent(),
             updateRawRatesIntent(),
             editCurrencyListIntent(),
             changeBaseCurrencyIntent()
         )
     }
 
-    private fun loadRatesIntent(): Observable<OverviewIntent.LoadAllRatesIntent> {
-        return loadRatesSubject
-    }
 
     private fun updateRawRatesIntent(): Observable<OverviewIntent.UpdateRawRatesIntent> {
         return updateRawRatesSubject
@@ -154,20 +147,29 @@ class OverviewFragment : Fragment(), MviView<OverviewIntent, OverviewViewState>,
             rates_data.visible = false
             error_data.visible = true
 
-            showMessage(state.error.localizedMessage?: "111111111111111111111111111111111")
+            showMessage(state.error.localizedMessage ?: "111111111111111111111111111111111")
         }
 
         if (state.switchingTo != null) {
             when (state.switchingTo) {
                 is Destinations.ChangeBaseCurrencyDestination -> {
-                    val action =
-                        OverviewFragmentDirections.actionCurrencyRatesFragmentToBaseChooserFragment(
-                            state.switchingTo.currencyCode, state.switchingTo.currentCurrencyAmount
-                        )
-                    findNavController().navigate(action)
+                    val argCurrencyCode = state.switchingTo.currencyCode
+                    val argCurrencyAmount = state.switchingTo.currentCurrencyAmount
+
+                    val fragment =
+                        BaseChooserFragment.newInstance(argCurrencyCode, argCurrencyAmount)
+
+                    FragmentHelper.replace(
+                        fragmentActivity = requireActivity(),
+                        fragment = fragment
+                    )
                 }
                 is Destinations.EditCurrencyListDestination -> {
                     Toast.makeText(activity, "Click Edit rates list", Toast.LENGTH_SHORT).show()
+                }
+                is Destinations.OverviewRatesDestination -> {
+                    Toast.makeText(activity, "Click OverviewRatesDestination", Toast.LENGTH_SHORT)
+                        .show()
                 }
             }
         }
@@ -182,11 +184,6 @@ class OverviewFragment : Fragment(), MviView<OverviewIntent, OverviewViewState>,
     }
 
     override fun onClickRateItem(currencyCode: String, currencyAmount: Float) {
-        Toast.makeText(
-            activity,
-            "Click changeBaseCurrency: $currencyCode, $currencyAmount",
-            Toast.LENGTH_SHORT
-        ).show()
         changeBaseCurrencySubject.onNext(
             OverviewIntent.ChangeBaseCurrencyIntent(
                 currencyCode,
@@ -195,4 +192,9 @@ class OverviewFragment : Fragment(), MviView<OverviewIntent, OverviewViewState>,
         )
     }
 
+    companion object {
+        fun newInstance(): OverviewFragment {
+            return OverviewFragment()
+        }
+    }
 }

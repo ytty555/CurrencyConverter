@@ -1,15 +1,8 @@
 package ru.okcode.currencyconverter.ui.overview
 
-import ru.okcode.currencyconverter.data.model.Rates
 import ru.okcode.currencyconverter.mvibase.MviResult
 
 sealed class OverviewResult : MviResult {
-
-    sealed class LoadAllRatesResult : OverviewResult() {
-        object Processing : LoadAllRatesResult()
-        data class Success(val rates: Rates) : LoadAllRatesResult()
-        data class Failure(val error: Throwable) : LoadAllRatesResult()
-    }
 
     sealed class UpdateRawRatesResult : OverviewResult() {
         object Processing : UpdateRawRatesResult()

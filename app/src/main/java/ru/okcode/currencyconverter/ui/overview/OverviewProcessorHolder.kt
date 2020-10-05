@@ -5,14 +5,12 @@ import io.reactivex.ObservableTransformer
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import ru.okcode.currencyconverter.data.repository.RawRatesRepository
-import ru.okcode.currencyconverter.data.repository.ReadyRepository
 import ru.okcode.currencyconverter.data.repository.UpdateStatus
 import ru.okcode.currencyconverter.ui.overview.OverviewAction.*
 import ru.okcode.currencyconverter.ui.overview.OverviewResult.*
 import javax.inject.Inject
 
 class OverviewProcessorHolder @Inject constructor(
-    private val readyRepository: ReadyRepository,
     private val rawRatesRepository: RawRatesRepository
 ) {
     internal val actionProcessor:
@@ -20,8 +18,6 @@ class OverviewProcessorHolder @Inject constructor(
         ObservableTransformer { actions ->
             actions.publish { shared ->
                 Observable.merge(
-                    shared.ofType(LoadAllRatesAction::class.java)
-                        .compose(loadAllRatesProcessor),
                     shared.ofType(EditCurrencyListAction::class.java)
                         .compose(editCurrencyListProcessor),
                     shared.ofType(ChangeBaseCurrencyAction::class.java)
@@ -34,7 +30,6 @@ class OverviewProcessorHolder @Inject constructor(
                     .mergeWith(
                         shared.filter { action ->
                             action !is EditCurrencyListAction
-                                    && action !is LoadAllRatesAction
                                     && action !is ChangeBaseCurrencyAction
                                     && action !is UpdateRawRatesAction
                         }.flatMap { action ->
@@ -43,22 +38,6 @@ class OverviewProcessorHolder @Inject constructor(
                             )
                         }
                     )
-            }
-        }
-
-    private val loadAllRatesProcessor:
-            ObservableTransformer<LoadAllRatesAction, LoadAllRatesResult> =
-        ObservableTransformer { actions ->
-            actions.flatMap {
-                readyRepository.getReadyRates()
-                    .map { rates ->
-                        LoadAllRatesResult.Success(rates)
-                    }
-                    .cast(LoadAllRatesResult::class.java)
-                    .onErrorReturn(LoadAllRatesResult::Failure)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread(), true)
-                    .startWith(LoadAllRatesResult.Processing)
             }
         }
 
