@@ -3,6 +3,7 @@ package ru.okcode.currencyconverter.data.repository
 import android.util.Log
 import io.reactivex.Observable
 import io.reactivex.functions.BiFunction
+import io.reactivex.rxkotlin.Observables
 import ru.okcode.currencyconverter.data.db.ready.ReadyRates
 import ru.okcode.currencyconverter.data.db.ready.decorator.BaseChangeDecorator
 import ru.okcode.currencyconverter.data.db.ready.decorator.CurrencyPriorityChangeDecorator
@@ -14,7 +15,7 @@ import javax.inject.Inject
 class ReadyRepositoryImpl @Inject constructor(
     private val readyRates: ReadyRates,
     private val rawRatesRepository: RawRatesRepository,
-    configRepository: ConfigRepository
+    private val configRepository: ConfigRepository
 
 ) : ReadyRepository {
 
@@ -27,14 +28,25 @@ class ReadyRepositoryImpl @Inject constructor(
                 }
         }
 
-    private val configDataSource = configRepository.getConfigObservable()
+    private val configDataSource: Observable<Config>
+        get() {
+            return configRepository.getConfig()
+                .toObservable()
+                .doOnNext{
+                    Log.e(">>> 3c >>>", "$it")
+                }
+        }
 
     override fun getReadyRates(): Observable<Rates> {
         // TODO FIX IT
-        return Observable.combineLatest(
+        val configuredReadyRates = Observables.combineLatest(
             rawRatesDataSource,
-            configDataSource,
-        ) {r, c -> Rates.idle()}
+            configDataSource
+        ) { r, c -> r }
+
+        return configuredReadyRates
+
+//        return rawRatesDataSource
 
     }
 
