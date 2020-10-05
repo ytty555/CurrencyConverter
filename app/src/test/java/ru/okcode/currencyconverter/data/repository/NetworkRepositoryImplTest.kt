@@ -29,10 +29,10 @@ class NetworkRepositoryTest {
         val ratesDto = getRatesDtoActualByDate01()
         val expectedRates = ratesDtoToRatesMapper.mapToModel(ratesDto)
         val wrongRates = getRatesActualByData02()
-        Mockito.`when`(mockApi.getRates()).thenReturn(Single.just(ratesDto))
+        Mockito.`when`(mockApi.getRatesObservable()).thenReturn(Single.just(ratesDto))
 
         // when
-        val observable = sut.getRates()
+        val observable = sut.getRatesObservable()
         observable.subscribe(testObserver)
 
         //then
@@ -49,10 +49,10 @@ class NetworkRepositoryTest {
     fun getRates_whenApiReturnError() {
         // given
         val error = Throwable("Api cann't return value")
-        Mockito.`when`(mockApi.getRates()).thenReturn(Single.error(error))
+        Mockito.`when`(mockApi.getRatesObservable()).thenReturn(Single.error(error))
 
         // when
-        val observable = sut.getRates()
+        val observable = sut.getRatesObservable()
         observable.subscribe(testObserver)
 
         // then

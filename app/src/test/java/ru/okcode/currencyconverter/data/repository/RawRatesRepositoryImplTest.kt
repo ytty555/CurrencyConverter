@@ -26,13 +26,13 @@ class RawRatesRepositoryImplTest {
         // given
         val cacheRates = getRatesActualByData01()
         val networkRates = getRatesActualByData02()
-        `when`(cache.getRates()).thenReturn(
+        `when`(cache.getRatesObservable()).thenReturn(
             Single.just(cacheRates).delay(1, TimeUnit.MILLISECONDS)
         )
 
         `when`(cache.saveCache(any())).thenReturn(Completable.complete())
 
-        `when`(network.getRates()).thenReturn(
+        `when`(network.getRatesObservable()).thenReturn(
             Single.just(networkRates).delay(5, TimeUnit.MILLISECONDS)
         )
 
@@ -58,13 +58,13 @@ class RawRatesRepositoryImplTest {
         // given
         val cacheRates = getRatesActualByData01()
         val networkRates = getRatesActualByData02()
-        `when`(cache.getRates()).thenReturn(
+        `when`(cache.getRatesObservable()).thenReturn(
             Single.just(cacheRates).delay(5, TimeUnit.MILLISECONDS)
         )
 
         `when`(cache.saveCache(any())).thenReturn(Completable.complete())
 
-        `when`(network.getRates()).thenReturn(
+        `when`(network.getRatesObservable()).thenReturn(
             Single.just(networkRates).delay(1, TimeUnit.MILLISECONDS)
         )
 
@@ -92,13 +92,13 @@ class RawRatesRepositoryImplTest {
         // given
         val cacheOldRates = getRatesNOTActualByData01()
         val networkRates = getRatesActualByData02()
-        `when`(cache.getRates()).thenReturn(
+        `when`(cache.getRatesObservable()).thenReturn(
             Single.just(cacheOldRates).delay(1, TimeUnit.MILLISECONDS)
         )
 
         `when`(cache.saveCache(any())).thenReturn(Completable.complete())
 
-        `when`(network.getRates()).thenReturn(
+        `when`(network.getRatesObservable()).thenReturn(
             Single.just(networkRates).delay(5, TimeUnit.MILLISECONDS)
         )
 
@@ -126,13 +126,13 @@ class RawRatesRepositoryImplTest {
         // given
         val cacheOldRates = getRatesNOTActualByData01()
         val networkRates = getRatesActualByData02()
-        `when`(cache.getRates()).thenReturn(
+        `when`(cache.getRatesObservable()).thenReturn(
             Single.just(cacheOldRates).delay(5, TimeUnit.MILLISECONDS)
         )
 
         `when`(cache.saveCache(any())).thenReturn(Completable.complete())
 
-        `when`(network.getRates()).thenReturn(
+        `when`(network.getRatesObservable()).thenReturn(
             Single.just(networkRates).delay(1, TimeUnit.MILLISECONDS)
         )
 
@@ -159,13 +159,13 @@ class RawRatesRepositoryImplTest {
     fun when_CacheReturnError_NetworkReturnData_thenReturn_Network_andSaveCache() {
         // given
         val networkRates = getRatesActualByData02()
-        `when`(cache.getRates()).thenReturn(
+        `when`(cache.getRatesObservable()).thenReturn(
             Single.error(Throwable())
         )
 
         `when`(cache.saveCache(any())).thenReturn(Completable.complete())
 
-        `when`(network.getRates()).thenReturn(
+        `when`(network.getRatesObservable()).thenReturn(
             Single.just(networkRates).delay(5, TimeUnit.MILLISECONDS)
         )
 
@@ -193,13 +193,13 @@ class RawRatesRepositoryImplTest {
         // given
         val cacheOldRates = getRatesNOTActualByData01()
         val exception = Throwable("Some error")
-        `when`(cache.getRates()).thenReturn(
+        `when`(cache.getRatesObservable()).thenReturn(
             Single.just(cacheOldRates).delay(5, TimeUnit.MILLISECONDS)
         )
 
         `when`(cache.saveCache(any())).thenReturn(Completable.complete())
 
-        `when`(network.getRates()).thenReturn(
+        `when`(network.getRatesObservable()).thenReturn(
             Single.error(exception)
         )
 
@@ -226,13 +226,13 @@ class RawRatesRepositoryImplTest {
         // given
         val exceptionCache = Throwable("Cache error")
         val exceptionNetwork = Throwable("Network error")
-        `when`(cache.getRates()).thenReturn(
+        `when`(cache.getRatesObservable()).thenReturn(
             Single.error(exceptionCache)
         )
 
         `when`(cache.saveCache(any())).thenReturn(Completable.complete())
 
-        `when`(network.getRates()).thenReturn(
+        `when`(network.getRatesObservable()).thenReturn(
             Single.error(exceptionNetwork)
         )
 

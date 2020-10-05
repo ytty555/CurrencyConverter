@@ -8,6 +8,7 @@ data class OverviewViewState(
     val isLoading: Boolean,
     val switchingTo: Destinations?,
     val rates: Rates,
+    val message: String?,
     val error: Throwable?
 ) : MviViewState {
     companion object {
@@ -15,6 +16,7 @@ data class OverviewViewState(
             isLoading = false,
             switchingTo = null,
             rates = Rates.idle(),
+            message = null,
             error = null
         )
     }

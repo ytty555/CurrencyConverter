@@ -1,7 +1,10 @@
 package ru.okcode.currencyconverter.data.repository
 
+import android.util.Log
 import io.reactivex.Completable
-import io.reactivex.Observable
+import io.reactivex.Flowable
+import io.reactivex.Single
+import io.reactivex.processors.BehaviorProcessor
 import ru.okcode.currencyconverter.data.db.cache.CacheDao
 import ru.okcode.currencyconverter.data.db.cache.CacheMapper
 import ru.okcode.currencyconverter.data.model.Rates
@@ -12,12 +15,32 @@ class CacheRepositoryImpl @Inject constructor(
     private val cacheMapper: CacheMapper,
 ) : CacheRepository {
 
-    override fun getRates(): Observable<Rates> {
-        return cacheDao.getCache()
-            .toObservable()
+
+    private val cacheSubject: BehaviorProcessor<Rates> = BehaviorProcessor.create()
+
+
+    init {
+        cacheDao.getCacheFlowable()
+            .map {
+                cacheMapper.mapToModel(it)
+            }
+            .subscribe(cacheSubject)
+    }
+
+    override fun getRatesObservable(): Flowable<Rates> {
+        return cacheSubject
+            .doOnNext{
+                Log.e(">>> 1 >>>", "$it")
+            }
+
+    }
+
+
+    override fun getRatesSingle(): Single<Rates> {
+        return cacheDao.getCacheSingle()
             .flatMap {
                 val rates = cacheMapper.mapToModel(it)!!
-                Observable.just(rates)
+                Single.just(rates)
             }
     }
 
@@ -30,5 +53,8 @@ class CacheRepositoryImpl @Inject constructor(
                 emitter.onError(error)
             }
         }
+    }
+
+    override fun onClose() {
     }
 }

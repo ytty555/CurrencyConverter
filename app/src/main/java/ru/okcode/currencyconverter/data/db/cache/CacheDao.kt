@@ -10,7 +10,11 @@ import io.reactivex.Single
 interface CacheDao {
     @Transaction
     @Query("SELECT * FROM CacheRatesHeader")
-    fun getCache(): Flowable<CacheHeaderWithRates>
+    fun getCacheFlowable(): Flowable<CacheHeaderWithRates>
+
+    @Transaction
+    @Query("SELECT * FROM CacheRatesHeader")
+    fun getCacheSingle(): Single<CacheHeaderWithRates>
 
     @Transaction
     fun insertToCache(cacheRatesHeaderWithRates: CacheHeaderWithRates) {

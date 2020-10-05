@@ -1,6 +1,7 @@
 package ru.okcode.currencyconverter.data.repository
 
 import io.reactivex.Observable
+import io.reactivex.Single
 import ru.okcode.currencyconverter.data.model.Rates
 import ru.okcode.currencyconverter.data.network.ApiService
 import ru.okcode.currencyconverter.data.network.RatesDtoToRatesMapper
@@ -11,11 +12,18 @@ class NetworkRepositoryImpl @Inject constructor(
     private val ratesDtoToRatesMapper: RatesDtoToRatesMapper
 ) : NetworkRepository {
 
-    override fun getRates(): Observable<Rates> {
-        return api.getRates()
+    override fun getRatesObservable(): Observable<Rates> {
+        return api.getRatesObservable()
+            .map { ratesDto ->
+                ratesDtoToRatesMapper.mapToModel(ratesDto)!!
+            }
+    }
+
+    override fun getRatesSingle(): Single<Rates> {
+        return api.getRatesSingle()
             .flatMap { ratesDto ->
                 val rates = ratesDtoToRatesMapper.mapToModel(ratesDto)!!
-                Observable.just(rates)
+                Single.just(rates)
             }
     }
 }

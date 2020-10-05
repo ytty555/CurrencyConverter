@@ -6,5 +6,8 @@ import retrofit2.http.GET
 
 interface ApiService {
     @GET("latest/EUR")
-    fun getRates(): Observable<RatesDto>
+    fun getRatesObservable(): Observable<RatesDto>
+
+    @GET("latest/EUR")
+    fun getRatesSingle(): Single<RatesDto>
 }

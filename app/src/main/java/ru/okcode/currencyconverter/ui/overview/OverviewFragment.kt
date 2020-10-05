@@ -1,7 +1,6 @@
 package ru.okcode.currencyconverter.ui.overview
 
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -37,11 +36,15 @@ class OverviewFragment : Fragment(), MviView<OverviewIntent, OverviewViewState>,
     private val loadRatesSubject =
         PublishSubject.create<OverviewIntent.LoadAllRatesIntent>()
 
+    private val updateRawRatesSubject =
+        PublishSubject.create<OverviewIntent.UpdateRawRatesIntent>()
+
 
     override fun onStart() {
         super.onStart()
         bind()
-        loadRatesSubject.onNext(OverviewIntent.LoadAllRatesIntent)
+        updateRawRatesSubject.onNext(OverviewIntent.UpdateRawRatesIntent)
+//        loadRatesSubject.onNext(OverviewIntent.LoadAllRatesIntent)
     }
 
     private fun bind() {
@@ -59,9 +62,6 @@ class OverviewFragment : Fragment(), MviView<OverviewIntent, OverviewViewState>,
         setHasOptionsMenu(true)
     }
 
-    override fun onResume() {
-        super.onResume()
-    }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.overview_rates_menu, menu)
@@ -107,6 +107,7 @@ class OverviewFragment : Fragment(), MviView<OverviewIntent, OverviewViewState>,
     override fun intents(): Observable<OverviewIntent> {
         return Observable.merge(
             loadRatesIntent(),
+            updateRawRatesIntent(),
             editCurrencyListIntent(),
             changeBaseCurrencyIntent()
         )
@@ -114,6 +115,10 @@ class OverviewFragment : Fragment(), MviView<OverviewIntent, OverviewViewState>,
 
     private fun loadRatesIntent(): Observable<OverviewIntent.LoadAllRatesIntent> {
         return loadRatesSubject
+    }
+
+    private fun updateRawRatesIntent(): Observable<OverviewIntent.UpdateRawRatesIntent> {
+        return updateRawRatesSubject
     }
 
     private fun editCurrencyListIntent(): Observable<OverviewIntent.EditCurrencyListIntent> {
@@ -140,16 +145,16 @@ class OverviewFragment : Fragment(), MviView<OverviewIntent, OverviewViewState>,
             rates_data.visible = true
         }
 
+        if (!state.message.isNullOrEmpty()) {
+            showMessage(state.message)
+        }
+
         if (state.error != null) {
             loading_data.visible = false
             rates_data.visible = false
             error_data.visible = true
 
-            Toast.makeText(
-                activity,
-                "Error loading data: ${state.error.localizedMessage}",
-                Toast.LENGTH_LONG
-            ).show()
+            showMessage(state.error.localizedMessage?: "111111111111111111111111111111111")
         }
 
         if (state.switchingTo != null) {
@@ -166,6 +171,14 @@ class OverviewFragment : Fragment(), MviView<OverviewIntent, OverviewViewState>,
                 }
             }
         }
+    }
+
+    private fun showMessage(message: String) {
+        Toast.makeText(
+            activity,
+            message,
+            Toast.LENGTH_LONG
+        ).show()
     }
 
     override fun onClickRateItem(currencyCode: String, currencyAmount: Float) {

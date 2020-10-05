@@ -26,10 +26,10 @@ class CacheRepositoryImplTest {
         val testObserver = TestObserver<Rates>()
         val ratesFromCacheDao = getRatesActualByData01()
         val cacheHeaderWithRates = cacheMapper.mapToEntity(ratesFromCacheDao)
-        `when`(mockCacheDao.getCache()).thenReturn(Single.just(cacheHeaderWithRates))
+        `when`(mockCacheDao.getCacheFlowable()).thenReturn(Single.just(cacheHeaderWithRates))
 
         // when
-        val observable = sut.getRates()
+        val observable = sut.getRatesObservable()
         observable.subscribe(testObserver)
 
         // then
@@ -46,10 +46,10 @@ class CacheRepositoryImplTest {
         // given
         val testObserver = TestObserver<Rates>()
         val exception = EmptyResultSetException("123")
-        `when`(mockCacheDao.getCache()).thenReturn(Single.error(exception))
+        `when`(mockCacheDao.getCacheFlowable()).thenReturn(Single.error(exception))
 
         // when
-        val observable = sut.getRates()
+        val observable = sut.getRatesObservable()
         observable.subscribe(testObserver)
 
         // then

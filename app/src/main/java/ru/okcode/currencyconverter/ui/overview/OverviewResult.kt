@@ -8,7 +8,14 @@ sealed class OverviewResult : MviResult {
     sealed class LoadAllRatesResult : OverviewResult() {
         object Processing : LoadAllRatesResult()
         data class Success(val rates: Rates) : LoadAllRatesResult()
-        class Failure(val error: Throwable) : LoadAllRatesResult()
+        data class Failure(val error: Throwable) : LoadAllRatesResult()
+    }
+
+    sealed class UpdateRawRatesResult : OverviewResult() {
+        object Processing : UpdateRawRatesResult()
+        object Success : UpdateRawRatesResult()
+        object NoNeedUpdate : UpdateRawRatesResult()
+        data class Failure(val error: Throwable) : UpdateRawRatesResult()
     }
 
     sealed class EditCurrencyListResult : OverviewResult() {

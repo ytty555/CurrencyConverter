@@ -4,13 +4,16 @@ import io.reactivex.Observable
 import io.reactivex.ObservableTransformer
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import ru.okcode.currencyconverter.data.repository.RawRatesRepository
 import ru.okcode.currencyconverter.data.repository.ReadyRepository
+import ru.okcode.currencyconverter.data.repository.UpdateStatus
 import ru.okcode.currencyconverter.ui.overview.OverviewAction.*
 import ru.okcode.currencyconverter.ui.overview.OverviewResult.*
 import javax.inject.Inject
 
 class OverviewProcessorHolder @Inject constructor(
     private val readyRepository: ReadyRepository,
+    private val rawRatesRepository: RawRatesRepository
 ) {
     internal val actionProcessor:
             ObservableTransformer<OverviewAction, OverviewResult> =
@@ -23,17 +26,23 @@ class OverviewProcessorHolder @Inject constructor(
                         .compose(editCurrencyListProcessor),
                     shared.ofType(ChangeBaseCurrencyAction::class.java)
                         .compose(changeBaseCurrencyProcessor)
-                ).mergeWith(
-                    shared.filter { action ->
-                        action !is EditCurrencyListAction
-                                && action !is LoadAllRatesAction
-                                && action !is ChangeBaseCurrencyAction
-                    }.flatMap { action ->
-                        Observable.error(
-                            IllegalArgumentException("Unknown Action type: $action")
-                        )
-                    }
                 )
+                    .mergeWith(
+                        shared.ofType(UpdateRawRatesAction::class.java)
+                            .compose(updateRawRatesProcessor)
+                    )
+                    .mergeWith(
+                        shared.filter { action ->
+                            action !is EditCurrencyListAction
+                                    && action !is LoadAllRatesAction
+                                    && action !is ChangeBaseCurrencyAction
+                                    && action !is UpdateRawRatesAction
+                        }.flatMap { action ->
+                            Observable.error(
+                                IllegalArgumentException("Unknown Action type: $action")
+                            )
+                        }
+                    )
             }
         }
 
@@ -50,6 +59,29 @@ class OverviewProcessorHolder @Inject constructor(
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread(), true)
                     .startWith(LoadAllRatesResult.Processing)
+            }
+        }
+
+    private val updateRawRatesProcessor:
+            ObservableTransformer<UpdateRawRatesAction, UpdateRawRatesResult> =
+        ObservableTransformer { actions ->
+            actions.flatMap {
+                rawRatesRepository.updateRawRates()
+                    .toObservable()
+                    .map { updateStatus ->
+                        when (updateStatus) {
+                            is UpdateStatus.Success -> {
+                                UpdateRawRatesResult.Success
+                            }
+                            is UpdateStatus.NotNeededToUpdate -> {
+                                UpdateRawRatesResult.NoNeedUpdate
+                            }
+                        }
+                    }
+                    .onErrorReturn(UpdateRawRatesResult::Failure)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .startWith(UpdateRawRatesResult.Processing)
             }
         }
 

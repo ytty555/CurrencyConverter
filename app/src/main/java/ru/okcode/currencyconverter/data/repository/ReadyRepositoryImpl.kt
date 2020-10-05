@@ -1,5 +1,6 @@
 package ru.okcode.currencyconverter.data.repository
 
+import android.util.Log
 import io.reactivex.Observable
 import io.reactivex.functions.BiFunction
 import ru.okcode.currencyconverter.data.db.ready.ReadyRates
@@ -12,24 +13,33 @@ import javax.inject.Inject
 
 class ReadyRepositoryImpl @Inject constructor(
     private val readyRates: ReadyRates,
-    rawRatesRepository: RawRatesRepository,
+    private val rawRatesRepository: RawRatesRepository,
     configRepository: ConfigRepository
 
 ) : ReadyRepository {
 
-    private val rawRatesDataSource = rawRatesRepository.getRatesObservable()
+    private val rawRatesDataSource: Observable<Rates>
+        get() {
+            return rawRatesRepository.getRatesObservable()
+                .toObservable()
+                .doOnNext {
+                    Log.e(">>> 3 >>>", "$it")
+                }
+        }
+
     private val configDataSource = configRepository.getConfigObservable()
 
     override fun getReadyRates(): Observable<Rates> {
+        // TODO FIX IT
         return Observable.combineLatest(
             rawRatesDataSource,
             configDataSource,
-            conversion()
-        )
+        ) {r, c -> Rates.idle()}
+
     }
 
     private fun conversion() = BiFunction { rawRates: Rates, config: Config ->
-        createReadyRates(rawRates, config)
+        return@BiFunction rawRates
     }
 
     private fun createReadyRates(rawRates: Rates, config: Config): Rates {
