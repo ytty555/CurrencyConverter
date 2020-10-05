@@ -2,31 +2,53 @@ package ru.okcode.currencyconverter.ui.overview
 
 import android.icu.util.Currency
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import ru.okcode.currencyconverter.databinding.RateItemBinding
-import ru.okcode.currencyconverter.model.Rate
-import ru.okcode.currencyconverter.model.Rates
+import ru.okcode.currencyconverter.R
+import ru.okcode.currencyconverter.data.model.Rates
 
-class OverviewAdaptor(private val rateListListener: RatesListListener) :
+class OverviewAdaptor(private val rateListListener: OverviewListener) :
     RecyclerView.Adapter<OverviewAdaptor.ViewHolder>() {
 
-    private var ratesData: Rates = Rates.getEmptyInstance()
+    private var ratesData: Rates = Rates.idle()
 
-    class ViewHolder private constructor(private val binding: RateItemBinding) :
-        RecyclerView.ViewHolder(binding.root) {
-        fun bind(ratesData: Rates, position: Int, rateListListener: RatesListListener) {
-            binding.clickListener = rateListListener
-            binding.fullRates = ratesData
-            binding.rate = ratesData.rates[position]
-            binding.executePendingBindings()
+    class ViewHolder private constructor(view: View) :
+        RecyclerView.ViewHolder(view) {
+
+        val currencyCodeTextView = view.findViewById<TextView>(R.id.currency_code)
+        val currencyNameTextView = view.findViewById<TextView>(R.id.currency_name)
+        val currencyRateTextView = view.findViewById<TextView>(R.id.currency_rate)
+        val currencySymbolTextView = view.findViewById<TextView>(R.id.currency_symbol)
+        val baseCurrencyAmountSymbolEqualTextView =
+            view.findViewById<TextView>(R.id.base_currency_amount_symbol_equal)
+        val currencyFlagImageView = view.findViewById<ImageView>(R.id.currency_flag)
+
+
+        fun bind(ratesData: Rates, position: Int, rateListListener: OverviewListener) {
+            val rate = ratesData.rates[position]
+
+            itemView.setOnClickListener {
+                rateListListener.onClickRateItem(rate.currencyCode, rate.sum.toFloat())
+            }
+            val currency = Currency.getInstance(rate.currencyCode)
+            val baseCurrency = Currency.getInstance(ratesData.baseCurrencyCode)
+            currencyCodeTextView.text = currency.currencyCode
+            currencyNameTextView.text = currency.displayName
+            currencyRateTextView.text = rate.sum.toString()
+            currencySymbolTextView.text = currency.symbol
+            baseCurrencyAmountSymbolEqualTextView.text =
+                "${ratesData.baseCurrencyAmount} ${baseCurrency.symbol} ="
+            rate.flagRes?.let { currencyFlagImageView.setImageResource(it) }
         }
 
         companion object {
             fun from(parent: ViewGroup): ViewHolder {
                 val layoutInflater = LayoutInflater.from(parent.context)
-                val binding = RateItemBinding.inflate(layoutInflater, parent, false)
-                return ViewHolder(binding)
+                val view = layoutInflater.inflate(R.layout.rate_item, parent, false)
+                return ViewHolder(view)
             }
         }
     }
@@ -54,8 +76,4 @@ class OverviewAdaptor(private val rateListListener: RatesListListener) :
         ratesData = data
         notifyDataSetChanged()
     }
-}
-
-class RatesListListener(val clickListener: (currency: Currency) -> Unit) {
-    fun onClick(rate: Rate) = clickListener(rate.currency)
 }

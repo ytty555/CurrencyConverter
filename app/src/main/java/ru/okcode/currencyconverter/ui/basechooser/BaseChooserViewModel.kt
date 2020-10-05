@@ -1,83 +1,23 @@
 package ru.okcode.currencyconverter.ui.basechooser
 
-import android.icu.util.Currency
 import androidx.hilt.Assisted
 import androidx.hilt.lifecycle.ViewModelInject
-import androidx.lifecycle.*
-import kotlinx.coroutines.*
-import ru.okcode.currencyconverter.model.processor.TextProcessor
-import ru.okcode.currencyconverter.model.repositories.ConfigRepository
-import ru.okcode.currencyconverter.util.getFlagRes
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.ViewModel
 
 class BaseChooserViewModel @ViewModelInject constructor(
-    private val configRepository: ConfigRepository,
-    private val textProcessor: TextProcessor,
     @Assisted private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    private val job = Job()
-    private val scope = CoroutineScope(Dispatchers.Main + job)
+    private val currencyCode: String? =
+        savedStateHandle.get(ARG_CURRENCY_CODE)
 
-    private val _currencyCodeDataSource = MutableLiveData<String>()
-    val currencyDataSource: LiveData<Currency> =
-        Transformations.map(_currencyCodeDataSource) { currencyCode ->
-            Currency.getInstance(currencyCode)
-        }
+    private val currencyAmount: Float? =
+        savedStateHandle.get(ARG_CURRENCY_AMOUNT)
 
-    val currencyAmountDateSource: LiveData<String> = textProcessor.displayValueDataSource
-
-    val currencyFlag: LiveData<Int> = Transformations.map(currencyDataSource) { currency ->
-        currency.getFlagRes()
+    companion object {
+        const val ARG_CURRENCY_CODE = "arg_currency_code"
+        const val ARG_CURRENCY_AMOUNT = "arg_currency_amount"
     }
 
-    private val _closeBaseChooser = MutableLiveData<Boolean>()
-    val closeBaseChooser: LiveData<Boolean>
-        get() = _closeBaseChooser
-
-    init {
-        _closeBaseChooser.value = false
-        textProcessor.setDisplayValue("0")
-    }
-
-    fun setCurrencyCode(currencyCode: String) {
-        _currencyCodeDataSource.value = currencyCode
-    }
-
-    override fun onCleared() {
-        job.cancel()
-        super.onCleared()
-    }
-
-    private fun updateBase(currencyCode: String) {
-        val resultValue: Float = textProcessor.getNumberValue()
-
-        scope.launch {
-            withContext(Dispatchers.IO) {
-                configRepository.changeBase(currencyCode, resultValue)
-            }
-        }
-    }
-
-    fun onClickDigit(digit: Int) {
-        textProcessor.pressDigit(digit)
-    }
-
-    fun onClickComma() {
-        textProcessor.pressComma()
-    }
-
-    fun onClickErase() {
-        textProcessor.pressErase()
-    }
-
-    fun onClickOkFixedValue(currencyCode: String, amount: Float) {
-        textProcessor.setDisplayValue(amount.toString())
-        updateBase(currencyCode)
-        _closeBaseChooser.value = true
-    }
-
-    fun onClickOk(currencyCode: String) {
-        updateBase(currencyCode)
-        _closeBaseChooser.value = true
-    }
 }
