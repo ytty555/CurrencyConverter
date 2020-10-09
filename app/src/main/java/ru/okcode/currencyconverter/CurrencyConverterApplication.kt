@@ -1,10 +1,11 @@
 package ru.okcode.currencyconverter
 
 import android.app.Application
-import com.yandex.metrica.YandexMetrica
-import com.yandex.metrica.YandexMetricaConfig
-import com.yandex.metrica.push.YandexMetricaPush
 import dagger.hilt.android.HiltAndroidApp
+import ru.okcode.currencyconverter.crashreporting.CrashReportingTree
+import timber.log.Timber
+import timber.log.Timber.DebugTree
+
 
 @HiltAndroidApp
 class CurrencyConverterApplication : Application() {
@@ -18,5 +19,12 @@ class CurrencyConverterApplication : Application() {
 //        YandexMetrica.enableActivityAutoTracking(this)
 //        // Yandex Push init
 //        YandexMetricaPush.init(applicationContext);
+
+        if (BuildConfig.DEBUG) {
+            Timber.plant(DebugTree())
+        }
+//        else {
+//            Timber.plant(CrashReportingTree())
+//        }
     }
 }

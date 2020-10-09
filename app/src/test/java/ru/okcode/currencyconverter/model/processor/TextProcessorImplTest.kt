@@ -26,12 +26,12 @@ class TextProcessorImplTest(
     @Before
     fun setUp() {
         sut = TextProcessorImpl()
-        sut.displayValueDataSource.observeForever(observer)
+        sut.displayValue.observeForever(observer)
     }
 
     @After
     fun afterSetUp() {
-        sut.displayValueDataSource.removeObserver(observer)
+        sut.displayValue.removeObserver(observer)
     }
 
     enum class Type {
@@ -89,7 +89,7 @@ class TextProcessorImplTest(
         Assume.assumeTrue(type == Type.SET_VALUE)
 
         sut.setDisplayValue(operand as String)
-        val actual = sut.displayValueDataSource.value
+        val actual = sut.displayValue.value
         assertEquals("setDisplayValueTest", expected, actual)
     }
 
@@ -99,7 +99,7 @@ class TextProcessorImplTest(
 
         sut.setDisplayValue(inputValue)
         sut.pressDigit(operand as Int)
-        val actual = sut.displayValueDataSource.value
+        val actual = sut.displayValue.value
         assertEquals("pressDigit error", expected as String, actual)
     }
 
@@ -109,7 +109,7 @@ class TextProcessorImplTest(
 
         sut.setDisplayValue(inputValue)
         sut.pressComma()
-        val actual = sut.displayValueDataSource.value
+        val actual = sut.displayValue.value
         assertEquals("pressComma error", expected as String, actual)
     }
 
@@ -119,7 +119,7 @@ class TextProcessorImplTest(
 
         sut.setDisplayValue(inputValue)
         sut.pressErase()
-        val actual = sut.displayValueDataSource.value
+        val actual = sut.displayValue.value
         assertEquals("pressErase error", expected as String, actual)
     }
 

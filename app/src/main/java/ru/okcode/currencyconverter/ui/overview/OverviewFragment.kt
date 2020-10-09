@@ -17,35 +17,44 @@ import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.fragment_currency_rates.*
 import ru.okcode.currencyconverter.R
 import ru.okcode.currencyconverter.mvibase.MviView
-import ru.okcode.currencyconverter.ui.Destinations
-import ru.okcode.currencyconverter.ui.FragmentHelper
-import ru.okcode.currencyconverter.ui.basechooser.BaseChooserFragment
 import ru.okcode.currencyconverter.util.visible
+import timber.log.Timber
 
 @AndroidEntryPoint
-class OverviewFragment : Fragment(), MviView<OverviewIntent, OverviewViewState>, OverviewListener,
+class OverviewFragment private constructor() : Fragment(),
+    MviView<OverviewIntent, OverviewViewState>, OverviewListener,
     SwipeRefreshLayout.OnRefreshListener {
 
     private val viewModel: OverviewViewModel by viewModels()
     private val disposables = CompositeDisposable()
     private val adaptor = OverviewAdaptor(this)
 
-    private val changeBaseCurrencySubject =
+    private var lastState: OverviewViewState? = null
+
+    private val changeBaseCurrencyPublisher =
         PublishSubject.create<OverviewIntent.ChangeBaseCurrencyIntent>()
 
-    private val editRatesListSubject =
+    private val editRatesListPublisher =
         PublishSubject.create<OverviewIntent.EditCurrencyListIntent>()
 
-    private val updateRawRatesSubject =
-        PublishSubject.create<OverviewIntent.UpdateRawRatesIntent>()
+    private val updateRatesPublisher =
+        PublishSubject.create<OverviewIntent.UpdateRatesIntent>()
 
-    lateinit var swipeRefreshLayout: SwipeRefreshLayout
+    private val instantiateStatePublisher =
+        PublishSubject.create<OverviewIntent.InstantiateStateIntent>()
+
+    private lateinit var swipeRefreshLayout: SwipeRefreshLayout
 
 
     override fun onStart() {
         super.onStart()
         bind()
-        updateRawRatesSubject.onNext(OverviewIntent.UpdateRawRatesIntent(false))
+
+        if (lastState == null) {
+            updateRatesPublisher.onNext(OverviewIntent.UpdateRatesIntent(false))
+        } else {
+            instantiateStatePublisher.onNext(OverviewIntent.InstantiateStateIntent(lastState!!))
+        }
     }
 
     private fun bind() {
@@ -61,9 +70,7 @@ class OverviewFragment : Fragment(), MviView<OverviewIntent, OverviewViewState>,
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
-
     }
-
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.overview_rates_menu, menu)
@@ -72,11 +79,11 @@ class OverviewFragment : Fragment(), MviView<OverviewIntent, OverviewViewState>,
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.edit_currency_list -> {
-                editRatesListSubject.onNext(OverviewIntent.EditCurrencyListIntent)
+                editRatesListPublisher.onNext(OverviewIntent.EditCurrencyListIntent)
                 true
             }
             R.id.update_rates -> {
-                updateRawRatesSubject.onNext(OverviewIntent.UpdateRawRatesIntent(true))
+                updateRatesPublisher.onNext(OverviewIntent.UpdateRatesIntent(true))
                 true
             }
             else -> {
@@ -108,89 +115,81 @@ class OverviewFragment : Fragment(), MviView<OverviewIntent, OverviewViewState>,
         swipeRefreshLayout.setOnRefreshListener(this)
         swipeRefreshLayout.isRefreshing = false
 
-
         return view
     }
 
     override fun onRefresh() {
         swipeRefreshLayout.isRefreshing = true
-        updateRawRatesSubject.onNext(OverviewIntent.UpdateRawRatesIntent(true))
+        updateRatesPublisher.onNext(OverviewIntent.UpdateRatesIntent(true))
         swipeRefreshLayout.isRefreshing = false
     }
 
     override fun intents(): Observable<OverviewIntent> {
         return Observable.merge(
-            updateRawRatesIntent(),
+            updateRatesIntent(),
             editCurrencyListIntent(),
             changeBaseCurrencyIntent()
         )
     }
 
-
-    private fun updateRawRatesIntent(): Observable<OverviewIntent.UpdateRawRatesIntent> {
-        return updateRawRatesSubject
+    private fun updateRatesIntent(): Observable<OverviewIntent.UpdateRatesIntent> {
+        return updateRatesPublisher
     }
 
     private fun editCurrencyListIntent(): Observable<OverviewIntent.EditCurrencyListIntent> {
-        return editRatesListSubject
+        return editRatesListPublisher
     }
 
     private fun changeBaseCurrencyIntent(): Observable<OverviewIntent.ChangeBaseCurrencyIntent> {
-        return changeBaseCurrencySubject
+        return changeBaseCurrencyPublisher
     }
 
 
     override fun render(state: OverviewViewState) {
-
-        loading_data.visible = state.isLoading
-        swipeRefreshLayout.isRefreshing = state.isLoading
-
-        if (state.isLoading) {
-            error_data.visible = false
+        when (state) {
+            is OverviewViewState.Loading -> renderLoading()
+            is OverviewViewState.ReadyData -> renderReadyData(state)
+            is OverviewViewState.Failure -> renderError(state.error)
+            is OverviewViewState.ChangeBaseCurrency -> renderChangeBaseCurrency()
         }
+    }
+
+    private fun renderChangeBaseCurrency() {
+        // Do nothing
+    }
+
+    private fun renderError(error: Throwable) {
+        loading_data.visible = false
+        swipeRefreshLayout.isRefreshing = false
+        rates_data.visible = false
+        error_data.visible = true
+
+        showMessage(error.localizedMessage ?: "111111111111111111111111111111111")
+    }
+
+    private fun renderReadyData(state: OverviewViewState.ReadyData) {
+        lastState =
+            if (state.rates.rates.isNotEmpty()) {
+                state
+            } else {
+                null
+            }
+
+        loading_data.visible = false
+        swipeRefreshLayout.isRefreshing = false
+        rates_data.visible = true
+        error_data.visible = false
 
         if (state.rates.rates.isNotEmpty()) {
-            loading_data.visible = false
-            error_data.visible = false
             adaptor.setData(state.rates)
-            rates_data.visible = true
         }
+    }
 
-        if (!state.message.isNullOrEmpty()) {
-            showMessage(state.message)
-        }
-
-        if (state.error != null) {
-            loading_data.visible = false
-            rates_data.visible = false
-            error_data.visible = true
-
-            showMessage(state.error.localizedMessage ?: "111111111111111111111111111111111")
-        }
-
-        if (state.switchingTo != null) {
-            when (state.switchingTo) {
-                is Destinations.ChangeBaseCurrencyDestination -> {
-                    val argCurrencyCode = state.switchingTo.currencyCode
-                    val argCurrencyAmount = state.switchingTo.currentCurrencyAmount
-
-                    val fragment =
-                        BaseChooserFragment.newInstance(argCurrencyCode, argCurrencyAmount)
-
-                    FragmentHelper.replace(
-                        fragmentActivity = requireActivity(),
-                        fragment = fragment
-                    )
-                }
-                is Destinations.EditCurrencyListDestination -> {
-                    Toast.makeText(activity, "Click Edit rates list", Toast.LENGTH_SHORT).show()
-                }
-                is Destinations.OverviewRatesDestination -> {
-                    Toast.makeText(activity, "Click OverviewRatesDestination", Toast.LENGTH_SHORT)
-                        .show()
-                }
-            }
-        }
+    private fun renderLoading() {
+        loading_data.visible = true
+        swipeRefreshLayout.isRefreshing = true
+        rates_data.visible = false
+        error_data.visible = false
     }
 
     private fun showMessage(message: String) {
@@ -202,7 +201,8 @@ class OverviewFragment : Fragment(), MviView<OverviewIntent, OverviewViewState>,
     }
 
     override fun onClickRateItem(currencyCode: String, currencyAmount: Float) {
-        changeBaseCurrencySubject.onNext(
+        Timber.d("onClickRateItem $currencyCode $currencyAmount")
+        changeBaseCurrencyPublisher.onNext(
             OverviewIntent.ChangeBaseCurrencyIntent(
                 currencyCode,
                 currencyAmount

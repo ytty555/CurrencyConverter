@@ -5,6 +5,7 @@ import io.reactivex.Single
 import ru.okcode.currencyconverter.data.model.Rates
 import ru.okcode.currencyconverter.data.network.ApiService
 import ru.okcode.currencyconverter.data.network.RatesDtoToRatesMapper
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class NetworkRepositoryImpl @Inject constructor(
@@ -25,5 +26,6 @@ class NetworkRepositoryImpl @Inject constructor(
                 val rates = ratesDtoToRatesMapper.mapToModel(ratesDto)!!
                 Single.just(rates)
             }
+            .timeout(5, TimeUnit.SECONDS)
     }
 }

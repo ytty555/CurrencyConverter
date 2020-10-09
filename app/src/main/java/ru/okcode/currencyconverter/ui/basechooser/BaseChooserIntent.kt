@@ -3,11 +3,15 @@ package ru.okcode.currencyconverter.ui.basechooser
 import ru.okcode.currencyconverter.mvibase.MviIntent
 
 sealed class BaseChooserIntent : MviIntent {
-    data class PressDigitIntent(val digitOperand: DigitOperand): BaseChooserIntent()
-    data class PressAdditionalIntent(val additionalOperand: AdditionalOperand): BaseChooserIntent()
-    data class PressCalculationResultIntent(val calculationResult: Calculation): BaseChooserIntent()
-    data class LoadCurrencyInfoIntent(val currencyCode: String, val currencyAmount: Float = 0f): BaseChooserIntent()
-    object CancelIntent: BaseChooserIntent()
+    data class PressDigitIntent(val digitOperand: DigitOperand) : BaseChooserIntent()
+    data class PressAdditionalIntent(val additionalOperand: AdditionalOperand) : BaseChooserIntent()
+    data class PressCalculationIntent(val currencyCode: String, val calculation: Calculation) :
+        BaseChooserIntent()
+
+    data class LoadCurrencyInfoIntent(val currencyCode: String, val currencyAmount: Float?) :
+        BaseChooserIntent()
+
+    object CancelIntent : BaseChooserIntent()
 }
 
 enum class DigitOperand(val value: Int) {
@@ -23,9 +27,9 @@ enum class DigitOperand(val value: Int) {
     OPERAND_9(9),
 }
 
-enum class AdditionalOperand {
-    OPERAND_COMMA,
-    OPERAND_CLEAR
+sealed class AdditionalOperand {
+    object Comma : AdditionalOperand()
+    object Erase : AdditionalOperand()
 }
 
 enum class Calculation {

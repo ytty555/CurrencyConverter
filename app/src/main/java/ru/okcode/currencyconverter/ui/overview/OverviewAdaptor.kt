@@ -18,13 +18,13 @@ class OverviewAdaptor(private val rateListListener: OverviewListener) :
     class ViewHolder private constructor(view: View) :
         RecyclerView.ViewHolder(view) {
 
-        val currencyCodeTextView = view.findViewById<TextView>(R.id.currency_code)
-        val currencyNameTextView = view.findViewById<TextView>(R.id.currency_name)
-        val currencyRateTextView = view.findViewById<TextView>(R.id.currency_rate)
-        val currencySymbolTextView = view.findViewById<TextView>(R.id.currency_symbol)
-        val baseCurrencyAmountSymbolEqualTextView =
+        private val currencyCodeTextView = view.findViewById<TextView>(R.id.currency_code)
+        private val currencyNameTextView = view.findViewById<TextView>(R.id.currency_name)
+        private val currencyRateTextView = view.findViewById<TextView>(R.id.currency_rate)
+        private val currencySymbolTextView = view.findViewById<TextView>(R.id.currency_symbol)
+        private val baseCurrencyAmountSymbolEqualTextView =
             view.findViewById<TextView>(R.id.base_currency_amount_symbol_equal)
-        val currencyFlagImageView = view.findViewById<ImageView>(R.id.currency_flag)
+        private val currencyFlagImageView = view.findViewById<ImageView>(R.id.currency_flag)
 
 
         fun bind(ratesData: Rates, position: Int, rateListListener: OverviewListener) {

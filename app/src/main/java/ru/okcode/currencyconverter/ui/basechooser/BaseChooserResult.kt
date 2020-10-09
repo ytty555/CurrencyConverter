@@ -16,15 +16,18 @@ sealed class BaseChooserResult : MviResult {
     }
 
     sealed class PressCalculationResult : BaseChooserResult() {
-        data class Success(val displayValue: String, val currencyAmount: Float) :
-            PressCalculationResult()
-
+        object Success : PressCalculationResult()
         data class Failure(val error: Throwable) : PressCalculationResult()
     }
 
-    sealed class LoadCurrencyResult : BaseChooserResult() {
-        data class Success(val currency: Currency, val startAmount: Float) : LoadCurrencyResult()
-        data class Failure(val error: Throwable) : LoadCurrencyResult()
+    sealed class LoadCurrencyInfoResult : BaseChooserResult() {
+        data class Success(
+            val currency: Currency,
+            val flagRes: Int?,
+            val displayValue: String
+        ) : LoadCurrencyInfoResult()
+
+        data class Failure(val error: Throwable) : LoadCurrencyInfoResult()
     }
 
     sealed class CancelResult : BaseChooserResult() {

@@ -8,6 +8,7 @@ import ru.okcode.currencyconverter.data.repository.RawRatesRepository
 import ru.okcode.currencyconverter.data.repository.UpdateStatus
 import ru.okcode.currencyconverter.ui.overview.OverviewAction.*
 import ru.okcode.currencyconverter.ui.overview.OverviewResult.*
+import timber.log.Timber
 import javax.inject.Inject
 
 class OverviewProcessorHolder @Inject constructor(
@@ -21,17 +22,19 @@ class OverviewProcessorHolder @Inject constructor(
                     shared.ofType(EditCurrencyListAction::class.java)
                         .compose(editCurrencyListProcessor),
                     shared.ofType(ChangeBaseCurrencyAction::class.java)
-                        .compose(changeBaseCurrencyProcessor)
+                        .compose(changeBaseCurrencyProcessor),
+                    shared.ofType(UpdateRatesAction::class.java)
+                        .compose(updateRatesProcessor),
+                    shared.ofType(InstantiateStateAction::class.java)
+                        .compose(instantiateLastStateProcessor)
                 )
-                    .mergeWith(
-                        shared.ofType(UpdateRawRatesAction::class.java)
-                            .compose(updateRawRatesProcessor)
-                    )
                     .mergeWith(
                         shared.filter { action ->
                             action !is EditCurrencyListAction
                                     && action !is ChangeBaseCurrencyAction
-                                    && action !is UpdateRawRatesAction
+                                    && action !is UpdateRatesAction
+                                    && action !is ListenCacheAndConfigHaveChangedAction
+                                    && action !is InstantiateStateAction
                         }.flatMap { action ->
                             Observable.error(
                                 IllegalArgumentException("Unknown Action type: $action")
@@ -41,26 +44,40 @@ class OverviewProcessorHolder @Inject constructor(
             }
         }
 
-    private val updateRawRatesProcessor:
-            ObservableTransformer<UpdateRawRatesAction, UpdateRawRatesResult> =
+    private val instantiateLastStateProcessor:
+            ObservableTransformer<InstantiateStateAction, InstantiateStateResult> =
         ObservableTransformer { actions ->
-            actions.flatMap {
-                rawRatesRepository.updateRawRates(it.nothingToUpdateMessageShow)
+            actions.map {
+                InstantiateStateResult.Success(it.state)
+            }
+                .cast(InstantiateStateResult::class.java)
+                .onErrorReturn(InstantiateStateResult::Failure)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+        }
+
+    private val updateRatesProcessor:
+            ObservableTransformer<UpdateRatesAction, UpdateRatesResult> =
+        ObservableTransformer { actions ->
+            actions.flatMap { action ->
+                Timber.d("$action")
+                rawRatesRepository.updateRawRates(action.nothingToUpdateMessageShow)
                     .toObservable()
                     .map { updateStatus ->
                         when (updateStatus) {
                             is UpdateStatus.Success -> {
-                                UpdateRawRatesResult.Success
+                                UpdateRatesResult.Success
                             }
                             is UpdateStatus.NotNeededToUpdate -> {
-                                UpdateRawRatesResult.NoNeedUpdate(updateStatus.nothingToUpdateMessageShow)
+                                UpdateRatesResult.NoNeedUpdate(updateStatus.nothingToUpdateMessageShow)
                             }
                         }
                     }
-                    .onErrorReturn(UpdateRawRatesResult::Failure)
+                    .cast(UpdateRatesResult::class.java)
+                    .onErrorReturn(UpdateRatesResult::Failure)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .startWith(UpdateRawRatesResult.Processing)
+                    .startWith(UpdateRatesResult.Processing)
             }
         }
 
@@ -72,9 +89,8 @@ class OverviewProcessorHolder @Inject constructor(
             }
                 .cast(EditCurrencyListResult::class.java)
                 .onErrorReturn(EditCurrencyListResult::Failure)
-                .subscribeOn(Schedulers.newThread())
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread(), true)
-                .startWith(EditCurrencyListResult.Processing)
         }
 
     private val changeBaseCurrencyProcessor:
@@ -88,8 +104,7 @@ class OverviewProcessorHolder @Inject constructor(
             }
                 .cast(ChangeBaseCurrencyResult::class.java)
                 .onErrorReturn(ChangeBaseCurrencyResult::Failure)
-                .subscribeOn(Schedulers.newThread())
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .startWith(ChangeBaseCurrencyResult.Processing)
         }
 }
