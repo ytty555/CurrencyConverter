@@ -6,6 +6,7 @@ import io.reactivex.Single
 import ru.okcode.currencyconverter.data.db.cache.CacheDao
 import ru.okcode.currencyconverter.data.db.cache.CacheMapper
 import ru.okcode.currencyconverter.data.model.Rates
+import timber.log.Timber
 import javax.inject.Inject
 
 class CacheRepositoryImpl @Inject constructor(
@@ -16,8 +17,11 @@ class CacheRepositoryImpl @Inject constructor(
     override fun getRatesObservable(): Flowable<Rates> {
         return cacheDao.getCacheFlowable()
             .map {
-                cacheMapper.mapToModel(it)
+                Timber.d("dataChange 000a $it")
+                cacheMapper.mapToModel(it)!!
             }
+
+
     }
 
     override fun getRatesSingle(): Single<Rates> {

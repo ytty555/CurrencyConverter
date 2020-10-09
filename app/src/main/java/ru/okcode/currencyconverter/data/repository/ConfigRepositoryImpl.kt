@@ -11,6 +11,7 @@ import ru.okcode.currencyconverter.data.db.config.ConfigDao
 import ru.okcode.currencyconverter.data.db.config.ConfigEntity
 import ru.okcode.currencyconverter.data.db.config.ConfigMapper
 import ru.okcode.currencyconverter.data.model.Config
+import timber.log.Timber
 import javax.inject.Inject
 
 class ConfigRepositoryImpl @Inject constructor(
@@ -35,6 +36,7 @@ class ConfigRepositoryImpl @Inject constructor(
             .subscribeOn(Schedulers.io())
             .subscribeBy(
                 onError = {
+                    Timber.d("dataChange saving default config $it")
                     configDao.insertConfig(ConfigEntity.createDefaultConfig())
                 }
             )
@@ -43,15 +45,21 @@ class ConfigRepositoryImpl @Inject constructor(
 
     override fun getConfig(): Flowable<Config> {
         return configDao.getConfig()
-            .map {
-                configMapper.mapToModel(it)
+            .map { configEntity ->
+                Timber.d("dateChange config")
+                configMapper.mapToModel(configEntity)!!
             }
     }
 
     override fun saveConfig(config: Config): Completable {
-        return configDao.insertConfig(
-            configMapper.mapToEntity(config)
-        )
+        try {
+            configDao.insertConfig(
+                configMapper.mapToEntity(config)
+            )
+            return Completable.complete()
+        } catch (e: Throwable) {
+            return Completable.error(e)
+        }
     }
 
 }

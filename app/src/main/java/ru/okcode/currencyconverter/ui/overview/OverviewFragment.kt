@@ -50,9 +50,7 @@ class OverviewFragment private constructor() : Fragment(),
         super.onStart()
         bind()
 
-        if (lastState == null) {
-            updateRatesPublisher.onNext(OverviewIntent.UpdateRatesIntent(false))
-        } else {
+        if (lastState != null) {
             instantiateStatePublisher.onNext(OverviewIntent.InstantiateStateIntent(lastState!!))
         }
     }

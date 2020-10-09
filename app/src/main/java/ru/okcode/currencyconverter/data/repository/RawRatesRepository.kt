@@ -15,6 +15,6 @@ interface RawRatesRepository {
 }
 
 sealed class UpdateStatus {
-    object Success : UpdateStatus()
-    data class NotNeededToUpdate(val nothingToUpdateMessageShow: Boolean) : UpdateStatus()
+    data class Success(val rates: Rates): UpdateStatus()
+    data class NotNeededToUpdate(val nothingToUpdateMessageShow: Boolean, val rates: Rates) : UpdateStatus()
 }

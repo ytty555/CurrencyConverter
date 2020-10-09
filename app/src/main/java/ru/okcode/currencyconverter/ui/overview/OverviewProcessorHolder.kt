@@ -8,7 +8,6 @@ import ru.okcode.currencyconverter.data.repository.RawRatesRepository
 import ru.okcode.currencyconverter.data.repository.UpdateStatus
 import ru.okcode.currencyconverter.ui.overview.OverviewAction.*
 import ru.okcode.currencyconverter.ui.overview.OverviewResult.*
-import timber.log.Timber
 import javax.inject.Inject
 
 class OverviewProcessorHolder @Inject constructor(
@@ -60,16 +59,18 @@ class OverviewProcessorHolder @Inject constructor(
             ObservableTransformer<UpdateRatesAction, UpdateRatesResult> =
         ObservableTransformer { actions ->
             actions.flatMap { action ->
-                Timber.d("$action")
                 rawRatesRepository.updateRawRates(action.nothingToUpdateMessageShow)
                     .toObservable()
                     .map { updateStatus ->
                         when (updateStatus) {
                             is UpdateStatus.Success -> {
-                                UpdateRatesResult.Success
+                                UpdateRatesResult.Success(updateStatus.rates)
                             }
                             is UpdateStatus.NotNeededToUpdate -> {
-                                UpdateRatesResult.NoNeedUpdate(updateStatus.nothingToUpdateMessageShow)
+                                UpdateRatesResult.NoNeedUpdate(
+                                    updateStatus.nothingToUpdateMessageShow,
+                                    updateStatus.rates
+                                )
                             }
                         }
                     }

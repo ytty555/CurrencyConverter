@@ -18,7 +18,7 @@ interface ConfigDao {
     fun checkForEmptyConfig(): Single<ConfigEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertConfig(config: ConfigEntity): Completable
+    fun insertConfig(config: ConfigEntity)
 
     @Query("DELETE FROM ConfigEntity")
     fun clear()

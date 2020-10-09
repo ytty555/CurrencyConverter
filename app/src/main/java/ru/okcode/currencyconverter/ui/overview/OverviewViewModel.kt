@@ -6,6 +6,7 @@ import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.functions.BiFunction
+import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
 import ru.okcode.currencyconverter.data.model.Rates
 import ru.okcode.currencyconverter.data.repository.ReadyRepository
@@ -22,6 +23,7 @@ class OverviewViewModel @ViewModelInject constructor(
 ) : ViewModel(), MviViewModel<OverviewIntent, OverviewViewState> {
 
     private val intentsSubject: PublishSubject<OverviewIntent> = PublishSubject.create()
+    private val dataChangeBehavior = BehaviorSubject.create<OverviewViewState>()
 
     private val disposables = CompositeDisposable()
 
@@ -41,6 +43,7 @@ class OverviewViewModel @ViewModelInject constructor(
 
     init {
         disposables.add(coordinatorDisposable)
+        listenToDataChange()
     }
 
     override fun processIntents(intents: Observable<OverviewIntent>) {
@@ -53,7 +56,7 @@ class OverviewViewModel @ViewModelInject constructor(
         return when (intent) {
             is InstantiateStateIntent -> InstantiateStateAction(intent.state)
             is ListenCacheAndConfigHaveChangedIntent -> {
-                Timber.tag("pizda").d("actionFromIntent ListenCacheAndConfigHaveChangedAction")
+                Timber.d("actionFromIntent ListenCacheAndConfigHaveChangedAction")
                 ListenCacheAndConfigHaveChangedAction
             }
             is UpdateRatesIntent -> UpdateRatesAction(intent.nothingToUpdateMessageShow)
@@ -69,18 +72,25 @@ class OverviewViewModel @ViewModelInject constructor(
         return intentsSubject
             .map(this::actionFromIntent)
             .compose(actionProcessorHolder.actionProcessor)
-            .mergeWith(listenDataChange())
             .scan(OverviewViewState.ReadyData(Rates.idle()), reducer)
+            .mergeWith(dataChangeBehavior)
+            .distinctUntilChanged()
             .replay()
             .autoConnect(0)
             .share()
     }
 
-    private fun listenDataChange(): Observable<OverviewResult> {
-        return readyRepository.getReadyRates()
+    private fun listenToDataChange() {
+        Timber.d("listenToDataChange()")
+        readyRepository.getReadyRates()
             .map { rates ->
-                ListenCacheAndConfigHaveChangedResult.Success(rates)
+                OverviewViewState.ReadyData(rates)
             }
+            .doOnNext {
+                Timber.d("dataChange 777ab $it")
+            }
+            .safeSubscribe(dataChangeBehavior)
+
     }
 
     companion object {
@@ -95,31 +105,29 @@ class OverviewViewModel @ViewModelInject constructor(
                     }
                     is ListenCacheAndConfigHaveChangedResult -> when (result) {
                         is ListenCacheAndConfigHaveChangedResult.Success -> {
-                            Timber.tag("pizda")
-                                .d("reducer  ListenCacheAndConfigHaveChangedResult.Success")
+                            Timber.d("reducer  ListenCacheAndConfigHaveChangedResult.Success")
                             previousState
                         }
                         is ListenCacheAndConfigHaveChangedResult.Failure -> {
-                            Timber.tag("pizda")
-                                .d("reducer  ListenCacheAndConfigHaveChangedResult.Failure")
+                            Timber.d("reducer  ListenCacheAndConfigHaveChangedResult.Failure")
                             OverviewViewState.Failure(result.error)
                         }
                     }
                     is UpdateRatesResult -> when (result) {
                         is UpdateRatesResult.Processing -> {
-                            Timber.tag("pizda Update").d("reducer  UpdateRatesResult.Processing")
+                            Timber.d("reducer  UpdateRatesResult.Processing")
                             OverviewViewState.Loading
                         }
                         is UpdateRatesResult.Success -> {
-                            Timber.tag("pizda Update").d("reducer  UpdateRatesResult.Success")
-                            previousState
+                            Timber.d("reducer  UpdateRatesResult.Success")
+                            OverviewViewState.ReadyData(result.rates)
                         }
                         is UpdateRatesResult.NoNeedUpdate -> {
-                            Timber.tag("pizda Update").d("reducer  UpdateRatesResult.NoNeed")
-                            previousState
+                            Timber.d("reducer  UpdateRatesResult.NoNeed")
+                            OverviewViewState.ReadyData(result.rates)
                         }
                         is UpdateRatesResult.Failure -> {
-                            Timber.tag("pizda Update").d("reducer  UpdateRatesResult.Failure")
+                            Timber.d("reducer  UpdateRatesResult.Failure")
                             OverviewViewState.Failure(result.error)
                         }
                     }

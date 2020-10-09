@@ -1,6 +1,5 @@
 package ru.okcode.currencyconverter.ui.overview
 
-import io.reactivex.Observable
 import ru.okcode.currencyconverter.data.model.Rates
 import ru.okcode.currencyconverter.mvibase.MviResult
 
@@ -11,15 +10,17 @@ sealed class OverviewResult : MviResult {
         data class Failure(val error: Throwable) : ListenCacheAndConfigHaveChangedResult()
     }
 
-    sealed class InstantiateStateResult: OverviewResult() {
+    sealed class InstantiateStateResult : OverviewResult() {
         data class Success(val state: OverviewViewState) : InstantiateStateResult()
-        data class Failure(val error: Throwable): InstantiateStateResult()
+        data class Failure(val error: Throwable) : InstantiateStateResult()
     }
 
     sealed class UpdateRatesResult : OverviewResult() {
         object Processing : UpdateRatesResult()
-        object Success : UpdateRatesResult()
-        data class NoNeedUpdate(val nothingToUpdateMessageShow: Boolean) : UpdateRatesResult()
+        data class Success(val rates: Rates) : UpdateRatesResult()
+        data class NoNeedUpdate(val nothingToUpdateMessageShow: Boolean, val rates: Rates) :
+            UpdateRatesResult()
+
         data class Failure(val error: Throwable) : UpdateRatesResult()
     }
 
