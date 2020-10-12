@@ -86,10 +86,7 @@ class OverviewViewModel @ViewModelInject constructor(
             .map { rates ->
                 OverviewViewState.ReadyData(rates)
             }
-            .doOnNext {
-                Timber.d("dataChange 777ab $it")
-            }
-            .safeSubscribe(dataChangeBehavior)
+            .subscribe(dataChangeBehavior)
 
     }
 

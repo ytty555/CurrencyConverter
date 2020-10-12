@@ -35,7 +35,7 @@ class Navigator @Inject constructor() {
         activity!!.supportFragmentManager
             .beginTransaction()
             .replace(CONTAINER, EditCurrencySetFragment.newInstance())
-            .addToBackStack("EditCurrenyList")
+            .addToBackStack("EditCurrencyList")
             .commit()
     }
 
