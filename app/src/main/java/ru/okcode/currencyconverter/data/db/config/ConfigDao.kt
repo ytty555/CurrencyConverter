@@ -1,12 +1,12 @@
 package ru.okcode.currencyconverter.data.db.config
 
-import androidx.lifecycle.LiveData
-import androidx.room.*
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
+import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Single
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
 
 @Dao
 interface ConfigDao {
@@ -15,7 +15,7 @@ interface ConfigDao {
     fun getConfig(): Flowable<ConfigEntity>
 
     @Query("SELECT * FROM ConfigEntity")
-    fun checkForEmptyConfig(): Single<ConfigEntity>
+    fun getConfigSingle(): Single<ConfigEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertConfig(config: ConfigEntity)

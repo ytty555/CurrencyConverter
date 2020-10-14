@@ -16,8 +16,10 @@ class CacheRepositoryImpl @Inject constructor(
     override fun getRatesObservable(): Flowable<Rates> {
         return cacheDao.getCacheFlowable()
             .map {
-                cacheMapper.mapToModel(it)
+                cacheMapper.mapToModel(it)!!
             }
+
+
     }
 
     override fun getRatesSingle(): Single<Rates> {

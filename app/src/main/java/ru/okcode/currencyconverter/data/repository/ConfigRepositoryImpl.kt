@@ -3,6 +3,7 @@ package ru.okcode.currencyconverter.data.repository
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.OnLifecycleEvent
 import io.reactivex.Flowable
+import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
@@ -30,7 +31,7 @@ class ConfigRepositoryImpl @Inject constructor(
     }
 
     private fun checkForEmpty() {
-        val checkForEmptyConfigDisposable = configDao.checkForEmptyConfig()
+        val checkForEmptyConfigDisposable = configDao.getConfigSingle()
             .subscribeOn(Schedulers.io())
             .subscribeBy(
                 onError = {
@@ -40,10 +41,18 @@ class ConfigRepositoryImpl @Inject constructor(
         disposables.add(checkForEmptyConfigDisposable)
     }
 
-    override fun getConfig(): Flowable<Config> {
+    override fun getConfigFlowable(): Flowable<Config> {
         return configDao.getConfig()
-            .map {
-                configMapper.mapToModel(it)
+            .map { configEntity ->
+                configMapper.mapToModel(configEntity)
+            }
+    }
+
+    override fun getConfigSingle(): Single<Config> {
+        return configDao.getConfigSingle()
+            .subscribeOn(Schedulers.io())
+            .map { configEntity ->
+                configMapper.mapToModel(configEntity)
             }
     }
 

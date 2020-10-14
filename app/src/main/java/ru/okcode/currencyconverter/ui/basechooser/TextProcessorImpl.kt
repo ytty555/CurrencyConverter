@@ -1,15 +1,13 @@
 package ru.okcode.currencyconverter.ui.basechooser
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import dagger.hilt.android.scopes.ActivityRetainedScoped
 import javax.inject.Inject
+import javax.inject.Singleton
 
 /**
  * Текстовый процессор предназначен для генерации числа
  * путем обработки вводимых значений: цифровых символов, знаков и сервисных функций
  */
-@ActivityRetainedScoped
+@Singleton
 class TextProcessorImpl @Inject constructor() : TextProcessor {
 
     /**
@@ -17,9 +15,7 @@ class TextProcessorImpl @Inject constructor() : TextProcessor {
      * для отображения на экране, а так же, как буферное значение
      * в процессе генерации конечного значения
      */
-    private val _displayValueDataSource = MutableLiveData<String>()
-    override val displayValueDataSource: LiveData<String>
-        get() = _displayValueDataSource
+    var displayValue: String = "0"
 
     companion object {
         const val COMMA = ","
@@ -27,52 +23,52 @@ class TextProcessorImpl @Inject constructor() : TextProcessor {
     }
 
     /**
-     * Функция обработки ввода цифр (0..9)
+     * Функция обрабатывает ввод цифры (0..9)
+     * и возвращает генерируемое значение в текстовом виде
      */
-    override fun pressDigit(digit: Int) {
+    override fun pressDigit(digit: Int): String {
         if (digit < 0 || digit > 9) {
-            return
+            throw IllegalArgumentException("Argument must be in range 0..9. But received $digit")
         }
 
-        val displayValue = getDisplayValue()
-
-        if (displayValue != "0") {
-            setDisplayValue("$displayValue$digit")
-        } else {
-            setDisplayValue("$digit")
+        if (displayValue == "0") {
+            displayValue = "$digit"
+        } else if (displayValue.length < 15) {
+            displayValue = "$displayValue$digit"
         }
+        return displayValue
     }
 
     /**
-     * Функция обработки ввода запятой
+     * Функция обрабатывает ввод запятой
+     * и возвращает генерируемое значение в текстовом виде
      */
-    override fun pressComma() {
-        val displayValue = getDisplayValue()
+    override fun pressComma(): String {
         if (!displayValue.contains(COMMA)) {
-            setDisplayValue("$displayValue$COMMA")
+            displayValue = "$displayValue$COMMA"
         }
+
+        return displayValue
     }
 
     /**
-     * Функция удаления последнего введеного символа
+     * Функция удаляет последний введеный символ
+     * и возвращает генерируемое значение в текстовом виде
      */
-    override fun pressErase() {
-        val displayValue = getDisplayValue()
-
-        if (displayValue.length == 1) {
-            setDisplayValue("0")
-        } else {
-            setDisplayValue(displayValue.substring(0, displayValue.lastIndex))
-        }
-
+    override fun pressErase(): String {
+        displayValue =
+            if (displayValue.length == 1) {
+                "0"
+            } else {
+                displayValue.substring(0, displayValue.lastIndex)
+            }
+        return displayValue
     }
 
     /**
-     * Функция, возвращающая генерируемое значение числовом виде
+     * Функция, возвращает генерируемое значение в числовом виде
      */
     override fun getNumberValue(): Float {
-        var displayValue = getDisplayValue()
-
         if (displayValue.contains(COMMA)) {
             displayValue = displayValue.replace(COMMA, POINT)
         }
@@ -84,20 +80,30 @@ class TextProcessorImpl @Inject constructor() : TextProcessor {
         } else {
             resultValue
         }
-
     }
 
     /**
-     * Функция полностью перезаписывает значение строкового
-     * представления генерируемого числа
+     * Функция, устанавливает числовое значение генерируемого числа и
+     * возвращает генерируемое значение в текстовом виде
      */
-    override fun setDisplayValue(value: String) {
-        _displayValueDataSource.value = value
+    override fun setDisplayValue(number: Float?): String {
+        if (number == null) {
+            return displayValue
+        }
+
+        if (number == 0f) {
+            displayValue = "0"
+            return displayValue
+        }
+
+        var numberAsText = number.toString()
+        numberAsText = numberAsText.replace(POINT, COMMA)
+
+        if (numberAsText.endsWith(",0")) {
+            numberAsText = numberAsText.substring(0, numberAsText.lastIndex - 1)
+        }
+
+        displayValue = numberAsText
+        return displayValue
     }
-
-    private fun getDisplayValue(): String {
-        return displayValueDataSource.value!!
-    }
-
-
 }

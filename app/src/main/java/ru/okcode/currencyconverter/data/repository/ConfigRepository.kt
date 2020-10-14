@@ -1,14 +1,15 @@
 package ru.okcode.currencyconverter.data.repository
 
 import androidx.lifecycle.LifecycleObserver
+import io.reactivex.Completable
 import io.reactivex.Flowable
-import io.reactivex.Observable
 import io.reactivex.Single
 import ru.okcode.currencyconverter.data.model.Config
-import ru.okcode.currencyconverter.data.model.Rates
 
-interface ConfigRepository: LifecycleObserver {
-    fun getConfig(): Flowable<Config>
+interface ConfigRepository : LifecycleObserver {
+    fun getConfigFlowable(): Flowable<Config>
+
+    fun getConfigSingle(): Single<Config>
 
     fun saveConfig(config: Config)
 }

@@ -18,25 +18,25 @@ class OverviewAdaptor(private val rateListListener: OverviewListener) :
     class ViewHolder private constructor(view: View) :
         RecyclerView.ViewHolder(view) {
 
-        val currencyCodeTextView = view.findViewById<TextView>(R.id.currency_code)
-        val currencyNameTextView = view.findViewById<TextView>(R.id.currency_name)
-        val currencyRateTextView = view.findViewById<TextView>(R.id.currency_rate)
-        val currencySymbolTextView = view.findViewById<TextView>(R.id.currency_symbol)
-        val baseCurrencyAmountSymbolEqualTextView =
+        private val currencyCodeTextView = view.findViewById<TextView>(R.id.currency_code)
+        private val currencyNameTextView = view.findViewById<TextView>(R.id.currency_name)
+        private val currencyRateTextView = view.findViewById<TextView>(R.id.currency_rate)
+        private val currencySymbolTextView = view.findViewById<TextView>(R.id.currency_symbol)
+        private val baseCurrencyAmountSymbolEqualTextView =
             view.findViewById<TextView>(R.id.base_currency_amount_symbol_equal)
-        val currencyFlagImageView = view.findViewById<ImageView>(R.id.currency_flag)
+        private val currencyFlagImageView = view.findViewById<ImageView>(R.id.currency_flag)
 
 
         fun bind(ratesData: Rates, position: Int, rateListListener: OverviewListener) {
             val rate = ratesData.rates[position]
 
             itemView.setOnClickListener {
-                rateListListener.onClickRateItem(rate.currencyCode, rate.sum.toFloat())
+                rateListListener.onClickRateItem(rate.currencyCode, 0f)
             }
             val currency = Currency.getInstance(rate.currencyCode)
             val baseCurrency = Currency.getInstance(ratesData.baseCurrencyCode)
             currencyCodeTextView.text = currency.currencyCode
-            currencyNameTextView.text = currency.displayName
+            currencyNameTextView.text = currency.displayName.capitalize()
             currencyRateTextView.text = rate.sum.toString()
             currencySymbolTextView.text = currency.symbol
             baseCurrencyAmountSymbolEqualTextView.text =
@@ -74,6 +74,5 @@ class OverviewAdaptor(private val rateListListener: OverviewListener) :
 
     fun setData(data: Rates) {
         ratesData = data
-        notifyDataSetChanged()
     }
 }

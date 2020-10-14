@@ -1,4 +1,4 @@
-package ru.okcode.currencyconverter.data.db.ready
+package ru.okcode.currencyconverter.data.model.ready
 
 import android.content.Context
 import androidx.room.EmptyResultSetException
