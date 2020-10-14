@@ -10,11 +10,11 @@ interface RawRatesRepository {
 
     fun getRatesSingle(): Single<Rates>
 
-    fun updateRawRates(nothingToUpdateMessageShow: Boolean): Single<UpdateStatus>
+    fun updateRawRates(): Single<UpdateStatus>
 
 }
 
 sealed class UpdateStatus {
-    data class Success(val rates: Rates): UpdateStatus()
-    data class NotNeededToUpdate(val nothingToUpdateMessageShow: Boolean, val rates: Rates) : UpdateStatus()
+    object Success: UpdateStatus()
+    object NotNeededToUpdate : UpdateStatus()
 }

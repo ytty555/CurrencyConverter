@@ -2,8 +2,8 @@ package ru.okcode.currencyconverter.data.repository
 
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.OnLifecycleEvent
-import io.reactivex.Completable
 import io.reactivex.Flowable
+import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
@@ -11,7 +11,6 @@ import ru.okcode.currencyconverter.data.db.config.ConfigDao
 import ru.okcode.currencyconverter.data.db.config.ConfigEntity
 import ru.okcode.currencyconverter.data.db.config.ConfigMapper
 import ru.okcode.currencyconverter.data.model.Config
-import timber.log.Timber
 import javax.inject.Inject
 
 class ConfigRepositoryImpl @Inject constructor(
@@ -32,34 +31,35 @@ class ConfigRepositoryImpl @Inject constructor(
     }
 
     private fun checkForEmpty() {
-        val checkForEmptyConfigDisposable = configDao.checkForEmptyConfig()
+        val checkForEmptyConfigDisposable = configDao.getConfigSingle()
             .subscribeOn(Schedulers.io())
             .subscribeBy(
                 onError = {
-                    Timber.d("dataChange saving default config $it")
                     configDao.insertConfig(ConfigEntity.createDefaultConfig())
                 }
             )
         disposables.add(checkForEmptyConfigDisposable)
     }
 
-    override fun getConfig(): Flowable<Config> {
+    override fun getConfigFlowable(): Flowable<Config> {
         return configDao.getConfig()
             .map { configEntity ->
-                Timber.d("dateChange config")
-                configMapper.mapToModel(configEntity)!!
+                configMapper.mapToModel(configEntity)
             }
     }
 
-    override fun saveConfig(config: Config): Completable {
-        try {
-            configDao.insertConfig(
-                configMapper.mapToEntity(config)
-            )
-            return Completable.complete()
-        } catch (e: Throwable) {
-            return Completable.error(e)
-        }
+    override fun getConfigSingle(): Single<Config> {
+        return configDao.getConfigSingle()
+            .subscribeOn(Schedulers.io())
+            .map { configEntity ->
+                configMapper.mapToModel(configEntity)
+            }
+    }
+
+    override fun saveConfig(config: Config) {
+        configDao.insertConfig(
+            configMapper.mapToEntity(config)
+        )
     }
 
 }

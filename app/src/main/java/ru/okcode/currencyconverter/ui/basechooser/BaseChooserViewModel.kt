@@ -3,17 +3,23 @@ package ru.okcode.currencyconverter.ui.basechooser
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.ViewModel
 import io.reactivex.Observable
+import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.BiFunction
 import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
 import ru.okcode.currencyconverter.mvibase.MviViewModel
+import ru.okcode.currencyconverter.ui.Navigator
 import ru.okcode.currencyconverter.ui.basechooser.BaseChooserAction.*
 import ru.okcode.currencyconverter.ui.basechooser.BaseChooserIntent.*
 import ru.okcode.currencyconverter.ui.basechooser.BaseChooserResult.*
+import timber.log.Timber
 
 class BaseChooserViewModel @ViewModelInject constructor(
-    actionProcessorHolder: BaseChooserProcessorHolder
+    actionProcessorHolder: BaseChooserProcessorHolder,
+    private val navigator: Navigator
 ) : ViewModel(), MviViewModel<BaseChooserIntent, BaseChooserViewState> {
+
+    private val disposables = CompositeDisposable()
 
     private val intentsPublisher =
         PublishSubject.create<BaseChooserIntent>()
@@ -35,8 +41,28 @@ class BaseChooserViewModel @ViewModelInject constructor(
             .filter {
                 it.currency != null
             }
-            .distinctUntilChanged()
             .subscribe(viewStateBehavior)
+
+        val closingByOkResultDisposable = viewStateBehavior
+            .filter {
+                Timber.d(it.toString())
+                it.closingByOkResult
+            }
+            .subscribe {
+                Timber.d("closingByOkResultDisposable")
+                navigator.showOverview()
+            }
+
+        val closingByCancel = viewStateBehavior
+            .filter {
+                it.closingByCancel
+            }
+            .subscribe {
+                navigator.showOverview()
+            }
+
+        disposables.add(closingByOkResultDisposable)
+        disposables.add(closingByCancel)
     }
 
     private fun actionFromIntent(intent: BaseChooserIntent): BaseChooserAction {
@@ -47,10 +73,12 @@ class BaseChooserViewModel @ViewModelInject constructor(
                 intent.currencyCode,
                 intent.calculation
             )
-            is LoadCurrencyInfoIntent -> LoadCurrencyInfoAction(
-                intent.currencyCode,
-                intent.currencyAmount
-            )
+            is LoadCurrencyInfoIntent -> {
+                return LoadCurrencyInfoAction(
+                    intent.currencyCode,
+                    intent.currencyAmount
+                )
+            }
             is CancelIntent -> CancelAction
         }
     }
@@ -63,11 +91,15 @@ class BaseChooserViewModel @ViewModelInject constructor(
                         is PressDigitResult.Success -> {
                             previousState.copy(
                                 displayValue = result.displayValue,
+                                closingByOkResult = false,
+                                closingByCancel = false,
                                 error = null,
                             )
                         }
                         is PressDigitResult.Failure -> {
                             previousState.copy(
+                                closingByOkResult = false,
+                                closingByCancel = false,
                                 error = result.error
                             )
                         }
@@ -77,24 +109,32 @@ class BaseChooserViewModel @ViewModelInject constructor(
                         is PressAdditionalResult.Success -> {
                             previousState.copy(
                                 displayValue = result.displayValue,
+                                closingByOkResult = false,
+                                closingByCancel = false,
                                 error = null,
                             )
                         }
                         is PressAdditionalResult.Failure -> {
                             previousState.copy(
+                                closingByOkResult = false,
+                                closingByCancel = false,
                                 error = result.error
                             )
                         }
                     }
 
-                    is PressCalculationResult -> when (result) {
-                        is PressCalculationResult.Success -> {
+                    is ClosingByOkResult -> when (result) {
+                        is ClosingByOkResult.Success -> {
                             previousState.copy(
+                                closingByOkResult = true,
+                                closingByCancel = false,
                                 error = null
                             )
                         }
-                        is PressCalculationResult.Failure -> {
+                        is ClosingByOkResult.Failure -> {
                             previousState.copy(
+                                closingByOkResult = false,
+                                closingByCancel = false,
                                 error = result.error
                             )
                         }
@@ -106,24 +146,32 @@ class BaseChooserViewModel @ViewModelInject constructor(
                                 currency = result.currency,
                                 flagRes = result.flagRes,
                                 displayValue = result.displayValue,
+                                closingByOkResult = false,
+                                closingByCancel = false,
                                 error = null
                             )
                         }
                         is LoadCurrencyInfoResult.Failure -> {
                             previousState.copy(
+                                closingByOkResult = false,
+                                closingByCancel = false,
                                 error = result.error
                             )
                         }
                     }
 
-                    is CancelResult -> when (result) {
-                        is CancelResult.Success -> {
+                    is ClosingByCancel -> when (result) {
+                        is ClosingByCancel.Success -> {
                             previousState.copy(
+                                closingByOkResult = false,
+                                closingByCancel = true,
                                 error = null
                             )
                         }
-                        is CancelResult.Failure -> {
+                        is ClosingByCancel.Failure -> {
                             previousState.copy(
+                                closingByOkResult = false,
+                                closingByCancel = false,
                                 error = result.error
                             )
                         }
@@ -133,4 +181,8 @@ class BaseChooserViewModel @ViewModelInject constructor(
             }
     }
 
+    override fun onCleared() {
+        disposables.clear()
+        super.onCleared()
+    }
 }

@@ -3,12 +3,24 @@ package ru.okcode.currencyconverter.ui.overview
 import ru.okcode.currencyconverter.data.model.Rates
 import ru.okcode.currencyconverter.mvibase.MviViewState
 
-sealed class OverviewViewState : MviViewState {
-    object Loading : OverviewViewState()
-    data class ReadyData(val rates: Rates) : OverviewViewState()
-    data class Failure(val error: Throwable) : OverviewViewState()
-    data class ChangeBaseCurrency(val currencyCode: String, val currencyAmount: Float) :
-        OverviewViewState()
-    object EditCurrencyList: OverviewViewState()
+data class OverviewViewState(
+    val isLoading: Boolean,
+    val readyData: Rates,
+    val error: Throwable?,
+    val changeBaseCurrency: Pair<String, Float>?,
+    val editCurrencyList: Boolean
+): MviViewState {
+    companion object {
+        fun idle(): OverviewViewState {
+            return OverviewViewState(
+                isLoading = false,
+                readyData = Rates.idle(),
+                error = null,
+                changeBaseCurrency = null,
+                editCurrencyList = false
+            )
+        }
+    }
 }
+
 

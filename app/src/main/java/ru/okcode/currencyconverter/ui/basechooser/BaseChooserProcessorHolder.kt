@@ -25,13 +25,13 @@ class BaseChooserProcessorHolder @Inject constructor(
                     shared.ofType(PressAdditionalAction::class.java)
                         .compose(pressAdditionalProcessor),
                     shared.ofType((PressCalculationAction::class.java))
-                        .compose(pressCalculationProcessor),
+                        .compose(closingByOkProcessor),
                     shared.ofType(LoadCurrencyInfoAction::class.java)
                         .compose(loadCurrencyInfoInfoProcessor),
                 )
                     .mergeWith(
                         shared.ofType(CancelAction::class.java)
-                            .compose(cancelProcessor)
+                            .compose(closingByCancelProcessor)
                     )
                     .mergeWith(
                         shared.filter { action ->
@@ -60,8 +60,6 @@ class BaseChooserProcessorHolder @Inject constructor(
             }
                 .cast(PressDigitResult::class.java)
                 .onErrorReturn(PressDigitResult::Failure)
-                .subscribeOn(Schedulers.single())
-                .observeOn(AndroidSchedulers.mainThread())
         }
 
     private val pressAdditionalProcessor:
@@ -80,17 +78,17 @@ class BaseChooserProcessorHolder @Inject constructor(
             }
                 .cast(PressAdditionalResult::class.java)
                 .onErrorReturn(PressAdditionalResult::Failure)
-                .subscribeOn(Schedulers.single())
-                .observeOn(AndroidSchedulers.mainThread())
         }
 
-    private val pressCalculationProcessor:
-            ObservableTransformer<PressCalculationAction, PressCalculationResult> =
+    private val closingByOkProcessor:
+            ObservableTransformer<PressCalculationAction, ClosingByOkResult> =
         ObservableTransformer { actions ->
             actions.flatMap { action ->
-                configRepository.getConfig()
+                configRepository.getConfigSingle()
                     .toObservable()
                     .flatMap { previousConfig ->
+                        val newCurrencyCode = action.currencyCode
+
                         val newCurrencyAmount: Float =
                             when (action.calculation) {
                                 Calculation.RESULT_1 -> 1f
@@ -99,47 +97,50 @@ class BaseChooserProcessorHolder @Inject constructor(
                                 Calculation.RESULT_1000 -> 1000f
                                 Calculation.RESULT_OVERALL -> textProcessor.getNumberValue()
                             }
-                        val newConfig = previousConfig.copy(
-                            baseCurrencyCode = action.currencyCode,
-                            baseCurrencyAmount = newCurrencyAmount
-                        )
-                        configRepository.saveConfig(newConfig)
-                            .andThen(
-                                Observable.just(PressCalculationResult.Success)
-                            )
-                    }
 
+                        if (newCurrencyAmount != previousConfig.baseCurrencyAmount ||
+                            newCurrencyCode != previousConfig.baseCurrencyCode
+                        ) {
+                            val newConfig = previousConfig.copy(
+                                baseCurrencyCode = newCurrencyCode,
+                                baseCurrencyAmount = newCurrencyAmount
+                            )
+                            configRepository.saveConfig(newConfig)
+                        }
+
+                        Observable.just(ClosingByOkResult.Success)
+                    }
             }
-                .cast(PressCalculationResult::class.java)
-                .onErrorReturn(PressCalculationResult::Failure)
-                .subscribeOn(Schedulers.single())
+                .cast(ClosingByOkResult::class.java)
+                .onErrorReturn(ClosingByOkResult::Failure)
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
         }
 
     private val loadCurrencyInfoInfoProcessor:
             ObservableTransformer<LoadCurrencyInfoAction, LoadCurrencyInfoResult> =
         ObservableTransformer { actions ->
-            actions.map { action ->
-                LoadCurrencyInfoResult.Success(
-                    currency = Currency.getInstance(action.currencyCode),
-                    flagRes = getFlagRes(action.currencyCode),
-                    displayValue = textProcessor.setDisplayValue(action.currencyAmount)
+            actions.flatMap { action ->
+                Observable.just(
+                    LoadCurrencyInfoResult.Success(
+                        currency = Currency.getInstance(action.currencyCode),
+                        flagRes = getFlagRes(action.currencyCode),
+                        displayValue = textProcessor.setDisplayValue(action.currencyAmount)
+                    )
                 )
             }
                 .cast(LoadCurrencyInfoResult::class.java)
                 .onErrorReturn(LoadCurrencyInfoResult::Failure)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
         }
 
 
-    private val cancelProcessor:
-            ObservableTransformer<CancelAction, CancelResult> =
+    private val closingByCancelProcessor:
+            ObservableTransformer<CancelAction, ClosingByCancel> =
         ObservableTransformer { actions ->
             actions.map {
-                CancelResult.Success
+                ClosingByCancel.Success
             }
-                .cast(CancelResult::class.java)
-                .onErrorReturn(CancelResult::Failure)
+                .cast(ClosingByCancel::class.java)
+                .onErrorReturn(ClosingByCancel::Failure)
         }
 }

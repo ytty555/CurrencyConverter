@@ -1,10 +1,13 @@
 package ru.okcode.currencyconverter.ui.overview
 
+import android.icu.util.Currency
 import android.os.Bundle
 import android.view.*
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -21,12 +24,13 @@ import ru.okcode.currencyconverter.util.visible
 import timber.log.Timber
 
 @AndroidEntryPoint
-class OverviewFragment private constructor() : Fragment(),
+class OverviewFragment : Fragment(),
     MviView<OverviewIntent, OverviewViewState>, OverviewListener,
     SwipeRefreshLayout.OnRefreshListener {
 
     private val viewModel: OverviewViewModel by viewModels()
     private val disposables = CompositeDisposable()
+    private lateinit var recyclerView: RecyclerView
     private val adaptor = OverviewAdaptor(this)
 
     private var lastState: OverviewViewState? = null
@@ -45,14 +49,22 @@ class OverviewFragment private constructor() : Fragment(),
 
     private lateinit var swipeRefreshLayout: SwipeRefreshLayout
 
+    private lateinit var baseInfoBar: ConstraintLayout
+    private lateinit var baseInfoCodeAndName: TextView
+    private lateinit var baseInfoAmount: TextView
+    private lateinit var baseInfoSymbol: TextView
+
 
     override fun onStart() {
         super.onStart()
         bind()
 
-        if (lastState != null) {
+        if (lastState == null) {
+            updateRatesPublisher.onNext(OverviewIntent.UpdateRatesIntent)
+        } else {
             instantiateStatePublisher.onNext(OverviewIntent.InstantiateStateIntent(lastState!!))
         }
+
     }
 
     private fun bind() {
@@ -81,7 +93,7 @@ class OverviewFragment private constructor() : Fragment(),
                 true
             }
             R.id.update_rates -> {
-                updateRatesPublisher.onNext(OverviewIntent.UpdateRatesIntent(true))
+                updateRatesPublisher.onNext(OverviewIntent.UpdateRatesIntent)
                 true
             }
             else -> {
@@ -102,9 +114,15 @@ class OverviewFragment private constructor() : Fragment(),
         val activity = activity as AppCompatActivity
         activity.setSupportActionBar(toolbar)
 
+        // BaseInfoBar
+        baseInfoBar = view.findViewById(R.id.base_info_bar)
+        baseInfoCodeAndName = view.findViewById(R.id.currency_codeAndName)
+        baseInfoAmount = view.findViewById(R.id.currency_amount)
+        baseInfoSymbol = view.findViewById(R.id.currency_symbol)
+
         // RecyclerView Rates
         val ratesLayoutManager: RecyclerView.LayoutManager = LinearLayoutManager(context)
-        val recyclerView: RecyclerView = view.findViewById(R.id.rates_recyclerview)
+        recyclerView = view.findViewById(R.id.rates_recyclerview)
         recyclerView.layoutManager = ratesLayoutManager
         recyclerView.adapter = adaptor
 
@@ -118,7 +136,7 @@ class OverviewFragment private constructor() : Fragment(),
 
     override fun onRefresh() {
         swipeRefreshLayout.isRefreshing = true
-        updateRatesPublisher.onNext(OverviewIntent.UpdateRatesIntent(true))
+        updateRatesPublisher.onNext(OverviewIntent.UpdateRatesIntent)
         swipeRefreshLayout.isRefreshing = false
     }
 
@@ -142,22 +160,37 @@ class OverviewFragment private constructor() : Fragment(),
         return changeBaseCurrencyPublisher
     }
 
-
     override fun render(state: OverviewViewState) {
-        when (state) {
-            is OverviewViewState.Loading -> renderLoading()
-            is OverviewViewState.ReadyData -> renderReadyData(state)
-            is OverviewViewState.Failure -> renderError(state.error)
-            is OverviewViewState.ChangeBaseCurrency -> renderChangeBaseCurrency()
+        if (state.isLoading) { // if Loading
+            renderLoading()
+        } else if (state.error != null) { // if Error
+            renderError(state.error)
+        } else if (state.changeBaseCurrency != null) {// if ChangeBaseCurrency
+            renderChangeBaseCurrency()
+        } else if (state.editCurrencyList) { // if EditCurrencyList
+            renderEditCurrencyList()
+        } else {
+            renderReadyData(state)
         }
+
+    }
+
+    private fun renderEditCurrencyList() {
+        Timber.i("renderEditCurrencyList()")
+        // Do nothing
     }
 
     private fun renderChangeBaseCurrency() {
+        Timber.i("renderChangeBaseCurrency()")
+
         // Do nothing
     }
 
     private fun renderError(error: Throwable) {
+        Timber.i("renderError() ${error.localizedMessage}")
+
         loading_data.visible = false
+        baseInfoBar.visible = false
         swipeRefreshLayout.isRefreshing = false
         rates_data.visible = false
         error_data.visible = true
@@ -165,26 +198,39 @@ class OverviewFragment private constructor() : Fragment(),
         showMessage(error.localizedMessage ?: "111111111111111111111111111111111")
     }
 
-    private fun renderReadyData(state: OverviewViewState.ReadyData) {
-        lastState =
-            if (state.rates.rates.isNotEmpty()) {
-                state
-            } else {
-                null
-            }
+    private fun renderReadyData(state: OverviewViewState) {
+        Timber.i("renderReadyData()")
+
+        lastState = state.copy(
+            isLoading = false,
+            error = null,
+            changeBaseCurrency = null,
+            editCurrencyList = false
+        )
 
         loading_data.visible = false
         swipeRefreshLayout.isRefreshing = false
+        baseInfoBar.visible = true
         rates_data.visible = true
         error_data.visible = false
 
-        if (state.rates.rates.isNotEmpty()) {
-            adaptor.setData(state.rates)
+        // Render BaseInfoBar
+        val baseCurrency = Currency.getInstance(state.readyData.baseCurrencyCode)
+        baseInfoCodeAndName.text = "${baseCurrency.currencyCode} ${baseCurrency.displayName.capitalize()}"
+        baseInfoAmount.text = state.readyData.baseCurrencyAmount.toString()
+        baseInfoSymbol.text = baseCurrency.symbol
+
+        // Render recyclerView Rates
+        if (!state.readyData.rates.isNullOrEmpty()) {
+            adaptor.setData(state.readyData)
+            recyclerView.post { adaptor.notifyDataSetChanged() }
         }
     }
 
     private fun renderLoading() {
+        Timber.i("renderLoading()")
         loading_data.visible = true
+        baseInfoBar.visible = false
         swipeRefreshLayout.isRefreshing = true
         rates_data.visible = false
         error_data.visible = false

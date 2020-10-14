@@ -76,7 +76,6 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="16dp"
                     android:singleLine="true"
-                    android:text="1111111111111"
                     android:textColor="@color/colorPrimaryDark"
                     android:textSize="18sp"
                     app:layout_constraintEnd_toStartOf="@+id/currency_amount"

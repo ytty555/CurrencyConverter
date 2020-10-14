@@ -8,6 +8,7 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.addCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import dagger.hilt.android.AndroidEntryPoint
@@ -16,7 +17,6 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.subjects.PublishSubject
 import ru.okcode.currencyconverter.R
 import ru.okcode.currencyconverter.mvibase.MviView
-import timber.log.Timber
 
 private const val ARG_CURRENCY_CODE = "arg_currency_code"
 private const val ARG_CURRENCY_AMOUNT = "arg_currency_amount"
@@ -79,6 +79,15 @@ class BaseChooserFragment : Fragment(), MviView<BaseChooserIntent, BaseChooserVi
         }
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        val backPressedCallback =
+            requireActivity().onBackPressedDispatcher.addCallback(this) {
+            cancelPublisher.onNext(BaseChooserIntent.CancelIntent)
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -135,7 +144,6 @@ class BaseChooserFragment : Fragment(), MviView<BaseChooserIntent, BaseChooserVi
         }
 
         operand1.setOnClickListener {
-            Timber.d("setOnClickListener 1")
             pressDigitPublisher.onNext(
                 BaseChooserIntent.PressDigitIntent(
                     DigitOperand.OPERAND_1
@@ -267,7 +275,6 @@ class BaseChooserFragment : Fragment(), MviView<BaseChooserIntent, BaseChooserVi
     }
 
     override fun onStart() {
-        Timber.d("onStart()")
         super.onStart()
         bind()
     }
@@ -277,7 +284,6 @@ class BaseChooserFragment : Fragment(), MviView<BaseChooserIntent, BaseChooserVi
     }
 
     override fun onStop() {
-        Timber.d("onStop()")
         super.onStop()
         disposables.clear()
     }
@@ -305,23 +311,14 @@ class BaseChooserFragment : Fragment(), MviView<BaseChooserIntent, BaseChooserVi
 
     private fun pressDigitIntent(): Observable<BaseChooserIntent.PressDigitIntent> {
         return pressDigitPublisher
-            .doOnNext{
-                Timber.d("pressDigitIntent() with ${it.digitOperand.value}" )
-            }
     }
 
     private fun pressAdditionalIntent(): Observable<BaseChooserIntent.PressAdditionalIntent> {
         return pressAdditionalPublisher
-            .doOnNext{
-                Timber.d("pressAdditionalIntent() with ${it.additionalOperand}" )
-            }
     }
 
     private fun pressCalculationIntent(): Observable<BaseChooserIntent.PressCalculationIntent> {
         return pressCalculationPublisher
-            .doOnNext{
-                Timber.d("pressCalculationIntent() with ${it.calculation}" )
-            }
     }
 
     private fun cancelIntent(): Observable<BaseChooserIntent.CancelIntent> {
@@ -329,7 +326,6 @@ class BaseChooserFragment : Fragment(), MviView<BaseChooserIntent, BaseChooserVi
     }
 
     override fun render(state: BaseChooserViewState) {
-        Timber.d("render state $state")
         startBaseCurrencyAmount = null
 
         state.currency?.let { currency ->
@@ -345,7 +341,6 @@ class BaseChooserFragment : Fragment(), MviView<BaseChooserIntent, BaseChooserVi
         displayValueTextView.text = state.displayValue
 
         state.error?.let {
-            Timber.d("Render on state.error $it")
             it.localizedMessage?.let { message ->
                 showMessage(message)
             }

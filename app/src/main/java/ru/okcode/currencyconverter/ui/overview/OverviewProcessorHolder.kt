@@ -58,27 +58,24 @@ class OverviewProcessorHolder @Inject constructor(
     private val updateRatesProcessor:
             ObservableTransformer<UpdateRatesAction, UpdateRatesResult> =
         ObservableTransformer { actions ->
-            actions.flatMap { action ->
-                rawRatesRepository.updateRawRates(action.nothingToUpdateMessageShow)
+            actions.flatMap {
+                rawRatesRepository.updateRawRates()
                     .toObservable()
                     .map { updateStatus ->
                         when (updateStatus) {
                             is UpdateStatus.Success -> {
-                                UpdateRatesResult.Success(updateStatus.rates)
+                                UpdateRatesResult.Success
                             }
                             is UpdateStatus.NotNeededToUpdate -> {
-                                UpdateRatesResult.NoNeedUpdate(
-                                    updateStatus.nothingToUpdateMessageShow,
-                                    updateStatus.rates
-                                )
+                                UpdateRatesResult.NoNeedUpdate
                             }
                         }
                     }
                     .cast(UpdateRatesResult::class.java)
                     .onErrorReturn(UpdateRatesResult::Failure)
+                    .startWith(UpdateRatesResult.Processing)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .startWith(UpdateRatesResult.Processing)
             }
         }
 
@@ -90,8 +87,6 @@ class OverviewProcessorHolder @Inject constructor(
             }
                 .cast(EditCurrencyListResult::class.java)
                 .onErrorReturn(EditCurrencyListResult::Failure)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread(), true)
         }
 
     private val changeBaseCurrencyProcessor:
@@ -105,7 +100,5 @@ class OverviewProcessorHolder @Inject constructor(
             }
                 .cast(ChangeBaseCurrencyResult::class.java)
                 .onErrorReturn(ChangeBaseCurrencyResult::Failure)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
         }
 }

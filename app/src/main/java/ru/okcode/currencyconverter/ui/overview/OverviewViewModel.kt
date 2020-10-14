@@ -1,16 +1,18 @@
 package ru.okcode.currencyconverter.ui.overview
 
 import androidx.hilt.lifecycle.ViewModelInject
+import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.ViewModel
 import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.functions.BiFunction
 import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
-import ru.okcode.currencyconverter.data.model.Rates
 import ru.okcode.currencyconverter.data.repository.ReadyRepository
 import ru.okcode.currencyconverter.mvibase.MviViewModel
+import ru.okcode.currencyconverter.ui.Navigator
 import ru.okcode.currencyconverter.ui.overview.OverviewAction.*
 import ru.okcode.currencyconverter.ui.overview.OverviewIntent.*
 import ru.okcode.currencyconverter.ui.overview.OverviewResult.*
@@ -19,30 +21,36 @@ import timber.log.Timber
 class OverviewViewModel @ViewModelInject constructor(
     private val actionProcessorHolder: OverviewProcessorHolder,
     private val readyRepository: ReadyRepository,
-    private val coordinator: OverviewFlowCoordinator
+    private val navigator: Navigator
 ) : ViewModel(), MviViewModel<OverviewIntent, OverviewViewState> {
 
     private val intentsSubject: PublishSubject<OverviewIntent> = PublishSubject.create()
-    private val dataChangeBehavior = BehaviorSubject.create<OverviewViewState>()
+    private val dataChangeBehavior = BehaviorSubject.create<ListenCacheAndConfigHaveChangedResult>()
 
     private val disposables = CompositeDisposable()
 
-    private val coordinatorDisposable: Disposable =
-        sharedState().subscribe { state ->
-            if (state is OverviewViewState.ChangeBaseCurrency) {
-                coordinator.showBaseChooser(state.currencyCode, state.currencyAmount)
-            } else if (state is OverviewViewState.EditCurrencyList) {
-                coordinator.showEditCurrencyList()
-            }
-        }
-
     override fun onCleared() {
+        Timber.d("onCleared()")
         super.onCleared()
         disposables.clear()
     }
 
     init {
+        Timber.d("init{}")
+
+        val coordinatorDisposable: Disposable =
+            sharedState().subscribe { state ->
+                if (state.changeBaseCurrency != null) {
+                    val currencyCode = state.changeBaseCurrency.first
+                    val currencyAmount = state.changeBaseCurrency.second
+                    navigator.showBaseChooser(currencyCode, currencyAmount)
+                } else if (state.editCurrencyList) {
+                    navigator.showEditCurrencyList()
+                }
+            }
+
         disposables.add(coordinatorDisposable)
+
         listenToDataChange()
     }
 
@@ -56,10 +64,9 @@ class OverviewViewModel @ViewModelInject constructor(
         return when (intent) {
             is InstantiateStateIntent -> InstantiateStateAction(intent.state)
             is ListenCacheAndConfigHaveChangedIntent -> {
-                Timber.d("actionFromIntent ListenCacheAndConfigHaveChangedAction")
                 ListenCacheAndConfigHaveChangedAction
             }
-            is UpdateRatesIntent -> UpdateRatesAction(intent.nothingToUpdateMessageShow)
+            is UpdateRatesIntent -> UpdateRatesAction
             is EditCurrencyListIntent -> EditCurrencyListAction
             is ChangeBaseCurrencyIntent -> ChangeBaseCurrencyAction(
                 intent.currencyCode,
@@ -70,21 +77,28 @@ class OverviewViewModel @ViewModelInject constructor(
 
     private fun sharedState(): Observable<OverviewViewState> {
         return intentsSubject
+            .doOnNext{
+                Timber.i("--- action ---")
+            }
             .map(this::actionFromIntent)
             .compose(actionProcessorHolder.actionProcessor)
-            .scan(OverviewViewState.ReadyData(Rates.idle()), reducer)
             .mergeWith(dataChangeBehavior)
+            .scan(OverviewViewState.idle(), reducer)
             .distinctUntilChanged()
-            .replay()
-            .autoConnect(0)
-            .share()
+            .observeOn(AndroidSchedulers.mainThread())
+            .doOnNext {
+                Timber.d("intentsSubject $it")
+            }
     }
 
     private fun listenToDataChange() {
-        Timber.d("listenToDataChange()")
         readyRepository.getReadyRates()
             .map { rates ->
-                OverviewViewState.ReadyData(rates)
+                ListenCacheAndConfigHaveChangedResult.Success(rates)
+            }
+            .distinctUntilChanged()
+            .doOnNext {
+                Timber.d("Data has changed")
             }
             .subscribe(dataChangeBehavior)
 
@@ -95,60 +109,120 @@ class OverviewViewModel @ViewModelInject constructor(
             BiFunction { previousState: OverviewViewState, result: OverviewResult ->
                 when (result) {
                     is InstantiateStateResult -> when (result) {
-                        is InstantiateStateResult.Success -> result.state
+                        is InstantiateStateResult.Success -> {
+                            Timber.i("InstantiateStateResult.Success")
+                            result.state
+                        }
                         is InstantiateStateResult.Failure -> {
-                            OverviewViewState.Failure(result.error)
+                            Timber.i("InstantiateStateResult.Failure")
+                            previousState.copy(
+                                isLoading = false,
+                                error = result.error,
+                                changeBaseCurrency = null,
+                                editCurrencyList = false
+                            )
                         }
                     }
                     is ListenCacheAndConfigHaveChangedResult -> when (result) {
                         is ListenCacheAndConfigHaveChangedResult.Success -> {
-                            Timber.d("reducer  ListenCacheAndConfigHaveChangedResult.Success")
-                            previousState
+                            Timber.i("ListenCacheAndConfigHaveChangedResult.Success")
+                            previousState.copy(
+                                isLoading = false,
+                                readyData = result.rates,
+                                error = null,
+                                changeBaseCurrency = null,
+                                editCurrencyList = false
+                            )
                         }
                         is ListenCacheAndConfigHaveChangedResult.Failure -> {
-                            Timber.d("reducer  ListenCacheAndConfigHaveChangedResult.Failure")
-                            OverviewViewState.Failure(result.error)
+                            Timber.i("ListenCacheAndConfigHaveChangedResult.Failure")
+                            previousState.copy(
+                                isLoading = false,
+                                error = result.error,
+                                changeBaseCurrency = null,
+                                editCurrencyList = false
+                            )
                         }
                     }
                     is UpdateRatesResult -> when (result) {
                         is UpdateRatesResult.Processing -> {
-                            Timber.d("reducer  UpdateRatesResult.Processing")
-                            OverviewViewState.Loading
+                            Timber.i("UpdateRatesResult.Processing")
+                            previousState.copy(
+                                isLoading = true,
+                                error = null,
+                                changeBaseCurrency = null,
+                                editCurrencyList = false
+                            )
                         }
                         is UpdateRatesResult.Success -> {
-                            Timber.d("reducer  UpdateRatesResult.Success")
-                            OverviewViewState.ReadyData(result.rates)
+                            Timber.i("UpdateRatesResult.Success")
+                            previousState.copy(
+                                isLoading = false,
+                                error = null,
+                                changeBaseCurrency = null,
+                                editCurrencyList = false
+                            )
                         }
                         is UpdateRatesResult.NoNeedUpdate -> {
-                            Timber.d("reducer  UpdateRatesResult.NoNeed")
-                            OverviewViewState.ReadyData(result.rates)
+                            Timber.i("UpdateRatesResult.NoNeedUpdate")
+                            previousState.copy(
+                                isLoading = false,
+                                error = null,
+                                changeBaseCurrency = null,
+                                editCurrencyList = false
+                            )
                         }
                         is UpdateRatesResult.Failure -> {
-                            Timber.d("reducer  UpdateRatesResult.Failure")
-                            OverviewViewState.Failure(result.error)
+                            Timber.i("UpdateRatesResult.Failure")
+                            previousState.copy(
+                                isLoading = false,
+                                error = result.error,
+                                changeBaseCurrency = null,
+                                editCurrencyList = false
+                            )
                         }
                     }
                     is EditCurrencyListResult -> when (result) {
                         is EditCurrencyListResult.Success -> {
-                            Timber.d("$result")
-                            OverviewViewState.EditCurrencyList
+                            Timber.i("EditCurrencyListResult.Success")
+                            previousState.copy(
+                                isLoading = false,
+                                error = null,
+                                changeBaseCurrency = null,
+                                editCurrencyList = true
+                            )
                         }
                         is EditCurrencyListResult.Failure -> {
-                            Timber.d("$result")
-                            OverviewViewState.Failure(result.error)
+                            Timber.i("EditCurrencyListResult.Failure")
+                            previousState.copy(
+                                isLoading = false,
+                                error = result.error,
+                                changeBaseCurrency = null,
+                                editCurrencyList = false
+                            )
                         }
                     }
                     is ChangeBaseCurrencyResult -> when (result) {
                         is ChangeBaseCurrencyResult.Success -> {
-                            Timber.d("$result")
-                            OverviewViewState.ChangeBaseCurrency(
-                                result.currencyCode,
-                                result.currentCurrencyAmount
+                            Timber.i("ChangeBaseCurrencyResult.Success")
+                            previousState.copy(
+                                isLoading = false,
+                                error = null,
+                                changeBaseCurrency = Pair(
+                                    result.currencyCode,
+                                    result.currentCurrencyAmount
+                                ),
+                                editCurrencyList = false
                             )
                         }
                         is ChangeBaseCurrencyResult.Failure -> {
-                            Timber.d("$result")
-                            OverviewViewState.Failure(result.error)
+                            Timber.i("ChangeBaseCurrencyResult.Failure")
+                            previousState.copy(
+                                isLoading = false,
+                                error = result.error,
+                                changeBaseCurrency = null,
+                                editCurrencyList = false
+                            )
                         }
                     }
                 }

@@ -7,6 +7,8 @@ data class BaseChooserViewState(
     val currency: Currency?,
     val flagRes: Int?,
     val displayValue: String,
+    val closingByOkResult: Boolean,
+    val closingByCancel: Boolean,
     val error: Throwable?
 ) : MviViewState {
     companion object {
@@ -15,6 +17,8 @@ data class BaseChooserViewState(
                 currency = null,
                 flagRes = null,
                 displayValue = "0",
+                closingByOkResult = false,
+                closingByCancel = false,
                 error = null
             )
         }

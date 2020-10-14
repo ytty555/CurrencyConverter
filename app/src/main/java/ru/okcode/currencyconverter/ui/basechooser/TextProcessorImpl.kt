@@ -1,7 +1,5 @@
 package ru.okcode.currencyconverter.ui.basechooser
 
-import android.util.Log
-import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -11,10 +9,6 @@ import javax.inject.Singleton
  */
 @Singleton
 class TextProcessorImpl @Inject constructor() : TextProcessor {
-
-    init {
-        Timber.d("initialization")
-    }
 
     /**
      * Хранит текстовое представление генерируемого чилсла
@@ -33,7 +27,6 @@ class TextProcessorImpl @Inject constructor() : TextProcessor {
      * и возвращает генерируемое значение в текстовом виде
      */
     override fun pressDigit(digit: Int): String {
-        Timber.d("pressDigit($digit)")
         if (digit < 0 || digit > 9) {
             throw IllegalArgumentException("Argument must be in range 0..9. But received $digit")
         }
@@ -43,7 +36,6 @@ class TextProcessorImpl @Inject constructor() : TextProcessor {
         } else if (displayValue.length < 15) {
             displayValue = "$displayValue$digit"
         }
-        Timber.d("pressDigit return $displayValue")
         return displayValue
     }
 

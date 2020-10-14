@@ -15,11 +15,6 @@ sealed class BaseChooserResult : MviResult {
         data class Failure(val error: Throwable) : PressAdditionalResult()
     }
 
-    sealed class PressCalculationResult : BaseChooserResult() {
-        object Success : PressCalculationResult()
-        data class Failure(val error: Throwable) : PressCalculationResult()
-    }
-
     sealed class LoadCurrencyInfoResult : BaseChooserResult() {
         data class Success(
             val currency: Currency,
@@ -30,8 +25,13 @@ sealed class BaseChooserResult : MviResult {
         data class Failure(val error: Throwable) : LoadCurrencyInfoResult()
     }
 
-    sealed class CancelResult : BaseChooserResult() {
-        object Success : CancelResult()
-        data class Failure(val error: Throwable) : CancelResult()
+    sealed class ClosingByOkResult : BaseChooserResult() {
+        object Success : ClosingByOkResult()
+        data class Failure(val error: Throwable) : ClosingByOkResult()
+    }
+
+    sealed class ClosingByCancel : BaseChooserResult() {
+        object Success : ClosingByCancel()
+        data class Failure(val error: Throwable) : ClosingByCancel()
     }
 }

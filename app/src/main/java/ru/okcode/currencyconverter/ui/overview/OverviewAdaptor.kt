@@ -31,12 +31,12 @@ class OverviewAdaptor(private val rateListListener: OverviewListener) :
             val rate = ratesData.rates[position]
 
             itemView.setOnClickListener {
-                rateListListener.onClickRateItem(rate.currencyCode, rate.sum.toFloat())
+                rateListListener.onClickRateItem(rate.currencyCode, 0f)
             }
             val currency = Currency.getInstance(rate.currencyCode)
             val baseCurrency = Currency.getInstance(ratesData.baseCurrencyCode)
             currencyCodeTextView.text = currency.currencyCode
-            currencyNameTextView.text = currency.displayName
+            currencyNameTextView.text = currency.displayName.capitalize()
             currencyRateTextView.text = rate.sum.toString()
             currencySymbolTextView.text = currency.symbol
             baseCurrencyAmountSymbolEqualTextView.text =
@@ -74,6 +74,5 @@ class OverviewAdaptor(private val rateListListener: OverviewListener) :
 
     fun setData(data: Rates) {
         ratesData = data
-        notifyDataSetChanged()
     }
 }

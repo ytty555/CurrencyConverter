@@ -15,7 +15,7 @@ interface ConfigDao {
     fun getConfig(): Flowable<ConfigEntity>
 
     @Query("SELECT * FROM ConfigEntity")
-    fun checkForEmptyConfig(): Single<ConfigEntity>
+    fun getConfigSingle(): Single<ConfigEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertConfig(config: ConfigEntity)

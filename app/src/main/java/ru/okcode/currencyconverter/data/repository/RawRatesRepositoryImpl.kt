@@ -20,16 +20,16 @@ class RawRatesRepositoryImpl @Inject constructor(
     }
 
 
-    override fun updateRawRates(nothingToUpdateMessageShow: Boolean): Single<UpdateStatus> {
+    override fun updateRawRates(): Single<UpdateStatus> {
         return fetchCacheRatesSingle()
             .flatMap {
-                Single.just(UpdateStatus.NotNeededToUpdate(nothingToUpdateMessageShow, it))
+                Single.just(UpdateStatus.NotNeededToUpdate)
             }
             .cast(UpdateStatus::class.java)
             .onErrorResumeNext(
                 fetchNetworkRatesSingle()
                     .flatMap {
-                        Single.just(UpdateStatus.Success(it))
+                        Single.just(UpdateStatus.Success)
                     }
             )
     }
