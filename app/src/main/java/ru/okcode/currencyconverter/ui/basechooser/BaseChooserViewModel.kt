@@ -3,23 +3,17 @@ package ru.okcode.currencyconverter.ui.basechooser
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.ViewModel
 import io.reactivex.Observable
-import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.BiFunction
 import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
 import ru.okcode.currencyconverter.mvibase.MviViewModel
-import ru.okcode.currencyconverter.ui.Navigator
 import ru.okcode.currencyconverter.ui.basechooser.BaseChooserAction.*
 import ru.okcode.currencyconverter.ui.basechooser.BaseChooserIntent.*
 import ru.okcode.currencyconverter.ui.basechooser.BaseChooserResult.*
-import timber.log.Timber
 
 class BaseChooserViewModel @ViewModelInject constructor(
     actionProcessorHolder: BaseChooserProcessorHolder,
-    private val navigator: Navigator
 ) : ViewModel(), MviViewModel<BaseChooserIntent, BaseChooserViewState> {
-
-    private val disposables = CompositeDisposable()
 
     private val intentsPublisher =
         PublishSubject.create<BaseChooserIntent>()
@@ -42,27 +36,6 @@ class BaseChooserViewModel @ViewModelInject constructor(
                 it.currency != null
             }
             .subscribe(viewStateBehavior)
-
-        val closingByOkResultDisposable = viewStateBehavior
-            .filter {
-                Timber.d(it.toString())
-                it.closingByOkResult
-            }
-            .subscribe {
-                Timber.d("closingByOkResultDisposable")
-                navigator.showOverview()
-            }
-
-        val closingByCancel = viewStateBehavior
-            .filter {
-                it.closingByCancel
-            }
-            .subscribe {
-                navigator.showOverview()
-            }
-
-        disposables.add(closingByOkResultDisposable)
-        disposables.add(closingByCancel)
     }
 
     private fun actionFromIntent(intent: BaseChooserIntent): BaseChooserAction {
@@ -126,6 +99,7 @@ class BaseChooserViewModel @ViewModelInject constructor(
                     is ClosingByOkResult -> when (result) {
                         is ClosingByOkResult.Success -> {
                             previousState.copy(
+                                displayValue = result.amountAsText,
                                 closingByOkResult = true,
                                 closingByCancel = false,
                                 error = null
@@ -179,10 +153,5 @@ class BaseChooserViewModel @ViewModelInject constructor(
                 }
 
             }
-    }
-
-    override fun onCleared() {
-        disposables.clear()
-        super.onCleared()
     }
 }

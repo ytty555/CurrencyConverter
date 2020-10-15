@@ -1,7 +1,6 @@
 package ru.okcode.currencyconverter.ui.overview
 
 import androidx.hilt.lifecycle.ViewModelInject
-import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.ViewModel
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -12,7 +11,6 @@ import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
 import ru.okcode.currencyconverter.data.repository.ReadyRepository
 import ru.okcode.currencyconverter.mvibase.MviViewModel
-import ru.okcode.currencyconverter.ui.Navigator
 import ru.okcode.currencyconverter.ui.overview.OverviewAction.*
 import ru.okcode.currencyconverter.ui.overview.OverviewIntent.*
 import ru.okcode.currencyconverter.ui.overview.OverviewResult.*
@@ -21,7 +19,7 @@ import timber.log.Timber
 class OverviewViewModel @ViewModelInject constructor(
     private val actionProcessorHolder: OverviewProcessorHolder,
     private val readyRepository: ReadyRepository,
-    private val navigator: Navigator
+    private val navigator: OverviewNavigator
 ) : ViewModel(), MviViewModel<OverviewIntent, OverviewViewState> {
 
     private val intentsSubject: PublishSubject<OverviewIntent> = PublishSubject.create()

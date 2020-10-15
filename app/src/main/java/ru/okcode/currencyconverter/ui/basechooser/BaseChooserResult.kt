@@ -26,7 +26,7 @@ sealed class BaseChooserResult : MviResult {
     }
 
     sealed class ClosingByOkResult : BaseChooserResult() {
-        object Success : ClosingByOkResult()
+        data class Success(val amountAsText: String) : ClosingByOkResult()
         data class Failure(val error: Throwable) : ClosingByOkResult()
     }
 

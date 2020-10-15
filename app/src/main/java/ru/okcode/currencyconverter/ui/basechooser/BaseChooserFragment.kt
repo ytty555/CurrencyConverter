@@ -9,6 +9,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.addCallback
+import androidx.core.widget.TextViewCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import dagger.hilt.android.AndroidEntryPoint
@@ -17,9 +18,6 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.subjects.PublishSubject
 import ru.okcode.currencyconverter.R
 import ru.okcode.currencyconverter.mvibase.MviView
-
-private const val ARG_CURRENCY_CODE = "arg_currency_code"
-private const val ARG_CURRENCY_AMOUNT = "arg_currency_amount"
 
 @AndroidEntryPoint
 class BaseChooserFragment : Fragment(), MviView<BaseChooserIntent, BaseChooserViewState> {
@@ -67,7 +65,12 @@ class BaseChooserFragment : Fragment(), MviView<BaseChooserIntent, BaseChooserVi
     private lateinit var baseCurrencyCode: String
     private var startBaseCurrencyAmount: Float? = null
 
+    private var okResultListener: OnOkResultListener? = null
+
     companion object {
+        const val ARG_CURRENCY_CODE = "arg_currency_code"
+        const val ARG_CURRENCY_AMOUNT = "arg_currency_amount"
+
         @JvmStatic
         fun newInstance(currencyCode: String, currencyAmount: Float): BaseChooserFragment {
             return BaseChooserFragment().apply {
@@ -235,6 +238,7 @@ class BaseChooserFragment : Fragment(), MviView<BaseChooserIntent, BaseChooserVi
                     calculation = Calculation.RESULT_1
                 )
             )
+            okResultListener?.onClickOkResult()
         }
 
         calc10.setOnClickListener {
@@ -244,6 +248,7 @@ class BaseChooserFragment : Fragment(), MviView<BaseChooserIntent, BaseChooserVi
                     calculation = Calculation.RESULT_10
                 )
             )
+            okResultListener?.onClickOkResult()
         }
 
         calc100.setOnClickListener {
@@ -253,6 +258,7 @@ class BaseChooserFragment : Fragment(), MviView<BaseChooserIntent, BaseChooserVi
                     calculation = Calculation.RESULT_100
                 )
             )
+            okResultListener?.onClickOkResult()
         }
 
         calc1000.setOnClickListener {
@@ -262,6 +268,7 @@ class BaseChooserFragment : Fragment(), MviView<BaseChooserIntent, BaseChooserVi
                     calculation = Calculation.RESULT_1000
                 )
             )
+            okResultListener?.onClickOkResult()
         }
 
         calcOverall.setOnClickListener {
@@ -271,6 +278,7 @@ class BaseChooserFragment : Fragment(), MviView<BaseChooserIntent, BaseChooserVi
                     calculation = Calculation.RESULT_OVERALL
                 )
             )
+            okResultListener?.onClickOkResult()
         }
     }
 
@@ -354,5 +362,13 @@ class BaseChooserFragment : Fragment(), MviView<BaseChooserIntent, BaseChooserVi
             message,
             Toast.LENGTH_LONG
         ).show()
+    }
+
+    fun setOnOkResultListener(listener: OnOkResultListener) {
+        okResultListener = listener
+    }
+
+    interface OnOkResultListener {
+        fun onClickOkResult()
     }
 }

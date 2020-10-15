@@ -5,8 +5,6 @@ import android.os.Bundle
 import android.view.*
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -17,7 +15,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.subjects.PublishSubject
-import kotlinx.android.synthetic.main.fragment_currency_rates.*
+import kotlinx.android.synthetic.main.fragment_overview.*
 import ru.okcode.currencyconverter.R
 import ru.okcode.currencyconverter.mvibase.MviView
 import ru.okcode.currencyconverter.util.visible
@@ -108,11 +106,7 @@ class OverviewFragment : Fragment(),
         savedInstanceState: Bundle?
     ): View? {
 
-        val view = inflater.inflate(R.layout.fragment_currency_rates, container, false)
-
-        val toolbar = view.findViewById<Toolbar>(R.id.toolbar)
-        val activity = activity as AppCompatActivity
-        activity.setSupportActionBar(toolbar)
+        val view = inflater.inflate(R.layout.fragment_overview, container, false)
 
         // BaseInfoBar
         baseInfoBar = view.findViewById(R.id.base_info_bar)
@@ -216,7 +210,8 @@ class OverviewFragment : Fragment(),
 
         // Render BaseInfoBar
         val baseCurrency = Currency.getInstance(state.readyData.baseCurrencyCode)
-        baseInfoCodeAndName.text = "${baseCurrency.currencyCode} ${baseCurrency.displayName.capitalize()}"
+        baseInfoCodeAndName.text =
+            "${baseCurrency.currencyCode} ${baseCurrency.displayName.capitalize()}"
         baseInfoAmount.text = state.readyData.baseCurrencyAmount.toString()
         baseInfoSymbol.text = baseCurrency.symbol
 
