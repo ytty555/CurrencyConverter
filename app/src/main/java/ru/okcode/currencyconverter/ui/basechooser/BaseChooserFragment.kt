@@ -9,6 +9,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.addCallback
+import androidx.core.widget.TextViewCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import dagger.hilt.android.AndroidEntryPoint
@@ -234,7 +235,7 @@ class BaseChooserFragment : Fragment(), MviView<BaseChooserIntent, BaseChooserVi
             pressCalculationPublisher.onNext(
                 BaseChooserIntent.PressCalculationIntent(
                     currencyCode = baseCurrencyCode,
-                    calculation = Calculation.RESULT_10
+                    calculation = Calculation.RESULT_1
                 )
             )
             okResultListener?.onClickOkResult()

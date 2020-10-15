@@ -1,8 +1,10 @@
 package ru.okcode.currencyconverter.ui
 
 import android.content.Intent
+import android.content.res.Configuration
 import android.os.Bundle
 import android.view.MenuItem
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import dagger.hilt.android.AndroidEntryPoint
 import ru.okcode.currencyconverter.R
@@ -17,6 +19,11 @@ class BaseChooserActivity : AppCompatActivity(), BaseChooserFragment.OnOkResultL
         setSupportActionBar(findViewById(R.id.toolbar))
 
 
+        val orientation = resources.configuration.orientation
+        if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            navigateUpTo()
+        }
+        
         // Show the Up button in the action bar.
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
@@ -58,17 +65,21 @@ class BaseChooserActivity : AppCompatActivity(), BaseChooserFragment.OnOkResultL
                 //
                 // http://developer.android.com/design/patterns/navigation.html#up-vs-back
 
-                navigateUpTo(Intent(this, RatesListActivity::class.java))
+                navigateUpTo()
                 true
             }
             else -> super.onOptionsItemSelected(item)
         }
 
     override fun onBackPressed() {
-        navigateUpTo(Intent(this, RatesListActivity::class.java))
+        navigateUpTo()
     }
 
     override fun onClickOkResult() {
+        navigateUpTo()
+    }
+
+    private fun navigateUpTo() {
         navigateUpTo(Intent(this, RatesListActivity::class.java))
     }
 }

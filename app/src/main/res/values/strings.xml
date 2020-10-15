@@ -2,7 +2,6 @@
     <string name="app_name">Currency converter</string>
     <string name="base_currency_info">"Base currency: %s"</string>
 
-    // Error messages
     <string name="err_loading_from_db">Can\'t load rates from the local database</string>
     <string name="err_loading_from_remote_api">Can\'t load rates from remote API</string>
     <string name="country_flag_of_the_currency">Country flag of the currency</string>
@@ -32,6 +31,4 @@
     <string name="menu_edit_currency_list">Edit currency list</string>
     <string name="menu_update_rates">Update rates</string>
     <string name="rates_loading_error_message">Can\'t load currency rates from server</string>
-    <string name="title_item_list">Items</string>
-    <string name="title_item_detail">Item Detail</string>
 </resources>

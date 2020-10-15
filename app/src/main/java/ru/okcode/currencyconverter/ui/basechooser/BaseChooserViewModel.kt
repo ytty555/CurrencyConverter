@@ -99,6 +99,7 @@ class BaseChooserViewModel @ViewModelInject constructor(
                     is ClosingByOkResult -> when (result) {
                         is ClosingByOkResult.Success -> {
                             previousState.copy(
+                                displayValue = result.amountAsText,
                                 closingByOkResult = true,
                                 closingByCancel = false,
                                 error = null

@@ -108,7 +108,13 @@ class BaseChooserProcessorHolder @Inject constructor(
                             configRepository.saveConfig(newConfig)
                         }
 
-                        Observable.just(ClosingByOkResult.Success)
+                        Observable.just(
+                            ClosingByOkResult.Success(
+                                textProcessor.setDisplayValue(
+                                    newCurrencyAmount
+                                )
+                            )
+                        )
                     }
             }
                 .cast(ClosingByOkResult::class.java)

@@ -18,7 +18,7 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".ui.RatesListActivity"
-            android:label="@string/title_item_list"
+            android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -28,7 +28,7 @@
         </activity>
         <activity
             android:name=".ui.BaseChooserActivity"
-            android:label="@string/title_item_detail"
+            android:label="@string/base_currency_settings"
             android:parentActivityName=".ui.RatesListActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
