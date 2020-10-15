@@ -32,4 +32,6 @@
     <string name="menu_edit_currency_list">Edit currency list</string>
     <string name="menu_update_rates">Update rates</string>
     <string name="rates_loading_error_message">Can\'t load currency rates from server</string>
+    <string name="title_item_list">Items</string>
+    <string name="title_item_detail">Item Detail</string>
 </resources>
