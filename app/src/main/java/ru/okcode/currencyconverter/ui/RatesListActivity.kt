@@ -4,6 +4,9 @@ import android.os.Bundle
 import android.widget.FrameLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.AdView
+import com.google.android.gms.ads.MobileAds
 import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.subscribeBy
@@ -26,10 +29,23 @@ class RatesListActivity : AppCompatActivity() {
 
     private val disposables = CompositeDisposable()
 
+    private var adView : AdView? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        // Google AdMob
+        MobileAds.initialize(this) {}
+
+        adView = findViewById(R.id.adView)
+
+        adView?.let {
+            val adRequest = AdRequest.Builder().build()
+            it.loadAd(adRequest)
+        }
+
+        // Toolbar
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
 
@@ -54,6 +70,26 @@ class RatesListActivity : AppCompatActivity() {
         }
     }
 
+    override fun onPause() {
+        adView?.pause()
+        super.onPause()
+    }
+
+    override fun onResume() {
+        adView?.resume()
+        super.onResume()
+    }
+
+    override fun onStop() {
+        disposables.clear()
+        super.onStop()
+    }
+
+    override fun onDestroy() {
+        adView?.destroy()
+        super.onDestroy()
+    }
+
     private fun showBaseChooser() {
         val configDisposable = configRepository
             .getConfigSingle()
@@ -69,8 +105,5 @@ class RatesListActivity : AppCompatActivity() {
         disposables.add(configDisposable)
     }
 
-    override fun onStop() {
-        disposables.clear()
-        super.onStop()
-    }
+
 }

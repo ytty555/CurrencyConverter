@@ -31,4 +31,6 @@
     <string name="menu_edit_currency_list">Edit currency list</string>
     <string name="menu_update_rates">Update rates</string>
     <string name="rates_loading_error_message">Can\'t load currency rates from server</string>
+
+    <string name="facebook_app_id" translatable="false">355965245517529</string>
 </resources>

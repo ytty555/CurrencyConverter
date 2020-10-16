@@ -6,6 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.cardview.widget.CardView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import ru.okcode.currencyconverter.R
 import ru.okcode.currencyconverter.data.model.Rates
@@ -35,6 +37,7 @@ class OverviewAdaptor(private val rateListListener: OverviewListener) :
             }
             val currency = Currency.getInstance(rate.currencyCode)
             val baseCurrency = Currency.getInstance(ratesData.baseCurrencyCode)
+
             currencyCodeTextView.text = currency.currencyCode
             currencyNameTextView.text = currency.displayName.capitalize()
             currencyRateTextView.text = rate.sum.toString()

@@ -4,8 +4,10 @@ import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
 import android.view.MenuItem
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.AdView
+import com.google.android.gms.ads.MobileAds
 import dagger.hilt.android.AndroidEntryPoint
 import ru.okcode.currencyconverter.R
 import ru.okcode.currencyconverter.ui.basechooser.BaseChooserFragment
@@ -13,17 +15,29 @@ import ru.okcode.currencyconverter.ui.basechooser.BaseChooserFragment
 @AndroidEntryPoint
 class BaseChooserActivity : AppCompatActivity(), BaseChooserFragment.OnOkResultListener {
 
+    private var adView: AdView? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_base_chooser)
         setSupportActionBar(findViewById(R.id.toolbar))
+
+        // Google AdMob
+        MobileAds.initialize(this) {}
+
+        adView = findViewById(R.id.adView)
+
+        adView?.let {
+            val adRequest = AdRequest.Builder().build()
+            it.loadAd(adRequest)
+        }
 
 
         val orientation = resources.configuration.orientation
         if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
             navigateUpTo()
         }
-        
+
         // Show the Up button in the action bar.
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
@@ -54,6 +68,21 @@ class BaseChooserActivity : AppCompatActivity(), BaseChooserFragment.OnOkResultL
                 .add(R.id.base_chooser_container, fragment)
                 .commit()
         }
+    }
+
+    override fun onPause() {
+        adView?.pause()
+        super.onPause()
+    }
+
+    override fun onResume() {
+        adView?.resume()
+        super.onResume()
+    }
+
+    override fun onDestroy() {
+        adView?.destroy()
+        super.onDestroy()
     }
 
     override fun onOptionsItemSelected(item: MenuItem) =
