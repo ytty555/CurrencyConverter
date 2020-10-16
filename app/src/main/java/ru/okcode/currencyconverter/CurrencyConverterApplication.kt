@@ -23,6 +23,9 @@ class CurrencyConverterApplication : Application() {
         // Automatic tracking of user activity.
         YandexMetrica.enableActivityAutoTracking(this)
         // Yandex Push init
+<<<<<<< HEAD:app/src/main/java/ru/okcode/currencyconverter/App.kt
+        YandexMetricaPush.init(applicationContext)
+=======
         YandexMetricaPush.init(applicationContext);
 
         if (BuildConfig.DEBUG) {
@@ -31,5 +34,6 @@ class CurrencyConverterApplication : Application() {
 //        else {
 //            Timber.plant(CrashReportingTree())
 //        }
+>>>>>>> release/v2.0.1:app/src/main/java/ru/okcode/currencyconverter/CurrencyConverterApplication.kt
     }
 }

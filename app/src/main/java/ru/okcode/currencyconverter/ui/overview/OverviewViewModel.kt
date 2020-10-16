@@ -17,10 +17,17 @@ import ru.okcode.currencyconverter.ui.overview.OverviewResult.*
 import timber.log.Timber
 
 class OverviewViewModel @ViewModelInject constructor(
+<<<<<<< HEAD
+    private val cacheRepository: CacheRepository,
+    private val configRepository: ConfigRepository,
+    private val readyRepository: ReadyRepository
+) : ViewModel() {
+=======
     private val actionProcessorHolder: OverviewProcessorHolder,
     private val readyRepository: ReadyRepository,
     private val navigator: OverviewNavigator
 ) : ViewModel(), MviViewModel<OverviewIntent, OverviewViewState> {
+>>>>>>> release/v2.0.1
 
     private val intentsSubject: PublishSubject<OverviewIntent> = PublishSubject.create()
     private val dataChangeBehavior = BehaviorSubject.create<ListenCacheAndConfigHaveChangedResult>()
