@@ -1,9 +1,5 @@
 package ru.okcode.currencyconverter.ui.basechooser
 
-<<<<<<< HEAD
-import android.icu.util.Currency
-=======
->>>>>>> release/v2.0.1
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.ViewModel
 import io.reactivex.Observable
@@ -16,14 +12,8 @@ import ru.okcode.currencyconverter.ui.basechooser.BaseChooserIntent.*
 import ru.okcode.currencyconverter.ui.basechooser.BaseChooserResult.*
 
 class BaseChooserViewModel @ViewModelInject constructor(
-<<<<<<< HEAD
-    private val configRepository: ConfigRepository,
-    private val textProcessor: TextProcessor
-) : ViewModel() {
-=======
     actionProcessorHolder: BaseChooserProcessorHolder,
 ) : ViewModel(), MviViewModel<BaseChooserIntent, BaseChooserViewState> {
->>>>>>> release/v2.0.1
 
     private val intentsPublisher =
         PublishSubject.create<BaseChooserIntent>()

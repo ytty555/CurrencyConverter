@@ -9,7 +9,6 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.addCallback
-import androidx.core.widget.TextViewCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import dagger.hilt.android.AndroidEntryPoint
@@ -87,8 +86,8 @@ class BaseChooserFragment : Fragment(), MviView<BaseChooserIntent, BaseChooserVi
 
         val backPressedCallback =
             requireActivity().onBackPressedDispatcher.addCallback(this) {
-            cancelPublisher.onNext(BaseChooserIntent.CancelIntent)
-        }
+                cancelPublisher.onNext(BaseChooserIntent.CancelIntent)
+            }
     }
 
     override fun onCreateView(
