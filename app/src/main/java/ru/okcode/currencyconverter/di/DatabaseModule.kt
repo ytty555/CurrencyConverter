@@ -7,12 +7,10 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ApplicationComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
-import ru.okcode.currencyconverter.model.db.cache.CacheDao
-import ru.okcode.currencyconverter.model.db.cache.CacheDatabase
-import ru.okcode.currencyconverter.model.db.config.ConfigDao
-import ru.okcode.currencyconverter.model.db.config.ConfigDatabase
-import ru.okcode.currencyconverter.model.db.ready.ReadyDao
-import ru.okcode.currencyconverter.model.db.ready.ReadyDatabase
+import ru.okcode.currencyconverter.data.db.cache.CacheDao
+import ru.okcode.currencyconverter.data.db.cache.CacheDatabase
+import ru.okcode.currencyconverter.data.db.config.ConfigDao
+import ru.okcode.currencyconverter.data.db.config.ConfigDatabase
 import javax.inject.Singleton
 
 @Module
@@ -34,23 +32,6 @@ object DatabaseModule {
     @Singleton
     fun provideCacheDao(database: CacheDatabase): CacheDao {
         return database.cacheDao()
-    }
-
-    // ReadyRatesDatabase -------------------------------------------------------------------
-    @Provides
-    @Singleton
-    fun provideReadyDatabase(@ApplicationContext context: Context): ReadyDatabase {
-        return Room.databaseBuilder(
-            context,
-            ReadyDatabase::class.java,
-            "ready_rates"
-        ).build()
-    }
-
-    @Provides
-    @Singleton
-    fun provideReadyDao(database: ReadyDatabase): ReadyDao {
-        return database.readyDao()
     }
 
     // ConfigDatabase -------------------------------------------------------------------

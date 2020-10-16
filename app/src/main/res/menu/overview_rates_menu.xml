@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+<!--    <item-->
+<!--        android:id="@+id/edit_currency_list"-->
+<!--        android:icon="@drawable/ic_edit_list_black"-->
+<!--        android:title="@string/menu_edit_currency_list"-->
+<!--        app:showAsAction="ifRoom" />-->
+
+    <item
+        android:id="@+id/update_rates"
+        android:icon="@drawable/ic_update_rates_black"
+        android:title="@string/menu_update_rates"
+         />
+</menu>

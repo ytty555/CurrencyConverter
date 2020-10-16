@@ -2,7 +2,6 @@
     <string name="app_name">Currency converter</string>
     <string name="base_currency_info">"Base currency: %s"</string>
 
-    // Error messages
     <string name="err_loading_from_db">Can\'t load rates from the local database</string>
     <string name="err_loading_from_remote_api">Can\'t load rates from remote API</string>
     <string name="country_flag_of_the_currency">Country flag of the currency</string>
@@ -28,4 +27,10 @@
     <string name="erase" translatable="false">C</string>
     <string name="base_currency_settings">Base currency settings</string>
     <string name="error_loading_data_from_remote_api">Error loading data from remote API</string>
+    <string name="no_data_received">No data received</string>
+    <string name="menu_edit_currency_list">Edit currency list</string>
+    <string name="menu_update_rates">Update rates</string>
+    <string name="rates_loading_error_message">Can\'t load currency rates from server</string>
+
+    <string name="facebook_app_id" translatable="false">355965245517529</string>
 </resources>

@@ -1,81 +1,167 @@
 package ru.okcode.currencyconverter.ui.basechooser
 
+<<<<<<< HEAD
 import android.icu.util.Currency
+=======
+>>>>>>> release/v2.0.1
 import androidx.hilt.lifecycle.ViewModelInject
-import androidx.lifecycle.*
-import kotlinx.coroutines.*
-import ru.okcode.currencyconverter.model.processor.TextProcessor
-import ru.okcode.currencyconverter.model.repositories.ConfigRepository
-import ru.okcode.currencyconverter.util.getFlagRes
+import androidx.lifecycle.ViewModel
+import io.reactivex.Observable
+import io.reactivex.functions.BiFunction
+import io.reactivex.subjects.BehaviorSubject
+import io.reactivex.subjects.PublishSubject
+import ru.okcode.currencyconverter.mvibase.MviViewModel
+import ru.okcode.currencyconverter.ui.basechooser.BaseChooserAction.*
+import ru.okcode.currencyconverter.ui.basechooser.BaseChooserIntent.*
+import ru.okcode.currencyconverter.ui.basechooser.BaseChooserResult.*
 
 class BaseChooserViewModel @ViewModelInject constructor(
+<<<<<<< HEAD
     private val configRepository: ConfigRepository,
     private val textProcessor: TextProcessor
 ) : ViewModel() {
+=======
+    actionProcessorHolder: BaseChooserProcessorHolder,
+) : ViewModel(), MviViewModel<BaseChooserIntent, BaseChooserViewState> {
+>>>>>>> release/v2.0.1
 
-    private val job = Job()
-    private val scope = CoroutineScope(Dispatchers.Main + job)
+    private val intentsPublisher =
+        PublishSubject.create<BaseChooserIntent>()
 
-    private val _currencyCodeDataSource = MutableLiveData<String>()
-    val currencyDataSource: LiveData<Currency> =
-        Transformations.map(_currencyCodeDataSource) { currencyCode ->
-            Currency.getInstance(currencyCode)
-        }
+    private val viewStateBehavior =
+        BehaviorSubject.create<BaseChooserViewState>()
 
-    val currencyAmountDateSource: LiveData<String> = textProcessor.displayValueDataSource
-
-    val currencyFlag: LiveData<Int> = Transformations.map(currencyDataSource) { currency ->
-        currency.getFlagRes()
+    override fun processIntents(intents: Observable<BaseChooserIntent>) {
+        intents.subscribe(intentsPublisher)
     }
 
-    private val _closeBaseChooser = MutableLiveData<Boolean>()
-    val closeBaseChooser: LiveData<Boolean>
-        get() = _closeBaseChooser
+    override fun states(): Observable<BaseChooserViewState> = viewStateBehavior
 
     init {
-        _closeBaseChooser.value = false
-        textProcessor.setDisplayValue("0")
-    }
-
-    fun setCurrencyCode(currencyCode: String) {
-        _currencyCodeDataSource.value = currencyCode
-    }
-
-    override fun onCleared() {
-        job.cancel()
-        super.onCleared()
-    }
-
-    private fun updateBase(currencyCode: String) {
-        val resultValue: Float = textProcessor.getNumberValue()
-
-        scope.launch {
-            withContext(Dispatchers.IO) {
-                configRepository.changeBase(currencyCode, resultValue)
+        intentsPublisher
+            .map(this::actionFromIntent)
+            .compose(actionProcessorHolder.actionProcessor)
+            .scan(BaseChooserViewState.idle(), reducer)
+            .filter {
+                it.currency != null
             }
+            .subscribe(viewStateBehavior)
+    }
+
+    private fun actionFromIntent(intent: BaseChooserIntent): BaseChooserAction {
+        return when (intent) {
+            is PressDigitIntent -> PressDigitAction(intent.digitOperand)
+            is PressAdditionalIntent -> PressAdditionalAction(intent.additionalOperand)
+            is PressCalculationIntent -> PressCalculationAction(
+                intent.currencyCode,
+                intent.calculation
+            )
+            is LoadCurrencyInfoIntent -> {
+                return LoadCurrencyInfoAction(
+                    intent.currencyCode,
+                    intent.currencyAmount
+                )
+            }
+            is CancelIntent -> CancelAction
         }
     }
 
-    fun onClickDigit(digit: Int) {
-        textProcessor.pressDigit(digit)
-    }
+    companion object {
+        private val reducer =
+            BiFunction { previousState: BaseChooserViewState, result: BaseChooserResult ->
+                when (result) {
+                    is PressDigitResult -> when (result) {
+                        is PressDigitResult.Success -> {
+                            previousState.copy(
+                                displayValue = result.displayValue,
+                                closingByOkResult = false,
+                                closingByCancel = false,
+                                error = null,
+                            )
+                        }
+                        is PressDigitResult.Failure -> {
+                            previousState.copy(
+                                closingByOkResult = false,
+                                closingByCancel = false,
+                                error = result.error
+                            )
+                        }
+                    }
 
-    fun onClickComma() {
-        textProcessor.pressComma()
-    }
+                    is PressAdditionalResult -> when (result) {
+                        is PressAdditionalResult.Success -> {
+                            previousState.copy(
+                                displayValue = result.displayValue,
+                                closingByOkResult = false,
+                                closingByCancel = false,
+                                error = null,
+                            )
+                        }
+                        is PressAdditionalResult.Failure -> {
+                            previousState.copy(
+                                closingByOkResult = false,
+                                closingByCancel = false,
+                                error = result.error
+                            )
+                        }
+                    }
 
-    fun onClickErase() {
-        textProcessor.pressErase()
-    }
+                    is ClosingByOkResult -> when (result) {
+                        is ClosingByOkResult.Success -> {
+                            previousState.copy(
+                                displayValue = result.amountAsText,
+                                closingByOkResult = true,
+                                closingByCancel = false,
+                                error = null
+                            )
+                        }
+                        is ClosingByOkResult.Failure -> {
+                            previousState.copy(
+                                closingByOkResult = false,
+                                closingByCancel = false,
+                                error = result.error
+                            )
+                        }
+                    }
 
-    fun onClickOkFixedValue(currencyCode: String, amount: Float) {
-        textProcessor.setDisplayValue(amount.toString())
-        updateBase(currencyCode)
-        _closeBaseChooser.value = true
-    }
+                    is LoadCurrencyInfoResult -> when (result) {
+                        is LoadCurrencyInfoResult.Success -> {
+                            previousState.copy(
+                                currency = result.currency,
+                                flagRes = result.flagRes,
+                                displayValue = result.displayValue,
+                                closingByOkResult = false,
+                                closingByCancel = false,
+                                error = null
+                            )
+                        }
+                        is LoadCurrencyInfoResult.Failure -> {
+                            previousState.copy(
+                                closingByOkResult = false,
+                                closingByCancel = false,
+                                error = result.error
+                            )
+                        }
+                    }
 
-    fun onClickOk(currencyCode: String) {
-        updateBase(currencyCode)
-        _closeBaseChooser.value = true
+                    is ClosingByCancel -> when (result) {
+                        is ClosingByCancel.Success -> {
+                            previousState.copy(
+                                closingByOkResult = false,
+                                closingByCancel = true,
+                                error = null
+                            )
+                        }
+                        is ClosingByCancel.Failure -> {
+                            previousState.copy(
+                                closingByOkResult = false,
+                                closingByCancel = false,
+                                error = result.error
+                            )
+                        }
+                    }
+                }
+
+            }
     }
 }
