@@ -15,4 +15,6 @@
     <string name="no_data_received">Данные не получены</string>
     <string name="menu_edit_currency_list">Редактирование списка валют</string>
     <string name="menu_update_rates">Обновление курсов валют</string>
+    <string name="title_activity_edit_currencies_list">Редактирование списка валют</string>
+    <string name="add_currencies_to_the_visible_list">Добавить валюты в отображаемый список</string>
 </resources>

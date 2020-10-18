@@ -5,6 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import ru.okcode.currencyconverter.R
 import ru.okcode.currencyconverter.data.model.ConfiguredCurrency
@@ -13,7 +14,7 @@ class EditCurrenciesListAdapter : RecyclerView.Adapter<EditCurrenciesListAdapter
 
     private var currencies: List<ConfiguredCurrency> = emptyList()
 
-    class ViewHolder private constructor(itemView: View): RecyclerView.ViewHolder(itemView) {
+    class ViewHolder private constructor(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val priorityPosition = itemView.findViewById<TextView>(R.id.position)
         private val currencyFlag = itemView.findViewById<ImageView>(R.id.currency_flag)
         private val currencyCode = itemView.findViewById<TextView>(R.id.currency_code)
@@ -37,7 +38,7 @@ class EditCurrenciesListAdapter : RecyclerView.Adapter<EditCurrenciesListAdapter
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EditCurrenciesListAdapter.ViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder.from(parent)
     }
 
@@ -48,8 +49,31 @@ class EditCurrenciesListAdapter : RecyclerView.Adapter<EditCurrenciesListAdapter
     override fun getItemCount(): Int = currencies.size
 
     fun setCurrencies(currencies: List<ConfiguredCurrency>) {
+
+        val oldCurrencies = this.currencies
+        val newCurrencies = currencies
+
+        val diffCallback = object : DiffUtil.Callback() {
+            override fun getOldListSize(): Int = oldCurrencies.size
+
+            override fun getNewListSize(): Int = newCurrencies.size
+
+            override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+                return oldCurrencies[oldItemPosition].currencyCode ==
+                        newCurrencies[newItemPosition].currencyCode
+            }
+
+            override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+                return oldCurrencies[oldItemPosition] == newCurrencies[newItemPosition]
+            }
+
+        }
+
+        val diffResult = DiffUtil.calculateDiff(diffCallback)
+
         this.currencies = currencies
-        notifyDataSetChanged()
+
+        diffResult.dispatchUpdatesTo(this)
     }
 
 }

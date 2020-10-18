@@ -218,7 +218,6 @@ class OverviewFragment : Fragment(),
         // Render recyclerView Rates
         if (!state.readyData.rates.isNullOrEmpty()) {
             adaptor.setData(state.readyData)
-            recyclerView.post { adaptor.notifyDataSetChanged() }
         }
     }
 

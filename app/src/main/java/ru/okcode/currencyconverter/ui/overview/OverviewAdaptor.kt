@@ -6,10 +6,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.cardview.widget.CardView
-import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import ru.okcode.currencyconverter.R
+import ru.okcode.currencyconverter.data.model.Rate
 import ru.okcode.currencyconverter.data.model.Rates
 
 class OverviewAdaptor(private val rateListListener: OverviewListener) :
@@ -75,7 +75,32 @@ class OverviewAdaptor(private val rateListListener: OverviewListener) :
         }
     }
 
-    fun setData(data: Rates) {
-        ratesData = data
+    fun setData(newRates: Rates) {
+        val oldRatesList = ratesData.rates
+        val newRatesList = newRates.rates
+
+        val diffCallback = object : DiffUtil.Callback() {
+
+            override fun getOldListSize(): Int = oldRatesList.size
+
+            override fun getNewListSize(): Int = newRatesList.size
+
+            override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+                return oldRatesList[oldItemPosition].currencyCode ==
+                        newRatesList[newItemPosition].currencyCode
+            }
+
+            override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+                return oldRatesList[oldItemPosition] == newRatesList[newItemPosition]
+            }
+
+        }
+
+        val diff = DiffUtil.calculateDiff(diffCallback)
+
+        ratesData = newRates
+
+        diff.dispatchUpdatesTo(this)
     }
+
 }
