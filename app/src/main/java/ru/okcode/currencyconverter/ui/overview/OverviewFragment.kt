@@ -86,10 +86,10 @@ class OverviewFragment : Fragment(),
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
-//            R.id.edit_currency_list -> {
-//                editRatesListPublisher.onNext(OverviewIntent.EditCurrencyListIntent)
-//                true
-//            }
+            R.id.edit_currency_list -> {
+                editRatesListPublisher.onNext(OverviewIntent.EditCurrencyListIntent)
+                true
+            }
             R.id.update_rates -> {
                 updateRatesPublisher.onNext(OverviewIntent.UpdateRatesIntent)
                 true

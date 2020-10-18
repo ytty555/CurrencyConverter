@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/item"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/item"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="4dp"
@@ -17,32 +17,13 @@
         android:paddingEnd="8dp"
         android:paddingBottom="4dp">
 
-        <androidx.cardview.widget.CardView
-            android:id="@+id/flag_cardview"
-            android:layout_width="68dp"
-            android:layout_height="40dp"
-            app:cardBackgroundColor="@android:color/darker_gray"
-            app:cardCornerRadius="5dp"
-            app:cardElevation="2dp"
+        <include
+            layout="@layout/flag_field"
+            android:layout_width="66dp"
+            android:layout_height="38dp"
             app:layout_constraintBottom_toBottomOf="@+id/currency_name"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/currency_code">
-
-            <androidx.cardview.widget.CardView
-                android:layout_width="66dp"
-                android:layout_height="38dp"
-                app:cardCornerRadius="5dp">
-
-                <ImageView
-                    android:id="@+id/currency_flag"
-                    android:layout_width="68dp"
-                    android:layout_height="40dp"
-                    android:contentDescription="@string/country_flag_of_the_currency"
-                    android:scaleType="fitCenter" />
-
-            </androidx.cardview.widget.CardView>
-
-        </androidx.cardview.widget.CardView>
+            app:layout_constraintTop_toTopOf="@+id/currency_code" />
 
         <TextView
             android:id="@+id/currency_code"

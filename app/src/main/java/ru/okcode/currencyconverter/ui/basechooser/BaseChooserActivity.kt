@@ -1,4 +1,4 @@
-package ru.okcode.currencyconverter.ui
+package ru.okcode.currencyconverter.ui.basechooser
 
 import android.content.Intent
 import android.content.res.Configuration
@@ -10,7 +10,7 @@ import com.google.android.gms.ads.AdView
 import com.google.android.gms.ads.MobileAds
 import dagger.hilt.android.AndroidEntryPoint
 import ru.okcode.currencyconverter.R
-import ru.okcode.currencyconverter.ui.basechooser.BaseChooserFragment
+import ru.okcode.currencyconverter.ui.RatesListActivity
 
 @AndroidEntryPoint
 class BaseChooserActivity : AppCompatActivity(), BaseChooserFragment.OnOkResultListener {
