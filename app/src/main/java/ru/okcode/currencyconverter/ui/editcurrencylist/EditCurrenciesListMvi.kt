@@ -11,10 +11,17 @@ import ru.okcode.currencyconverter.mvibase.MviViewState
  */
 sealed class EditCurrenciesListIntent : MviIntent {
     object LoadCurrenciesFromConfigIntent : EditCurrenciesListIntent()
-    object SaveCurrenciesToConfigIntent: EditCurrenciesListIntent()
-    object AddCurrencyIntent : EditCurrenciesListIntent()
-    object RemoveCurrencyIntent : EditCurrenciesListIntent()
-    object MoveCurrencyIntent : EditCurrenciesListIntent()
+    data class SaveCurrenciesToConfigIntent(val configuredCurrencies: List<ConfiguredCurrency>) :
+        EditCurrenciesListIntent()
+
+    data class AddCurrencyIntent(val configuredCurrencies: List<ConfiguredCurrency>) :
+        EditCurrenciesListIntent()
+
+    data class RemoveCurrencyIntent(val configuredCurrencies: List<ConfiguredCurrency>) :
+        EditCurrenciesListIntent()
+
+    data class MoveCurrencyIntent(val configuredCurrencies: List<ConfiguredCurrency>) :
+        EditCurrenciesListIntent()
 }
 
 /**
@@ -22,10 +29,17 @@ sealed class EditCurrenciesListIntent : MviIntent {
  */
 sealed class EditCurrenciesListAction : MviAction {
     object LoadCurrenciesFromConfigAction : EditCurrenciesListAction()
-    object SaveCurrenciesToConfigAction : EditCurrenciesListAction()
-    object AddCurrencyAction : EditCurrenciesListAction()
-    object RemoveCurrencyAction : EditCurrenciesListAction()
-    object MoveCurrencyAction : EditCurrenciesListAction()
+    data class SaveCurrenciesToConfigAction(val configuredCurrencies: List<ConfiguredCurrency>) :
+        EditCurrenciesListAction()
+
+    data class AddCurrencyAction(val configuredCurrencies: List<ConfiguredCurrency>) :
+        EditCurrenciesListAction()
+
+    data class RemoveCurrencyAction(val configuredCurrencies: List<ConfiguredCurrency>) :
+        EditCurrenciesListAction()
+
+    data class MoveCurrencyAction(val configuredCurrencies: List<ConfiguredCurrency>) :
+        EditCurrenciesListAction()
 }
 
 /**
@@ -46,17 +60,17 @@ sealed class EditCurrenciesListResult : MviResult {
     }
 
     sealed class AddCurrencyResult : EditCurrenciesListResult() {
-        object Success : AddCurrencyResult()
+        data class Success(val currencies: List<ConfiguredCurrency>) : AddCurrencyResult()
         data class Failure(val error: Throwable) : AddCurrencyResult()
     }
 
     sealed class RemoveCurrencyResult : EditCurrenciesListResult() {
-        object Success : RemoveCurrencyResult()
+        data class Success(val currencies: List<ConfiguredCurrency>) : RemoveCurrencyResult()
         data class Failure(val error: Throwable) : RemoveCurrencyResult()
     }
 
     sealed class MoveCurrencyResult : EditCurrenciesListResult() {
-        object Success : MoveCurrencyResult()
+        data class Success(val currencies: List<ConfiguredCurrency>) : MoveCurrencyResult()
         data class Failure(val error: Throwable) : MoveCurrencyResult()
     }
 }

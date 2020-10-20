@@ -37,10 +37,10 @@ class EditCurrenciesListViewModel @ViewModelInject constructor(
     private fun actionFromIntent(intent: EditCurrenciesListIntent): EditCurrenciesListAction =
         when (intent) {
             is LoadCurrenciesFromConfigIntent -> LoadCurrenciesFromConfigAction
-            is SaveCurrenciesToConfigIntent -> SaveCurrenciesToConfigAction
-            is AddCurrencyIntent -> AddCurrencyAction
-            is MoveCurrencyIntent -> MoveCurrencyAction
-            is RemoveCurrencyIntent -> RemoveCurrencyAction
+            is SaveCurrenciesToConfigIntent -> SaveCurrenciesToConfigAction(intent.configuredCurrencies)
+            is AddCurrencyIntent -> AddCurrencyAction(intent.configuredCurrencies)
+            is MoveCurrencyIntent -> MoveCurrencyAction(intent.configuredCurrencies)
+            is RemoveCurrencyIntent -> RemoveCurrencyAction(intent.configuredCurrencies)
         }
 
     companion object {
@@ -78,6 +78,7 @@ class EditCurrenciesListViewModel @ViewModelInject constructor(
                     is AddCurrencyResult -> when (result) {
                         is AddCurrencyResult.Success -> {
                             previousState.copy(
+                                currencies = result.currencies,
                                 error = null
                             )
                         }
@@ -90,6 +91,7 @@ class EditCurrenciesListViewModel @ViewModelInject constructor(
                     is MoveCurrencyResult -> when (result) {
                         is MoveCurrencyResult.Success -> {
                             previousState.copy(
+                                currencies = result.currencies,
                                 error = null
                             )
                         }
@@ -102,6 +104,7 @@ class EditCurrenciesListViewModel @ViewModelInject constructor(
                     is RemoveCurrencyResult -> when (result) {
                         is RemoveCurrencyResult.Success -> {
                             previousState.copy(
+                                currencies = result.currencies,
                                 error = null
                             )
                         }

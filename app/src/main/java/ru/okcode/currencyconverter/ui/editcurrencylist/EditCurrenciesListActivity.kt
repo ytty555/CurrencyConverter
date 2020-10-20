@@ -62,7 +62,8 @@ class EditCurrenciesListActivity : AppCompatActivity(),
 
         // FAB
         findViewById<FloatingActionButton>(R.id.fab).setOnClickListener { view ->
-            addPublisher.onNext(AddCurrencyIntent)
+            TODO()
+            //start activity or dialog fragment
         }
     }
 

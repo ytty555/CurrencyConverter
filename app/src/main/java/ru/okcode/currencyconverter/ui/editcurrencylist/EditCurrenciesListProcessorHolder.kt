@@ -67,13 +67,28 @@ class EditCurrenciesListProcessorHolder @Inject constructor(
 
     private val saveCurrenciesToConfig:
             ObservableTransformer<SaveCurrenciesToConfigAction, SaveCurrenciesToConfigResult> =
-        TODO()
+        ObservableTransformer { actions ->
+            actions.flatMap { action ->
+                configRepository.getConfigSingle()
+                    .toObservable()
+                    .flatMap { config ->
+                        val newConfig = config.copy(
+                            configuredCurrencies = action.configuredCurrencies
+                        )
+                        configRepository.saveConfig(newConfig)
+                            .andThen(Observable.just(SaveCurrenciesToConfigResult.Success))
+                    }
+                    .cast(SaveCurrenciesToConfigResult::class.java)
+                    .onErrorReturn(SaveCurrenciesToConfigResult::Failure)
+                    .subscribeOn(Schedulers.io())
+            }
+        }
 
     private val addCurrencyProcessor:
             ObservableTransformer<AddCurrencyAction, AddCurrencyResult> =
         ObservableTransformer { actions ->
-            actions.map {
-                AddCurrencyResult.Success
+            actions.map {action ->
+                AddCurrencyResult.Success(action.configuredCurrencies)
             }
                 .cast(AddCurrencyResult::class.java)
                 .onErrorReturn(AddCurrencyResult::Failure)
@@ -81,11 +96,23 @@ class EditCurrenciesListProcessorHolder @Inject constructor(
 
     private val moveCurrencyProcessor:
             ObservableTransformer<MoveCurrencyAction, MoveCurrencyResult> =
-        TODO()
+        ObservableTransformer { actions ->
+            actions.map {action ->
+                MoveCurrencyResult.Success(action.configuredCurrencies)
+            }
+                .cast(MoveCurrencyResult::class.java)
+                .onErrorReturn(MoveCurrencyResult::Failure)
+        }
 
     private val removeCurrencyProcessor:
             ObservableTransformer<RemoveCurrencyAction, RemoveCurrencyResult> =
-        TODO()
+        ObservableTransformer { actions ->
+            actions.map {action ->
+                RemoveCurrencyResult.Success(action.configuredCurrencies)
+            }
+                .cast(RemoveCurrencyResult::class.java)
+                .onErrorReturn(RemoveCurrencyResult::Failure)
+        }
 
 
 }

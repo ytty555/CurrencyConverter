@@ -2,6 +2,7 @@ package ru.okcode.currencyconverter.data.repository
 
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.OnLifecycleEvent
+import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
@@ -56,10 +57,15 @@ class ConfigRepositoryImpl @Inject constructor(
             }
     }
 
-    override fun saveConfig(config: Config) {
-        configDao.insertConfig(
-            configMapper.mapToEntity(config)
-        )
+    override fun saveConfig(config: Config): Completable {
+        return try {
+            configDao.insertConfig(
+                configMapper.mapToEntity(config)
+            )
+            Completable.complete()
+        } catch (error: Throwable) {
+            Completable.error(error)
+        }
     }
 
 }
