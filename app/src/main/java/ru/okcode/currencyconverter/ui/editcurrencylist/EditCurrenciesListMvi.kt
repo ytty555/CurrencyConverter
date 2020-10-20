@@ -9,44 +9,55 @@ import ru.okcode.currencyconverter.mvibase.MviViewState
 /**
  * EditCurrenciesList Intent
  */
-sealed class EditCurrenciesListIntent: MviIntent {
-    object AddCurrencyIntent: EditCurrenciesListIntent()
-    object RemoveCurrencyIntent: EditCurrenciesListIntent()
-    object MoveCurrencyIntent: EditCurrenciesListIntent()
+sealed class EditCurrenciesListIntent : MviIntent {
+    object LoadCurrenciesFromConfigIntent : EditCurrenciesListIntent()
+    object SaveCurrenciesToConfigIntent: EditCurrenciesListIntent()
+    object AddCurrencyIntent : EditCurrenciesListIntent()
+    object RemoveCurrencyIntent : EditCurrenciesListIntent()
+    object MoveCurrencyIntent : EditCurrenciesListIntent()
 }
 
 /**
  * EditCurrenciesList Action
  */
-sealed class EditCurrenciesListAction: MviAction {
-    object AddCurrencyAction: EditCurrenciesListAction()
-    object RemoveCurrencyAction: EditCurrenciesListAction()
-    object MoveCurrencyAction: EditCurrenciesListAction()
+sealed class EditCurrenciesListAction : MviAction {
+    object LoadCurrenciesFromConfigAction : EditCurrenciesListAction()
+    object SaveCurrenciesToConfigAction : EditCurrenciesListAction()
+    object AddCurrencyAction : EditCurrenciesListAction()
+    object RemoveCurrencyAction : EditCurrenciesListAction()
+    object MoveCurrencyAction : EditCurrenciesListAction()
 }
 
 /**
  * EditCurrenciesList Result
  */
-sealed class EditCurrenciesListResult: MviResult {
+sealed class EditCurrenciesListResult : MviResult {
 
-    sealed class AddCurrencyResult: EditCurrenciesListResult() {
-        object Success: AddCurrencyResult()
-        data class Failure(val error: Throwable): AddCurrencyResult()
+    sealed class LoadCurrenciesFromConfigResult : EditCurrenciesListResult() {
+        data class Success(val currencies: List<ConfiguredCurrency>) :
+            LoadCurrenciesFromConfigResult()
+
+        data class Failure(val error: Throwable) : LoadCurrenciesFromConfigResult()
     }
 
-    sealed class RemoveCurrencyResult: EditCurrenciesListResult() {
-        object Success: RemoveCurrencyResult()
-        data class Failure(val error: Throwable): RemoveCurrencyResult()
+    sealed class SaveCurrenciesToConfigResult : EditCurrenciesListResult() {
+        object Success : SaveCurrenciesToConfigResult()
+        data class Failure(val error: Throwable) : SaveCurrenciesToConfigResult()
     }
 
-    sealed class MoveCurrencyResult: EditCurrenciesListResult() {
-        object Success: MoveCurrencyResult()
-        data class Failure(val error: Throwable): MoveCurrencyResult()
+    sealed class AddCurrencyResult : EditCurrenciesListResult() {
+        object Success : AddCurrencyResult()
+        data class Failure(val error: Throwable) : AddCurrencyResult()
     }
 
-    sealed class ListenConfigChangedResult: EditCurrenciesListResult() {
-        data class Success(val currencies: List<ConfiguredCurrency>): ListenConfigChangedResult()
-        data class Failure(val error: Throwable): ListenConfigChangedResult()
+    sealed class RemoveCurrencyResult : EditCurrenciesListResult() {
+        object Success : RemoveCurrencyResult()
+        data class Failure(val error: Throwable) : RemoveCurrencyResult()
+    }
+
+    sealed class MoveCurrencyResult : EditCurrenciesListResult() {
+        object Success : MoveCurrencyResult()
+        data class Failure(val error: Throwable) : MoveCurrencyResult()
     }
 }
 
@@ -56,7 +67,7 @@ sealed class EditCurrenciesListResult: MviResult {
 data class EditCurrenciesListViewState(
     val currencies: List<ConfiguredCurrency>,
     val error: Throwable?
-): MviViewState {
+) : MviViewState {
     companion object {
         fun idle(): EditCurrenciesListViewState {
             return EditCurrenciesListViewState(emptyList(), null)

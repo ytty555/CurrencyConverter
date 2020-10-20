@@ -5,9 +5,7 @@ import androidx.lifecycle.ViewModel
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.BiFunction
-import io.reactivex.processors.BehaviorProcessor
 import io.reactivex.subjects.PublishSubject
-import ru.okcode.currencyconverter.data.repository.ConfigRepository
 import ru.okcode.currencyconverter.mvibase.MviViewModel
 import ru.okcode.currencyconverter.ui.editcurrencylist.EditCurrenciesListAction.*
 import ru.okcode.currencyconverter.ui.editcurrencylist.EditCurrenciesListIntent.*
@@ -16,33 +14,12 @@ import timber.log.Timber
 
 class EditCurrenciesListViewModel @ViewModelInject constructor(
     private val processorHolder: EditCurrenciesListProcessorHolder,
-    private val configRepository: ConfigRepository
 ) : ViewModel(),
     MviViewModel<EditCurrenciesListIntent, EditCurrenciesListViewState> {
 
     private val intentsPublisher =
         PublishSubject.create<EditCurrenciesListIntent>()
 
-    private val configChangedBehavior =
-        BehaviorProcessor.create<ListenConfigChangedResult>()
-
-    init {
-        listenConfigChanged()
-    }
-
-    private fun listenConfigChanged() {
-        configRepository.getConfigFlowable()
-            .map { config ->
-                processorHolder.getConfiguredCurrencyList(config)
-                    .map { currencies ->
-                        ListenConfigChangedResult.Success(currencies)
-                    }
-            }
-            .cast(ListenConfigChangedResult::class.java)
-            .onErrorReturn(ListenConfigChangedResult::Failure)
-            .doOnNext { Timber.d("config changed") }
-            .subscribe(configChangedBehavior)
-    }
 
     override fun processIntents(intents: Observable<EditCurrenciesListIntent>) {
         intents.subscribe(intentsPublisher)
@@ -52,7 +29,6 @@ class EditCurrenciesListViewModel @ViewModelInject constructor(
         intentsPublisher
             .map(this::actionFromIntent)
             .compose(processorHolder.actionProcessor)
-            .mergeWith(configChangedBehavior.toObservable())
             .scan(EditCurrenciesListViewState.idle(), reducer)
             .observeOn(AndroidSchedulers.mainThread())
             .doOnNext { Timber.d("new EditCurrenciesListViewState $it") }
@@ -60,6 +36,8 @@ class EditCurrenciesListViewModel @ViewModelInject constructor(
 
     private fun actionFromIntent(intent: EditCurrenciesListIntent): EditCurrenciesListAction =
         when (intent) {
+            is LoadCurrenciesFromConfigIntent -> LoadCurrenciesFromConfigAction
+            is SaveCurrenciesToConfigIntent -> SaveCurrenciesToConfigAction
             is AddCurrencyIntent -> AddCurrencyAction
             is MoveCurrencyIntent -> MoveCurrencyAction
             is RemoveCurrencyIntent -> RemoveCurrencyAction
@@ -72,14 +50,26 @@ class EditCurrenciesListViewModel @ViewModelInject constructor(
                 EditCurrenciesListViewState> =
             BiFunction { previousState: EditCurrenciesListViewState, result: EditCurrenciesListResult ->
                 when (result) {
-                    is ListenConfigChangedResult -> when (result) {
-                        is ListenConfigChangedResult.Success -> {
+                    is LoadCurrenciesFromConfigResult -> when (result) {
+                        is LoadCurrenciesFromConfigResult.Success -> {
                             previousState.copy(
                                 currencies = result.currencies,
                                 error = null
                             )
                         }
-                        is ListenConfigChangedResult.Failure -> {
+                        is LoadCurrenciesFromConfigResult.Failure -> {
+                            previousState.copy(
+                                error = result.error
+                            )
+                        }
+                    }
+                    is SaveCurrenciesToConfigResult -> when (result) {
+                        is SaveCurrenciesToConfigResult.Success -> {
+                            previousState.copy(
+                                error = null
+                            )
+                        }
+                        is SaveCurrenciesToConfigResult.Failure -> {
                             previousState.copy(
                                 error = result.error
                             )

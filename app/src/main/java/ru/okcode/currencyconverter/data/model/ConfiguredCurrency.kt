@@ -5,4 +5,5 @@ data class ConfiguredCurrency(
     val currencyName: String,
     val flagRes: Int?,
     val positionInList: Int,
+    val isVisible: Boolean
 )

@@ -13,7 +13,7 @@ class ConfigMapper @Inject constructor() : ModelMapper<ConfigEntity, Config> {
         return Config(
             baseCurrencyCode = entity.baseCurrencyCode,
             baseCurrencyAmount = entity.baseCurrencyAmount,
-            visibleCurrencies = entity.visibleCurrencies
+            configuredCurrencies = entity.configuredCurrencies
         )
     }
 
@@ -21,7 +21,7 @@ class ConfigMapper @Inject constructor() : ModelMapper<ConfigEntity, Config> {
         return ConfigEntity(
             baseCurrencyCode = model.baseCurrencyCode,
             baseCurrencyAmount = model.baseCurrencyAmount,
-            visibleCurrencies = model.visibleCurrencies
+            configuredCurrencies = model.configuredCurrencies
         )
     }
 }
