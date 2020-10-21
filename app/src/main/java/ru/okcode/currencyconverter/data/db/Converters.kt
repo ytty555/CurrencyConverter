@@ -1,7 +1,7 @@
 package ru.okcode.currencyconverter.data.db
 
-import android.icu.math.BigDecimal
 import androidx.room.TypeConverter
+import ru.okcode.currencyconverter.data.model.ConfiguredCurrency
 import java.util.*
 import java.util.stream.Collectors
 

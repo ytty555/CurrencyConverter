@@ -9,7 +9,7 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import ru.okcode.currencyconverter.data.db.config.ConfigDao
-import ru.okcode.currencyconverter.data.db.config.ConfigEntity
+import ru.okcode.currencyconverter.data.db.config.ConfigHeaderWithCurrencies
 import ru.okcode.currencyconverter.data.db.config.ConfigMapper
 import ru.okcode.currencyconverter.data.model.Config
 import javax.inject.Inject
@@ -36,7 +36,7 @@ class ConfigRepositoryImpl @Inject constructor(
             .subscribeOn(Schedulers.io())
             .subscribeBy(
                 onError = {
-                    configDao.insertConfig(ConfigEntity.createDefaultConfig())
+                    configDao.insertConfig(ConfigHeaderWithCurrencies.createDefaultConfig())
                 }
             )
         disposables.add(checkForEmptyConfigDisposable)

@@ -9,10 +9,13 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import ru.okcode.currencyconverter.R
 import ru.okcode.currencyconverter.data.model.ConfiguredCurrency
+import java.util.*
 
-class EditCurrenciesListAdapter : RecyclerView.Adapter<EditCurrenciesListAdapter.ViewHolder>() {
+class EditCurrenciesListApapter :
+    RecyclerView.Adapter<EditCurrenciesListApapter.ViewHolder>(),
+    EditListItemTouchHelperApapter {
 
-    private var currencies: List<ConfiguredCurrency> = emptyList()
+    private var currencies: MutableList<ConfiguredCurrency> = mutableListOf()
 
     class ViewHolder private constructor(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val priorityPosition = itemView.findViewById<TextView>(R.id.position)
@@ -48,7 +51,7 @@ class EditCurrenciesListAdapter : RecyclerView.Adapter<EditCurrenciesListAdapter
 
     override fun getItemCount(): Int = currencies.size
 
-    fun setCurrencies(currencies: List<ConfiguredCurrency>) {
+    fun setCurrencies(currencies: MutableList<ConfiguredCurrency>) {
 
         val oldCurrencies = this.currencies
         val newCurrencies = currencies
@@ -74,6 +77,26 @@ class EditCurrenciesListAdapter : RecyclerView.Adapter<EditCurrenciesListAdapter
         this.currencies = currencies
 
         diffResult.dispatchUpdatesTo(this)
+    }
+
+    override fun onItemMove(fromPosition: Int, toPosition: Int) {
+        if (fromPosition < toPosition) {
+            for (i in fromPosition..toPosition) {
+                Collections.swap(currencies, i, i + 1)
+            }
+        } else {
+            for (i in fromPosition..toPosition) {
+                Collections.swap(currencies, i, i - 1)
+            }
+        }
+
+        notifyItemMoved(fromPosition, toPosition)
+    }
+
+    override fun onItemDismiss(position: Int) {
+        currencies.removeAt(position)
+
+        notifyItemRemoved(position)
     }
 
 }

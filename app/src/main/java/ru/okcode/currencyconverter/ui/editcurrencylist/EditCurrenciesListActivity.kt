@@ -6,6 +6,7 @@ import android.view.MenuItem
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -19,6 +20,7 @@ import ru.okcode.currencyconverter.data.model.ConfiguredCurrency
 import ru.okcode.currencyconverter.mvibase.MviView
 import ru.okcode.currencyconverter.ui.RatesListActivity
 import ru.okcode.currencyconverter.ui.editcurrencylist.EditCurrenciesListIntent.*
+import timber.log.Timber
 
 @AndroidEntryPoint
 class EditCurrenciesListActivity : AppCompatActivity(),
@@ -40,6 +42,8 @@ class EditCurrenciesListActivity : AppCompatActivity(),
     // View elements
     private lateinit var coordinatorLayout: CoordinatorLayout
 
+    private lateinit var adapter: EditCurrenciesListApapter
+
     /**
      * onCreate
      */
@@ -54,7 +58,12 @@ class EditCurrenciesListActivity : AppCompatActivity(),
 
         // RecyclerView Edit currencies list
         val recyclerView: RecyclerView = findViewById(R.id.currencies_recyclerview)
-        val adapter = EditCurrenciesListAdapter()
+        adapter = EditCurrenciesListApapter()
+
+        val callback: ItemTouchHelper.Callback = EditItemTouchHelperCallback(adapter)
+        val touchHelper: ItemTouchHelper = ItemTouchHelper(callback)
+        touchHelper.attachToRecyclerView(recyclerView)
+
         val layoutManager = LinearLayoutManager(this)
 
         recyclerView.layoutManager = layoutManager
@@ -101,10 +110,15 @@ class EditCurrenciesListActivity : AppCompatActivity(),
      */
     override fun intents(): Observable<EditCurrenciesListIntent> {
         return Observable.merge(
+            loadCurrencyFromConfig(),
             addIntent(),
             moveIntent(),
             removeIntent()
         )
+    }
+
+    private fun loadCurrencyFromConfig(): Observable<LoadCurrenciesFromConfigIntent> {
+        return Observable.just(LoadCurrenciesFromConfigIntent)
     }
 
     private fun addIntent(): Observable<AddCurrencyIntent> {
@@ -131,6 +145,7 @@ class EditCurrenciesListActivity : AppCompatActivity(),
     }
 
     private fun renderError(error: Throwable) {
+        Timber.d("renderError")
         Snackbar.make(
             coordinatorLayout,
             error.localizedMessage ?: "Unknown error",
@@ -139,6 +154,11 @@ class EditCurrenciesListActivity : AppCompatActivity(),
     }
 
     private fun renderData(currencies: List<ConfiguredCurrency>) {
+        Timber.d("renderData")
+        val sortedCurrencies = currencies.sortedBy {
+            it.positionInList
+        }
 
+        adapter.setCurrencies(sortedCurrencies.toMutableList())
     }
 }

@@ -21,7 +21,8 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <include layout="@layout/edit_currencies_list_content"/>
+    <include
+        layout="@layout/edit_currencies_list_content" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab"
@@ -29,7 +30,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
-        app:srcCompat="@drawable/ic_add"
-        android:contentDescription="@string/add_currencies_to_the_visible_list" />
+        android:contentDescription="@string/add_currencies_to_the_visible_list"
+        app:srcCompat="@drawable/ic_add" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
