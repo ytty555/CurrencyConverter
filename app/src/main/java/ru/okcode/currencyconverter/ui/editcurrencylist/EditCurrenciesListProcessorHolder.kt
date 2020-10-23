@@ -98,7 +98,7 @@ class EditCurrenciesListProcessorHolder @Inject constructor(
             ObservableTransformer<MoveCurrencyAction, MoveCurrencyResult> =
         ObservableTransformer { actions ->
             actions.map {action ->
-                MoveCurrencyResult.Success(action.configuredCurrencies)
+                MoveCurrencyResult.Success(action.currencyCode, action.priorityPosition)
             }
                 .cast(MoveCurrencyResult::class.java)
                 .onErrorReturn(MoveCurrencyResult::Failure)

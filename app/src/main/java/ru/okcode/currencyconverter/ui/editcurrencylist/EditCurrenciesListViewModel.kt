@@ -39,7 +39,10 @@ class EditCurrenciesListViewModel @ViewModelInject constructor(
             is LoadCurrenciesFromConfigIntent -> LoadCurrenciesFromConfigAction
             is SaveCurrenciesToConfigIntent -> SaveCurrenciesToConfigAction(intent.configuredCurrencies)
             is AddCurrencyIntent -> AddCurrencyAction(intent.configuredCurrencies)
-            is MoveCurrencyIntent -> MoveCurrencyAction(intent.configuredCurrencies)
+            is MoveCurrencyIntent -> MoveCurrencyAction(
+                intent.currencyCode,
+                intent.priorityPosition
+            )
             is RemoveCurrencyIntent -> RemoveCurrencyAction(intent.configuredCurrencies)
         }
 
@@ -90,8 +93,15 @@ class EditCurrenciesListViewModel @ViewModelInject constructor(
                     }
                     is MoveCurrencyResult -> when (result) {
                         is MoveCurrencyResult.Success -> {
+                            val newCurrencies =
+                                previousState.currencies.toMutableList()
+                            for (currency in newCurrencies) {
+                                if (currency.currencyCode == result.currencyCode) {
+                                    currency.positionInList = result.priorityPosition
+                                }
+                            }
                             previousState.copy(
-                                currencies = result.currencies,
+                                currencies = newCurrencies,
                                 error = null
                             )
                         }

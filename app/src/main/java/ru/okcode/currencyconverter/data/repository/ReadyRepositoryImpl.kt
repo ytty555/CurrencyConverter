@@ -2,12 +2,11 @@ package ru.okcode.currencyconverter.data.repository
 
 import io.reactivex.Observable
 import io.reactivex.functions.BiFunction
-import ru.okcode.currencyconverter.data.model.ready.ReadyRates
-import ru.okcode.currencyconverter.data.model.ready.decorator.BaseChangeDecorator
-import ru.okcode.currencyconverter.data.model.ready.decorator.CurrencyPriorityChangeDecorator
-import ru.okcode.currencyconverter.data.model.ready.decorator.CurrencyVisibilityChangeDecorator
 import ru.okcode.currencyconverter.data.model.Config
 import ru.okcode.currencyconverter.data.model.Rates
+import ru.okcode.currencyconverter.data.model.ready.ReadyRates
+import ru.okcode.currencyconverter.data.model.ready.decorator.BaseChangeDecorator
+import ru.okcode.currencyconverter.data.model.ready.decorator.CurrencyPriorityAndVisibilityChangeDecorator
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -21,7 +20,7 @@ class ReadyRepositoryImpl @Inject constructor(
     private val rawRatesDataSource: Observable<Rates> =
         rawRatesRepository.getRatesObservable()
             .toObservable()
-            .doOnNext{
+            .doOnNext {
                 Timber.d("Cache changed")
             }
 
@@ -30,7 +29,7 @@ class ReadyRepositoryImpl @Inject constructor(
         configRepository.getConfigFlowable()
             .toObservable()
             .distinctUntilChanged()
-            .doOnNext{
+            .doOnNext {
                 Timber.d("Config changed $it")
             }
 
@@ -45,12 +44,10 @@ class ReadyRepositoryImpl @Inject constructor(
 
     private fun conversion() = BiFunction { rawRates: Rates, config: Config ->
         val readyRatesDecorator =
-            CurrencyVisibilityChangeDecorator(
-                CurrencyPriorityChangeDecorator(
-                    BaseChangeDecorator(
-                        readyRates,
-                        config
-                    ), config
+            CurrencyPriorityAndVisibilityChangeDecorator(
+                BaseChangeDecorator(
+                    readyRates,
+                    config
                 ), config
             )
 

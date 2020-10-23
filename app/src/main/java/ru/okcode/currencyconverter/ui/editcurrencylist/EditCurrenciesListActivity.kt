@@ -24,7 +24,7 @@ import timber.log.Timber
 
 @AndroidEntryPoint
 class EditCurrenciesListActivity : AppCompatActivity(),
-    MviView<EditCurrenciesListIntent, EditCurrenciesListViewState> {
+    MviView<EditCurrenciesListIntent, EditCurrenciesListViewState>, EditCurrenciesListListener {
 
     private val viewModel: EditCurrenciesListViewModel by viewModels()
     private val disposables = CompositeDisposable()
@@ -39,10 +39,15 @@ class EditCurrenciesListActivity : AppCompatActivity(),
     private val removePublisher =
         PublishSubject.create<RemoveCurrencyIntent>()
 
+    private val saveCurrenciesToConfigPublisher =
+        PublishSubject.create<SaveCurrenciesToConfigIntent>()
+
     // View elements
     private lateinit var coordinatorLayout: CoordinatorLayout
 
-    private lateinit var adapter: EditCurrenciesListApapter
+    private lateinit var recyclerView: RecyclerView
+
+    private lateinit var adapter: EditCurrenciesListAdapter
 
     /**
      * onCreate
@@ -57,11 +62,11 @@ class EditCurrenciesListActivity : AppCompatActivity(),
         coordinatorLayout = findViewById(R.id.edit_list_coordinator)
 
         // RecyclerView Edit currencies list
-        val recyclerView: RecyclerView = findViewById(R.id.currencies_recyclerview)
-        adapter = EditCurrenciesListApapter()
+        recyclerView = findViewById(R.id.currencies_recyclerview)
+        adapter = EditCurrenciesListAdapter(this)
 
         val callback: ItemTouchHelper.Callback = EditItemTouchHelperCallback(adapter)
-        val touchHelper: ItemTouchHelper = ItemTouchHelper(callback)
+        val touchHelper = ItemTouchHelper(callback)
         touchHelper.attachToRecyclerView(recyclerView)
 
         val layoutManager = LinearLayoutManager(this)
@@ -99,11 +104,20 @@ class EditCurrenciesListActivity : AppCompatActivity(),
     override fun onOptionsItemSelected(item: MenuItem) =
         when (item.itemId) {
             android.R.id.home -> {
+                saveCurrenciesToConfigPublisher.onNext(
+                    SaveCurrenciesToConfigIntent(
+                        getEditedCurrencies()
+                    )
+                )
                 navigateUpTo((Intent(this, RatesListActivity::class.java)))
                 true
             }
             else -> super.onOptionsItemSelected(item)
         }
+
+    private fun getEditedCurrencies(): List<ConfiguredCurrency> {
+        TODO()
+    }
 
     /**
      * intents
@@ -154,11 +168,19 @@ class EditCurrenciesListActivity : AppCompatActivity(),
     }
 
     private fun renderData(currencies: List<ConfiguredCurrency>) {
-        Timber.d("renderData")
-        val sortedCurrencies = currencies.sortedBy {
-            it.positionInList
-        }
+        Timber.d("renderData $currencies")
+        val sortedCurrencies = currencies
+            .filter { it.isVisible }
+            .sortedBy { it.positionInList }
 
         adapter.setCurrencies(sortedCurrencies.toMutableList())
+    }
+
+    override fun onItemMove(currencyCode: String, priorityPosition: Int) {
+        movePublisher.onNext(MoveCurrencyIntent(currencyCode, priorityPosition))
+    }
+
+    override fun onItemRemove(currencyCode: String) {
+        TODO("Not yet implemented")
     }
 }

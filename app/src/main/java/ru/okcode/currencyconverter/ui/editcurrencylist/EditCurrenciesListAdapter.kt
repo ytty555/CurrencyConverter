@@ -11,8 +11,8 @@ import ru.okcode.currencyconverter.R
 import ru.okcode.currencyconverter.data.model.ConfiguredCurrency
 import java.util.*
 
-class EditCurrenciesListApapter :
-    RecyclerView.Adapter<EditCurrenciesListApapter.ViewHolder>(),
+class EditCurrenciesListAdapter(private val listener: EditCurrenciesListListener) :
+    RecyclerView.Adapter<EditCurrenciesListAdapter.ViewHolder>(),
     EditListItemTouchHelperApapter {
 
     private var currencies: MutableList<ConfiguredCurrency> = mutableListOf()
@@ -81,14 +81,19 @@ class EditCurrenciesListApapter :
 
     override fun onItemMove(fromPosition: Int, toPosition: Int) {
         if (fromPosition < toPosition) {
-            for (i in fromPosition..toPosition) {
+            for (i in fromPosition until toPosition) {
+                listener.onItemMove(currencies[i].currencyCode, i + 1)
+                listener.onItemMove(currencies[i + 1].currencyCode, i)
                 Collections.swap(currencies, i, i + 1)
             }
         } else {
-            for (i in fromPosition..toPosition) {
+            for (i in fromPosition until toPosition) {
+                listener.onItemMove(currencies[i].currencyCode, i - 1)
+                listener.onItemMove(currencies[i - 1].currencyCode, i)
                 Collections.swap(currencies, i, i - 1)
             }
         }
+
 
         notifyItemMoved(fromPosition, toPosition)
     }

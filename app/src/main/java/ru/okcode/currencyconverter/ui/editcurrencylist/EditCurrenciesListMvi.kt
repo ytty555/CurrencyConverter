@@ -5,6 +5,7 @@ import ru.okcode.currencyconverter.mvibase.MviAction
 import ru.okcode.currencyconverter.mvibase.MviIntent
 import ru.okcode.currencyconverter.mvibase.MviResult
 import ru.okcode.currencyconverter.mvibase.MviViewState
+import java.text.FieldPosition
 
 /**
  * EditCurrenciesList Intent
@@ -20,7 +21,7 @@ sealed class EditCurrenciesListIntent : MviIntent {
     data class RemoveCurrencyIntent(val configuredCurrencies: List<ConfiguredCurrency>) :
         EditCurrenciesListIntent()
 
-    data class MoveCurrencyIntent(val configuredCurrencies: List<ConfiguredCurrency>) :
+    data class MoveCurrencyIntent(val currencyCode: String, val priorityPosition: Int) :
         EditCurrenciesListIntent()
 }
 
@@ -38,7 +39,7 @@ sealed class EditCurrenciesListAction : MviAction {
     data class RemoveCurrencyAction(val configuredCurrencies: List<ConfiguredCurrency>) :
         EditCurrenciesListAction()
 
-    data class MoveCurrencyAction(val configuredCurrencies: List<ConfiguredCurrency>) :
+    data class MoveCurrencyAction(val currencyCode: String, val priorityPosition: Int) :
         EditCurrenciesListAction()
 }
 
@@ -70,7 +71,7 @@ sealed class EditCurrenciesListResult : MviResult {
     }
 
     sealed class MoveCurrencyResult : EditCurrenciesListResult() {
-        data class Success(val currencies: List<ConfiguredCurrency>) : MoveCurrencyResult()
+        data class Success(val currencyCode: String, val priorityPosition: Int) : MoveCurrencyResult()
         data class Failure(val error: Throwable) : MoveCurrencyResult()
     }
 }
