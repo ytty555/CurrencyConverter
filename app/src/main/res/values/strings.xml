@@ -36,4 +36,6 @@
     <string name="title_activity_edit_currencies_list">Edit currencies list</string>
 
     <string name="add_currencies_to_the_visible_list">Add currencies to the visible list</string>
+    <string name="dialog_add_to_list">Check for adding currency to list</string>
+    <string name="cancel">Cancel</string>
 </resources>

@@ -6,6 +6,7 @@ import android.view.MenuItem
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -17,14 +18,22 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.subjects.PublishSubject
 import ru.okcode.currencyconverter.R
 import ru.okcode.currencyconverter.data.model.ConfiguredCurrency
+import ru.okcode.currencyconverter.data.model.changeVisibilityAndPositionBy
+import ru.okcode.currencyconverter.data.model.sort
 import ru.okcode.currencyconverter.mvibase.MviView
 import ru.okcode.currencyconverter.ui.RatesListActivity
+import ru.okcode.currencyconverter.ui.editcurrencylist.AddCurrenciesDialogFragment.AddCurrenciesDialogListener
 import ru.okcode.currencyconverter.ui.editcurrencylist.EditCurrenciesListIntent.*
 import timber.log.Timber
 
 @AndroidEntryPoint
 class EditCurrenciesListActivity : AppCompatActivity(),
-    MviView<EditCurrenciesListIntent, EditCurrenciesListViewState>, EditCurrenciesListListener {
+    MviView<EditCurrenciesListIntent, EditCurrenciesListViewState>,
+    EditListListener,
+    AddCurrenciesDialogListener {
+
+    // Temp result while editing
+    private var tempCurrenciesWhileEditing: List<ConfiguredCurrency> = emptyList()
 
     private val viewModel: EditCurrenciesListViewModel by viewModels()
     private val disposables = CompositeDisposable()
@@ -32,12 +41,6 @@ class EditCurrenciesListActivity : AppCompatActivity(),
     // Intents subjects
     private val addPublisher =
         PublishSubject.create<AddCurrencyIntent>()
-
-    private val movePublisher =
-        PublishSubject.create<MoveCurrencyIntent>()
-
-    private val removePublisher =
-        PublishSubject.create<RemoveCurrencyIntent>()
 
     private val saveCurrenciesToConfigPublisher =
         PublishSubject.create<SaveCurrenciesToConfigIntent>()
@@ -76,8 +79,13 @@ class EditCurrenciesListActivity : AppCompatActivity(),
 
         // FAB
         findViewById<FloatingActionButton>(R.id.fab).setOnClickListener { view ->
-            TODO()
-            //start activity or dialog fragment
+            saveCurrenciesToConfigPublisher.onNext(
+                SaveCurrenciesToConfigIntent(
+                    tempCurrenciesWhileEditing
+                )
+            )
+            val dialog: DialogFragment = AddCurrenciesDialogFragment(this)
+            dialog.show(supportFragmentManager, "addCurrenciesDialog")
         }
     }
 
@@ -104,47 +112,38 @@ class EditCurrenciesListActivity : AppCompatActivity(),
     override fun onOptionsItemSelected(item: MenuItem) =
         when (item.itemId) {
             android.R.id.home -> {
-                saveCurrenciesToConfigPublisher.onNext(
-                    SaveCurrenciesToConfigIntent(
-                        getEditedCurrencies()
+                if (tempCurrenciesWhileEditing.isNotEmpty()) {
+                    saveCurrenciesToConfigPublisher.onNext(
+                        SaveCurrenciesToConfigIntent(tempCurrenciesWhileEditing)
                     )
-                )
+                }
                 navigateUpTo((Intent(this, RatesListActivity::class.java)))
                 true
             }
             else -> super.onOptionsItemSelected(item)
         }
 
-    private fun getEditedCurrencies(): List<ConfiguredCurrency> {
-        TODO()
-    }
-
     /**
      * intents
      */
     override fun intents(): Observable<EditCurrenciesListIntent> {
         return Observable.merge(
-            loadCurrencyFromConfig(),
-            addIntent(),
-            moveIntent(),
-            removeIntent()
+            loadFromConfigIntent(),
+            addToListIntent(),
+            saveToConfigIntent()
         )
     }
 
-    private fun loadCurrencyFromConfig(): Observable<LoadCurrenciesFromConfigIntent> {
+    private fun loadFromConfigIntent(): Observable<LoadCurrenciesFromConfigIntent> {
         return Observable.just(LoadCurrenciesFromConfigIntent)
     }
 
-    private fun addIntent(): Observable<AddCurrencyIntent> {
+    private fun addToListIntent(): Observable<AddCurrencyIntent> {
         return addPublisher
     }
 
-    private fun moveIntent(): Observable<MoveCurrencyIntent> {
-        return movePublisher
-    }
-
-    private fun removeIntent(): Observable<RemoveCurrencyIntent> {
-        return removePublisher
+    private fun saveToConfigIntent(): Observable<SaveCurrenciesToConfigIntent> {
+        return saveCurrenciesToConfigPublisher
     }
 
     /**
@@ -169,18 +168,19 @@ class EditCurrenciesListActivity : AppCompatActivity(),
 
     private fun renderData(currencies: List<ConfiguredCurrency>) {
         Timber.d("renderData $currencies")
-        val sortedCurrencies = currencies
-            .filter { it.isVisible }
-            .sortedBy { it.positionInList }
 
-        adapter.setCurrencies(sortedCurrencies.toMutableList())
+        if (tempCurrenciesWhileEditing.isEmpty()) {
+            tempCurrenciesWhileEditing = currencies
+        }
+
+        adapter.setCurrencies(currencies.filter { it.isVisible }.sort())
     }
 
-    override fun onItemMove(currencyCode: String, priorityPosition: Int) {
-        movePublisher.onNext(MoveCurrencyIntent(currencyCode, priorityPosition))
+    override fun onChangeCurrenciesList(visibleCurrencies: List<ConfiguredCurrency>) {
+        tempCurrenciesWhileEditing.changeVisibilityAndPositionBy(visibleCurrencies)
     }
 
-    override fun onItemRemove(currencyCode: String) {
+    override fun onPositiveButtonClick(dialog: DialogFragment) {
         TODO("Not yet implemented")
     }
 }

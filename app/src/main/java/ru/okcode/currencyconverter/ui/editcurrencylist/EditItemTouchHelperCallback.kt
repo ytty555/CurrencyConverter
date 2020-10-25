@@ -5,9 +5,9 @@ import androidx.recyclerview.widget.RecyclerView
 
 class EditItemTouchHelperCallback(private val adapter: EditListItemTouchHelperApapter) :
     ItemTouchHelper.Callback() {
-    override fun isLongPressDragEnabled(): Boolean {
-        return true
-    }
+//    override fun isLongPressDragEnabled(): Boolean {
+//        return true
+//    }
 
     override fun isItemViewSwipeEnabled(): Boolean {
         return true

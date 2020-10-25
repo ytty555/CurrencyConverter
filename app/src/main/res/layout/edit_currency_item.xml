@@ -15,33 +15,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <android.widget.Space
-            android:id="@+id/space001"
-            android:layout_width="8dp"
-            android:layout_height="38dp"
-            android:layout_marginStart="32dp"
-            app:layout_constraintBottom_toBottomOf="@+id/include"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:id="@+id/position"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAlignment="center"
-            android:textColor="@color/colorPrimaryDark"
-            android:textSize="18sp"
-            app:layout_constraintBottom_toBottomOf="@+id/space001"
-            app:layout_constraintEnd_toStartOf="@+id/space001"
-            app:layout_constraintTop_toTopOf="@+id/space001"
-            tools:text="88" />
-
         <include
             android:id="@+id/include"
             layout="@layout/flag_field"
             android:layout_width="66dp"
             android:layout_height="38dp"
-            app:layout_constraintStart_toEndOf="@+id/space001"
+            android:layout_marginStart="8dp"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView

@@ -9,16 +9,17 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import ru.okcode.currencyconverter.R
 import ru.okcode.currencyconverter.data.model.ConfiguredCurrency
+import ru.okcode.currencyconverter.data.model.reindexPriorityPosition
+import timber.log.Timber
 import java.util.*
 
-class EditCurrenciesListAdapter(private val listener: EditCurrenciesListListener) :
+class EditCurrenciesListAdapter(private val listener: EditListListener) :
     RecyclerView.Adapter<EditCurrenciesListAdapter.ViewHolder>(),
     EditListItemTouchHelperApapter {
 
-    private var currencies: MutableList<ConfiguredCurrency> = mutableListOf()
+    private var currencies = mutableListOf<ConfiguredCurrency>()
 
     class ViewHolder private constructor(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val priorityPosition = itemView.findViewById<TextView>(R.id.position)
         private val currencyFlag = itemView.findViewById<ImageView>(R.id.currency_flag)
         private val currencyCode = itemView.findViewById<TextView>(R.id.currency_code)
         private val currencyName = itemView.findViewById<TextView>(R.id.currency_name)
@@ -32,7 +33,6 @@ class EditCurrenciesListAdapter(private val listener: EditCurrenciesListListener
         }
 
         fun bind(item: ConfiguredCurrency) {
-            priorityPosition.text = item.positionInList.toString()
             currencyCode.text = item.currencyCode
             currencyName.text = item.currencyName
             item.flagRes?.let {
@@ -51,7 +51,7 @@ class EditCurrenciesListAdapter(private val listener: EditCurrenciesListListener
 
     override fun getItemCount(): Int = currencies.size
 
-    fun setCurrencies(currencies: MutableList<ConfiguredCurrency>) {
+    fun setCurrencies(currencies: List<ConfiguredCurrency>) {
 
         val oldCurrencies = this.currencies
         val newCurrencies = currencies
@@ -74,7 +74,7 @@ class EditCurrenciesListAdapter(private val listener: EditCurrenciesListListener
 
         val diffResult = DiffUtil.calculateDiff(diffCallback)
 
-        this.currencies = currencies
+        this.currencies = currencies.toMutableList()
 
         diffResult.dispatchUpdatesTo(this)
     }
@@ -82,26 +82,26 @@ class EditCurrenciesListAdapter(private val listener: EditCurrenciesListListener
     override fun onItemMove(fromPosition: Int, toPosition: Int) {
         if (fromPosition < toPosition) {
             for (i in fromPosition until toPosition) {
-                listener.onItemMove(currencies[i].currencyCode, i + 1)
-                listener.onItemMove(currencies[i + 1].currencyCode, i)
                 Collections.swap(currencies, i, i + 1)
+                currencies.reindexPriorityPosition()
+                listener.onChangeCurrenciesList(currencies)
+                Timber.d("config change currencies $currencies")
             }
         } else {
-            for (i in fromPosition until toPosition) {
-                listener.onItemMove(currencies[i].currencyCode, i - 1)
-                listener.onItemMove(currencies[i - 1].currencyCode, i)
+            for (i in fromPosition downTo toPosition + 1) {
                 Collections.swap(currencies, i, i - 1)
+                currencies.reindexPriorityPosition()
+                listener.onChangeCurrenciesList(currencies)
+                Timber.d("config change currencies $currencies")
             }
         }
-
-
         notifyItemMoved(fromPosition, toPosition)
     }
 
     override fun onItemDismiss(position: Int) {
         currencies.removeAt(position)
-
+        currencies.reindexPriorityPosition()
+        listener.onChangeCurrenciesList(currencies)
         notifyItemRemoved(position)
     }
-
 }

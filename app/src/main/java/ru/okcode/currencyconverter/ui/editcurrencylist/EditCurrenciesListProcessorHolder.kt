@@ -21,24 +21,14 @@ class EditCurrenciesListProcessorHolder @Inject constructor(
                 Observable.merge(
                     shared.ofType(AddCurrencyAction::class.java)
                         .compose(addCurrencyProcessor),
-                    shared.ofType(RemoveCurrencyAction::class.java)
-                        .compose(removeCurrencyProcessor),
-                    shared.ofType(MoveCurrencyAction::class.java)
-                        .compose(moveCurrencyProcessor)
+                    shared.ofType(LoadCurrenciesFromConfigAction::class.java)
+                        .compose(loadCurrenciesFromConfig),
+                    shared.ofType(SaveCurrenciesToConfigAction::class.java)
+                        .compose(saveCurrenciesToConfig)
                 )
-                    .mergeWith(
-                        shared.ofType(LoadCurrenciesFromConfigAction::class.java)
-                            .compose(loadCurrenciesFromConfig)
-                    )
-                    .mergeWith(
-                        shared.ofType(SaveCurrenciesToConfigAction::class.java)
-                            .compose(saveCurrenciesToConfig)
-                    )
                     .mergeWith(
                         shared.filter { action ->
                             action !is AddCurrencyAction
-                                    && action !is RemoveCurrencyAction
-                                    && action !is MoveCurrencyAction
                                     && action !is LoadCurrenciesFromConfigAction
                                     && action !is SaveCurrenciesToConfigAction
                         }.flatMap { action ->
@@ -87,32 +77,11 @@ class EditCurrenciesListProcessorHolder @Inject constructor(
     private val addCurrencyProcessor:
             ObservableTransformer<AddCurrencyAction, AddCurrencyResult> =
         ObservableTransformer { actions ->
-            actions.map {action ->
+            actions.map { action ->
                 AddCurrencyResult.Success(action.configuredCurrencies)
             }
                 .cast(AddCurrencyResult::class.java)
                 .onErrorReturn(AddCurrencyResult::Failure)
         }
-
-    private val moveCurrencyProcessor:
-            ObservableTransformer<MoveCurrencyAction, MoveCurrencyResult> =
-        ObservableTransformer { actions ->
-            actions.map {action ->
-                MoveCurrencyResult.Success(action.currencyCode, action.priorityPosition)
-            }
-                .cast(MoveCurrencyResult::class.java)
-                .onErrorReturn(MoveCurrencyResult::Failure)
-        }
-
-    private val removeCurrencyProcessor:
-            ObservableTransformer<RemoveCurrencyAction, RemoveCurrencyResult> =
-        ObservableTransformer { actions ->
-            actions.map {action ->
-                RemoveCurrencyResult.Success(action.configuredCurrencies)
-            }
-                .cast(RemoveCurrencyResult::class.java)
-                .onErrorReturn(RemoveCurrencyResult::Failure)
-        }
-
 
 }

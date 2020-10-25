@@ -12,6 +12,7 @@ import ru.okcode.currencyconverter.data.db.config.ConfigDao
 import ru.okcode.currencyconverter.data.db.config.ConfigHeaderWithCurrencies
 import ru.okcode.currencyconverter.data.db.config.ConfigMapper
 import ru.okcode.currencyconverter.data.model.Config
+import timber.log.Timber
 import javax.inject.Inject
 
 class ConfigRepositoryImpl @Inject constructor(
@@ -58,6 +59,7 @@ class ConfigRepositoryImpl @Inject constructor(
     }
 
     override fun saveConfig(config: Config): Completable {
+        Timber.d("config save $config")
         return try {
             configDao.insertConfig(
                 configMapper.mapToEntity(config)

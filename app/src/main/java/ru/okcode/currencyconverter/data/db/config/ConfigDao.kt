@@ -4,6 +4,7 @@ import androidx.room.*
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Single
+import timber.log.Timber
 
 @Dao
 interface ConfigDao {
@@ -18,6 +19,7 @@ interface ConfigDao {
 
     @Transaction
     fun insertConfig(config: ConfigHeaderWithCurrencies) {
+        Timber.d("config save $config")
         clearHeader()
         clearCurrencies()
         insertConfigHeader(config.configHeader)
