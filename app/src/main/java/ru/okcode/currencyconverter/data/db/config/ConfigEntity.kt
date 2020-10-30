@@ -47,8 +47,8 @@ data class ConfigHeaderWithCurrencies(
             val allCurrencyCodes =
                 arrayListOf(CurrencyFlagsStore.values())
                     .flatMap {
-                        it.map { currencyFlagStor ->
-                            currencyFlagStor.name
+                        it.map { currencyFlagStore ->
+                            currencyFlagStore.name
                         }
                     }
 

@@ -3,11 +3,8 @@ package ru.okcode.currencyconverter.ui.editcurrencylist
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 
-class EditItemTouchHelperCallback(private val adapter: EditListItemTouchHelperApapter) :
+class PriorityPositionItemTouchHelperCallback(private val adapter: PriorityPositionItemTouchHelperAdapter) :
     ItemTouchHelper.Callback() {
-//    override fun isLongPressDragEnabled(): Boolean {
-//        return true
-//    }
 
     override fun isItemViewSwipeEnabled(): Boolean {
         return true
@@ -17,6 +14,9 @@ class EditItemTouchHelperCallback(private val adapter: EditListItemTouchHelperAp
         recyclerView: RecyclerView,
         viewHolder: RecyclerView.ViewHolder
     ): Int {
+        if (recyclerView.adapter!!.itemCount < 2) {
+            return 0
+        }
         val dragFlags = ItemTouchHelper.UP or ItemTouchHelper.DOWN
         val swipeFlags = ItemTouchHelper.START or ItemTouchHelper.END
         return makeMovementFlags(dragFlags, swipeFlags)
@@ -35,5 +35,6 @@ class EditItemTouchHelperCallback(private val adapter: EditListItemTouchHelperAp
     override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
         adapter.onItemDismiss(viewHolder.adapterPosition)
     }
+
 
 }

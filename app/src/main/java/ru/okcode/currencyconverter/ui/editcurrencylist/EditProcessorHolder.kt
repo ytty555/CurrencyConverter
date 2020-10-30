@@ -8,7 +8,7 @@ import ru.okcode.currencyconverter.ui.editcurrencylist.EditCurrenciesListAction.
 import ru.okcode.currencyconverter.ui.editcurrencylist.EditCurrenciesListResult.*
 import javax.inject.Inject
 
-class EditCurrenciesListProcessorHolder @Inject constructor(
+class EditProcessorHolder @Inject constructor(
     private val configRepository: ConfigRepository
 ) {
     /**

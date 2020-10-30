@@ -6,16 +6,20 @@ import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.BiFunction
 import io.reactivex.subjects.PublishSubject
+import ru.okcode.currencyconverter.data.model.ConfiguredCurrency
 import ru.okcode.currencyconverter.mvibase.MviViewModel
 import ru.okcode.currencyconverter.ui.editcurrencylist.EditCurrenciesListAction.*
 import ru.okcode.currencyconverter.ui.editcurrencylist.EditCurrenciesListIntent.*
 import ru.okcode.currencyconverter.ui.editcurrencylist.EditCurrenciesListResult.*
 import timber.log.Timber
 
-class EditCurrenciesListViewModel @ViewModelInject constructor(
-    private val processorHolder: EditCurrenciesListProcessorHolder,
+class EditViewModel @ViewModelInject constructor(
+    private val processorHolder: EditProcessorHolder,
 ) : ViewModel(),
     MviViewModel<EditCurrenciesListIntent, EditCurrenciesListViewState> {
+
+    // Temp result while editing
+    var tempCurrenciesWhileEditing: List<ConfiguredCurrency> = emptyList()
 
     private val intentsPublisher =
         PublishSubject.create<EditCurrenciesListIntent>()
@@ -30,8 +34,15 @@ class EditCurrenciesListViewModel @ViewModelInject constructor(
             .map(this::actionFromIntent)
             .compose(processorHolder.actionProcessor)
             .scan(EditCurrenciesListViewState.idle(), reducer)
+            .filter {
+                it.currencies.isNotEmpty()
+            }
             .observeOn(AndroidSchedulers.mainThread())
-            .doOnNext { Timber.d("new EditCurrenciesListViewState $it") }
+            .doOnNext {
+                if (it.error == null) {
+                    tempCurrenciesWhileEditing = it.currencies
+                }
+            }
 
 
     private fun actionFromIntent(intent: EditCurrenciesListIntent): EditCurrenciesListAction =
@@ -63,6 +74,7 @@ class EditCurrenciesListViewModel @ViewModelInject constructor(
                     }
                     is SaveCurrenciesToConfigResult -> when (result) {
                         is SaveCurrenciesToConfigResult.Success -> {
+                            Timber.d("ppp SaveCurrenciesToConfigResult.Success")
                             previousState.copy(
                                 error = null
                             )

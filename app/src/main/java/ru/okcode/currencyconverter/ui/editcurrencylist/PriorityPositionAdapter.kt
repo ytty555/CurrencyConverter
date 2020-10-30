@@ -13,9 +13,9 @@ import ru.okcode.currencyconverter.data.model.reindexPriorityPosition
 import timber.log.Timber
 import java.util.*
 
-class EditCurrenciesListAdapter(private val listener: EditListListener) :
-    RecyclerView.Adapter<EditCurrenciesListAdapter.ViewHolder>(),
-    EditListItemTouchHelperApapter {
+class PriorityPositionAdapter(private val listener: EventListener) :
+    RecyclerView.Adapter<PriorityPositionAdapter.ViewHolder>(),
+    PriorityPositionItemTouchHelperAdapter {
 
     private var currencies = mutableListOf<ConfiguredCurrency>()
 
@@ -27,7 +27,7 @@ class EditCurrenciesListAdapter(private val listener: EditListListener) :
         companion object {
             fun from(parent: ViewGroup): ViewHolder {
                 val layoutInflater = LayoutInflater.from(parent.context)
-                val view = layoutInflater.inflate(R.layout.edit_currency_item, parent, false)
+                val view = layoutInflater.inflate(R.layout.priority_position_item, parent, false)
                 return ViewHolder(view)
             }
         }
@@ -84,14 +84,14 @@ class EditCurrenciesListAdapter(private val listener: EditListListener) :
             for (i in fromPosition until toPosition) {
                 Collections.swap(currencies, i, i + 1)
                 currencies.reindexPriorityPosition()
-                listener.onChangeCurrenciesList(currencies)
+                listener.onChangePriorityPosition(currencies)
                 Timber.d("config change currencies $currencies")
             }
         } else {
             for (i in fromPosition downTo toPosition + 1) {
                 Collections.swap(currencies, i, i - 1)
                 currencies.reindexPriorityPosition()
-                listener.onChangeCurrenciesList(currencies)
+                listener.onChangePriorityPosition(currencies)
                 Timber.d("config change currencies $currencies")
             }
         }
@@ -101,7 +101,11 @@ class EditCurrenciesListAdapter(private val listener: EditListListener) :
     override fun onItemDismiss(position: Int) {
         currencies.removeAt(position)
         currencies.reindexPriorityPosition()
-        listener.onChangeCurrenciesList(currencies)
+        listener.onChangePriorityPosition(currencies)
         notifyItemRemoved(position)
+    }
+
+    interface EventListener {
+        fun onChangePriorityPosition(currencies: List<ConfiguredCurrency>)
     }
 }

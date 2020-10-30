@@ -4,7 +4,7 @@ import android.content.Intent
 import androidx.fragment.app.FragmentActivity
 import ru.okcode.currencyconverter.R
 import ru.okcode.currencyconverter.ui.basechooser.BaseChooserActivity
-import ru.okcode.currencyconverter.ui.editcurrencylist.EditCurrenciesListActivity
+import ru.okcode.currencyconverter.ui.editcurrencylist.EditActivity
 import ru.okcode.currencyconverter.ui.basechooser.BaseChooserFragment
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -37,7 +37,7 @@ class OverviewNavigator @Inject constructor() {
 
     fun showEditCurrencyList() {
         activity?.let {
-            val intent = Intent(it, EditCurrenciesListActivity::class.java)
+            val intent = Intent(it, EditActivity::class.java)
             it.startActivity(intent)
         }
     }

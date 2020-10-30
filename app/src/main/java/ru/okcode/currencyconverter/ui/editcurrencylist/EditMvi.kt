@@ -11,6 +11,7 @@ import ru.okcode.currencyconverter.mvibase.MviViewState
  */
 sealed class EditCurrenciesListIntent : MviIntent {
     object LoadCurrenciesFromConfigIntent : EditCurrenciesListIntent()
+
     data class SaveCurrenciesToConfigIntent(val configuredCurrencies: List<ConfiguredCurrency>) :
         EditCurrenciesListIntent()
 
@@ -57,12 +58,19 @@ sealed class EditCurrenciesListResult : MviResult {
  * EditCurrenciesList ViewState
  */
 data class EditCurrenciesListViewState(
+    val changingPriorityPosition: Boolean,
+    val addingCurrencies: Boolean,
     val currencies: List<ConfiguredCurrency>,
     val error: Throwable?
 ) : MviViewState {
     companion object {
         fun idle(): EditCurrenciesListViewState {
-            return EditCurrenciesListViewState(emptyList(), null)
+            return EditCurrenciesListViewState(
+                changingPriorityPosition = true,
+                addingCurrencies = false,
+                currencies = emptyList(),
+                error = null
+            )
         }
     }
 }

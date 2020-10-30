@@ -6,10 +6,6 @@ import android.view.MenuItem
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.coordinatorlayout.widget.CoordinatorLayout
-import androidx.fragment.app.DialogFragment
-import androidx.recyclerview.widget.ItemTouchHelper
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
@@ -19,23 +15,22 @@ import io.reactivex.subjects.PublishSubject
 import ru.okcode.currencyconverter.R
 import ru.okcode.currencyconverter.data.model.ConfiguredCurrency
 import ru.okcode.currencyconverter.data.model.changeVisibilityAndPositionBy
-import ru.okcode.currencyconverter.data.model.sort
 import ru.okcode.currencyconverter.mvibase.MviView
 import ru.okcode.currencyconverter.ui.RatesListActivity
-import ru.okcode.currencyconverter.ui.editcurrencylist.AddCurrenciesDialogFragment.AddCurrenciesDialogListener
 import ru.okcode.currencyconverter.ui.editcurrencylist.EditCurrenciesListIntent.*
 import timber.log.Timber
+import javax.inject.Inject
 
 @AndroidEntryPoint
-class EditCurrenciesListActivity : AppCompatActivity(),
+class EditActivity : AppCompatActivity(),
     MviView<EditCurrenciesListIntent, EditCurrenciesListViewState>,
-    EditListListener,
-    AddCurrenciesDialogListener {
+    PriorityPositionAdapter.EventListener {
 
-    // Temp result while editing
-    private var tempCurrenciesWhileEditing: List<ConfiguredCurrency> = emptyList()
+    // Navigator for fragments
+    @Inject
+    lateinit var navigator: EditNavigator
 
-    private val viewModel: EditCurrenciesListViewModel by viewModels()
+    private val viewModel: EditViewModel by viewModels()
     private val disposables = CompositeDisposable()
 
     // Intents subjects
@@ -48,9 +43,6 @@ class EditCurrenciesListActivity : AppCompatActivity(),
     // View elements
     private lateinit var coordinatorLayout: CoordinatorLayout
 
-    private lateinit var recyclerView: RecyclerView
-
-    private lateinit var adapter: EditCurrenciesListAdapter
 
     /**
      * onCreate
@@ -64,28 +56,15 @@ class EditCurrenciesListActivity : AppCompatActivity(),
 
         coordinatorLayout = findViewById(R.id.edit_list_coordinator)
 
-        // RecyclerView Edit currencies list
-        recyclerView = findViewById(R.id.currencies_recyclerview)
-        adapter = EditCurrenciesListAdapter(this)
-
-        val callback: ItemTouchHelper.Callback = EditItemTouchHelperCallback(adapter)
-        val touchHelper = ItemTouchHelper(callback)
-        touchHelper.attachToRecyclerView(recyclerView)
-
-        val layoutManager = LinearLayoutManager(this)
-
-        recyclerView.layoutManager = layoutManager
-        recyclerView.adapter = adapter
-
         // FAB
         findViewById<FloatingActionButton>(R.id.fab).setOnClickListener { view ->
             saveCurrenciesToConfigPublisher.onNext(
                 SaveCurrenciesToConfigIntent(
-                    tempCurrenciesWhileEditing
+                    viewModel.tempCurrenciesWhileEditing
                 )
             )
-            val dialog: DialogFragment = AddCurrenciesDialogFragment(this)
-            dialog.show(supportFragmentManager, "addCurrenciesDialog")
+            Snackbar.make(coordinatorLayout, "Add currencies button pressed", Snackbar.LENGTH_LONG)
+                .show()
         }
     }
 
@@ -96,6 +75,7 @@ class EditCurrenciesListActivity : AppCompatActivity(),
         super.onStart()
         disposables.add(viewModel.states().subscribe(this::render))
         viewModel.processIntents(intents())
+        navigator.activity = this
     }
 
     /**
@@ -104,6 +84,7 @@ class EditCurrenciesListActivity : AppCompatActivity(),
     override fun onStop() {
         super.onStop()
         disposables.clear()
+        navigator.activity = null
     }
 
     /**
@@ -112,9 +93,9 @@ class EditCurrenciesListActivity : AppCompatActivity(),
     override fun onOptionsItemSelected(item: MenuItem) =
         when (item.itemId) {
             android.R.id.home -> {
-                if (tempCurrenciesWhileEditing.isNotEmpty()) {
+                if (viewModel.tempCurrenciesWhileEditing.isNotEmpty()) {
                     saveCurrenciesToConfigPublisher.onNext(
-                        SaveCurrenciesToConfigIntent(tempCurrenciesWhileEditing)
+                        SaveCurrenciesToConfigIntent(viewModel.tempCurrenciesWhileEditing)
                     )
                 }
                 navigateUpTo((Intent(this, RatesListActivity::class.java)))
@@ -152,8 +133,10 @@ class EditCurrenciesListActivity : AppCompatActivity(),
     override fun render(state: EditCurrenciesListViewState) {
         if (state.error != null) {
             renderError(state.error)
-        } else {
-            renderData(state.currencies)
+        } else if (state.changingPriorityPosition) {
+            renderPriorityPosition(state.currencies)
+        } else if (state.addingCurrencies) {
+            renderAddCurrencies(state.currencies)
         }
     }
 
@@ -166,21 +149,15 @@ class EditCurrenciesListActivity : AppCompatActivity(),
         ).show()
     }
 
-    private fun renderData(currencies: List<ConfiguredCurrency>) {
-        Timber.d("renderData $currencies")
-
-        if (tempCurrenciesWhileEditing.isEmpty()) {
-            tempCurrenciesWhileEditing = currencies
-        }
-
-        adapter.setCurrencies(currencies.filter { it.isVisible }.sort())
+    private fun renderPriorityPosition(currencies: List<ConfiguredCurrency>) {
+        navigator.showPriorityPositionFragment(currencies)
     }
 
-    override fun onChangeCurrenciesList(visibleCurrencies: List<ConfiguredCurrency>) {
-        tempCurrenciesWhileEditing.changeVisibilityAndPositionBy(visibleCurrencies)
+    private fun renderAddCurrencies(currencies: List<ConfiguredCurrency>) {
+        navigator.showAddCurrenciesFragment(currencies)
     }
 
-    override fun onPositiveButtonClick(dialog: DialogFragment) {
-        TODO("Not yet implemented")
+    override fun onChangePriorityPosition(currencies: List<ConfiguredCurrency>) {
+        viewModel.tempCurrenciesWhileEditing.changeVisibilityAndPositionBy(currencies)
     }
 }
