@@ -11,5 +11,5 @@ interface ConfigRepository : LifecycleObserver {
 
     fun getConfigSingle(): Single<Config>
 
-    fun saveConfig(config: Config)
+    fun saveConfig(config: Config): Completable
 }

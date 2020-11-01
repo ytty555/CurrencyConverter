@@ -27,7 +27,7 @@ data class Rate(
     val rateToBase: Float,
     val rateToEur: Float,
     val sum: Float,
-    val priorityPosition: Int = 0,
+    val priorityPosition: Int = 1000,
     val flagRes: Int?,
-    val isVisible: Boolean = true
+    val isVisible: Boolean = false
 )

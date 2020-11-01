@@ -3,7 +3,8 @@ package ru.okcode.currencyconverter.ui.overview
 import android.content.Intent
 import androidx.fragment.app.FragmentActivity
 import ru.okcode.currencyconverter.R
-import ru.okcode.currencyconverter.ui.BaseChooserActivity
+import ru.okcode.currencyconverter.ui.basechooser.BaseChooserActivity
+import ru.okcode.currencyconverter.ui.editcurrencylist.EditActivity
 import ru.okcode.currencyconverter.ui.basechooser.BaseChooserFragment
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -35,6 +36,9 @@ class OverviewNavigator @Inject constructor() {
     }
 
     fun showEditCurrencyList() {
-        TODO()
+        activity?.let {
+            val intent = Intent(it, EditActivity::class.java)
+            it.startActivity(intent)
+        }
     }
 }

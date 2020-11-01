@@ -33,4 +33,12 @@
     <string name="rates_loading_error_message">Can\'t load currency rates from server</string>
 
     <string name="facebook_app_id" translatable="false">355965245517529</string>
+    <string name="title_activity_edit_currencies_list">Edit currencies list</string>
+
+    <string name="add_currencies_to_the_visible_list">Add currencies to the visible list</string>
+    <string name="ok_button">Ok</string>
+    <string name="cancel_button">Cancel</string>
+    <string name="property_position_title">Editing currency list</string>
+    <string name="add_title">Adding currencies to the list</string>
+    <string name="base_currency">Base currency</string>
 </resources>
