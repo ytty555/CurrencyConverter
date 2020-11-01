@@ -10,6 +10,7 @@
     app:cardCornerRadius="5dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/rate_item"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingStart="8dp"
@@ -37,6 +38,32 @@
             app:layout_constraintVertical_bias="0.0"
             app:layout_constraintVertical_chainStyle="spread"
             tools:text="EUR" />
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/base_currency_indicator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            app:cardCornerRadius="10dp"
+            android:backgroundTint="@android:color/holo_red_light"
+            app:layout_constraintCircleRadius="30dp"
+            app:layout_constraintBottom_toBottomOf="@+id/currency_code"
+            app:layout_constraintStart_toEndOf="@+id/currency_code"
+            app:layout_constraintTop_toTopOf="@+id/currency_code">
+
+            <TextView
+                android:layout_marginStart="6dp"
+                android:layout_marginEnd="6dp"
+                android:layout_marginBottom="2dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:textSize="12sp"
+                android:textColor="@android:color/white"
+                android:text="@string/base_currency"
+                />
+
+        </androidx.cardview.widget.CardView>
 
         <TextView
             android:id="@+id/currency_name"

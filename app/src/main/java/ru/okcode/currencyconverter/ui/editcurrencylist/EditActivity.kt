@@ -12,19 +12,23 @@ import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.subjects.PublishSubject
+import kotlinx.android.synthetic.main.activity_edit_currencies_list.*
 import ru.okcode.currencyconverter.R
 import ru.okcode.currencyconverter.data.model.ConfiguredCurrency
 import ru.okcode.currencyconverter.data.model.changeVisibilityAndPositionBy
 import ru.okcode.currencyconverter.mvibase.MviView
 import ru.okcode.currencyconverter.ui.RatesListActivity
 import ru.okcode.currencyconverter.ui.editcurrencylist.EditCurrenciesListIntent.*
+import ru.okcode.currencyconverter.util.visible
 import timber.log.Timber
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class EditActivity : AppCompatActivity(),
     MviView<EditCurrenciesListIntent, EditCurrenciesListViewState>,
-    PriorityPositionAdapter.EventListener {
+    PriorityPositionAdapter.EventListener,
+    AddCurrenciesAdapter.EventListener,
+    TitleChangeListener {
 
     // Navigator for fragments
     @Inject
@@ -57,14 +61,9 @@ class EditActivity : AppCompatActivity(),
         coordinatorLayout = findViewById(R.id.edit_list_coordinator)
 
         // FAB
-        findViewById<FloatingActionButton>(R.id.fab).setOnClickListener { view ->
-            saveCurrenciesToConfigPublisher.onNext(
-                SaveCurrenciesToConfigIntent(
-                    viewModel.tempCurrenciesWhileEditing
-                )
-            )
-            Snackbar.make(coordinatorLayout, "Add currencies button pressed", Snackbar.LENGTH_LONG)
-                .show()
+        findViewById<FloatingActionButton>(R.id.fab).setOnClickListener {
+            saveCurrenciesToConfigPublisher.onNext(SaveCurrenciesToConfigIntent)
+            addPublisher.onNext(AddCurrencyIntent)
         }
     }
 
@@ -93,13 +92,22 @@ class EditActivity : AppCompatActivity(),
     override fun onOptionsItemSelected(item: MenuItem) =
         when (item.itemId) {
             android.R.id.home -> {
-                if (viewModel.tempCurrenciesWhileEditing.isNotEmpty()) {
-                    saveCurrenciesToConfigPublisher.onNext(
-                        SaveCurrenciesToConfigIntent(viewModel.tempCurrenciesWhileEditing)
-                    )
+                val fragmentManager = supportFragmentManager
+                when (fragmentManager.fragments[0]) {
+                    is PriorityPositionFragment -> {
+                        if (viewModel.tempCurrenciesWhileEditing.isNotEmpty()) {
+                            saveCurrenciesToConfigPublisher.onNext(SaveCurrenciesToConfigIntent)
+                        }
+                        navigateUpTo((Intent(this, RatesListActivity::class.java)))
+                        true
+                    }
+                    is AddCurrenciesFragment -> {
+                        navigator.showPriorityPositionFragment()
+                        fab.visible = true
+                        true
+                    }
+                    else -> false
                 }
-                navigateUpTo((Intent(this, RatesListActivity::class.java)))
-                true
             }
             else -> super.onOptionsItemSelected(item)
         }
@@ -131,12 +139,16 @@ class EditActivity : AppCompatActivity(),
      * render
      */
     override fun render(state: EditCurrenciesListViewState) {
-        if (state.error != null) {
-            renderError(state.error)
-        } else if (state.changingPriorityPosition) {
-            renderPriorityPosition(state.currencies)
-        } else if (state.addingCurrencies) {
-            renderAddCurrencies(state.currencies)
+        when {
+            state.error != null -> {
+                renderError(state.error)
+            }
+            state.changingPriorityPosition -> {
+                renderPriorityPosition()
+            }
+            state.addingCurrencies -> {
+                renderAddCurrencies()
+            }
         }
     }
 
@@ -149,15 +161,27 @@ class EditActivity : AppCompatActivity(),
         ).show()
     }
 
-    private fun renderPriorityPosition(currencies: List<ConfiguredCurrency>) {
-        navigator.showPriorityPositionFragment(currencies)
+    private fun renderPriorityPosition() {
+        fab.visible = true
+        navigator.showPriorityPositionFragment()
     }
 
-    private fun renderAddCurrencies(currencies: List<ConfiguredCurrency>) {
-        navigator.showAddCurrenciesFragment(currencies)
+    private fun renderAddCurrencies() {
+        fab.visible = false
+        navigator.showAddCurrenciesFragment()
     }
 
     override fun onChangePriorityPosition(currencies: List<ConfiguredCurrency>) {
         viewModel.tempCurrenciesWhileEditing.changeVisibilityAndPositionBy(currencies)
+    }
+
+    override fun onCheckCurrency(currencyCode: String, isVisible: Boolean) {
+        Timber.d("Old: ${viewModel.tempCurrenciesWhileEditing}")
+        viewModel.tempCurrenciesWhileEditing.changeVisibilityAndPositionBy(currencyCode, isVisible)
+        Timber.d("New: ${viewModel.tempCurrenciesWhileEditing}")
+    }
+
+    override fun setTitle(title: String) {
+        supportActionBar?.title = title
     }
 }

@@ -11,12 +11,8 @@ import ru.okcode.currencyconverter.mvibase.MviViewState
  */
 sealed class EditCurrenciesListIntent : MviIntent {
     object LoadCurrenciesFromConfigIntent : EditCurrenciesListIntent()
-
-    data class SaveCurrenciesToConfigIntent(val configuredCurrencies: List<ConfiguredCurrency>) :
-        EditCurrenciesListIntent()
-
-    data class AddCurrencyIntent(val configuredCurrencies: List<ConfiguredCurrency>) :
-        EditCurrenciesListIntent()
+    object SaveCurrenciesToConfigIntent : EditCurrenciesListIntent()
+    object AddCurrencyIntent : EditCurrenciesListIntent()
 }
 
 /**
@@ -27,7 +23,7 @@ sealed class EditCurrenciesListAction : MviAction {
     data class SaveCurrenciesToConfigAction(val configuredCurrencies: List<ConfiguredCurrency>) :
         EditCurrenciesListAction()
 
-    data class AddCurrencyAction(val configuredCurrencies: List<ConfiguredCurrency>) :
+    data class AddCurrencyAction(val currencies: List<ConfiguredCurrency>) :
         EditCurrenciesListAction()
 }
 

@@ -19,12 +19,18 @@ class PriorityPositionFragment : Fragment() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: PriorityPositionAdapter
 
+    private lateinit var titleChangeListener: TitleChangeListener
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_priority_position, container, false)
+
+        // Title
+        titleChangeListener = activity as TitleChangeListener
+        titleChangeListener.setTitle(resources.getString(R.string.property_position_title))
 
         // RecyclerView Edit currencies list
         recyclerView = view.findViewById(R.id.currencies_recyclerview)

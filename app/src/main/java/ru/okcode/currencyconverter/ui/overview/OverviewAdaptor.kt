@@ -6,11 +6,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import ru.okcode.currencyconverter.R
-import ru.okcode.currencyconverter.data.model.Rate
 import ru.okcode.currencyconverter.data.model.Rates
+import ru.okcode.currencyconverter.util.visible
+import kotlin.math.round
 
 class OverviewAdaptor(private val rateListListener: OverviewListener) :
     RecyclerView.Adapter<OverviewAdaptor.ViewHolder>() {
@@ -19,7 +21,8 @@ class OverviewAdaptor(private val rateListListener: OverviewListener) :
 
     class ViewHolder private constructor(view: View) :
         RecyclerView.ViewHolder(view) {
-
+        private val baseCurrencyIndicator =
+            view.findViewById<CardView>(R.id.base_currency_indicator)
         private val currencyCodeTextView = view.findViewById<TextView>(R.id.currency_code)
         private val currencyNameTextView = view.findViewById<TextView>(R.id.currency_name)
         private val currencyRateTextView = view.findViewById<TextView>(R.id.currency_rate)
@@ -38,9 +41,11 @@ class OverviewAdaptor(private val rateListListener: OverviewListener) :
             val currency = Currency.getInstance(rate.currencyCode)
             val baseCurrency = Currency.getInstance(ratesData.baseCurrencyCode)
 
+            baseCurrencyIndicator.visible = (rate.currencyCode == ratesData.baseCurrencyCode)
+
             currencyCodeTextView.text = currency.currencyCode
             currencyNameTextView.text = currency.displayName.capitalize()
-            currencyRateTextView.text = rate.sum.toString()
+            currencyRateTextView.text = (round(rate.sum * 10000) / 10000).toString()
             currencySymbolTextView.text = currency.symbol
             baseCurrencyAmountSymbolEqualTextView.text =
                 "${ratesData.baseCurrencyAmount} ${baseCurrency.symbol} ="

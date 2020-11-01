@@ -18,4 +18,9 @@
     <string name="rates_loading_error_message">Ошибка загрузки курсов валют с сервера</string>
     <string name="title_activity_edit_currencies_list">Редактирование списка валют</string>
     <string name="add_currencies_to_the_visible_list">Добавить валюты в отображаемый список</string>
+    <string name="ok_button">Ок</string>
+    <string name="cancel_button">Отмена</string>
+    <string name="property_position_title">Редактирование списка валют</string>
+    <string name="add_title">Добавление валют</string>
+    <string name="base_currency">Базовая валюта</string>
 </resources>

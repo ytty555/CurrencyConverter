@@ -48,8 +48,8 @@ class EditViewModel @ViewModelInject constructor(
     private fun actionFromIntent(intent: EditCurrenciesListIntent): EditCurrenciesListAction =
         when (intent) {
             is LoadCurrenciesFromConfigIntent -> LoadCurrenciesFromConfigAction
-            is SaveCurrenciesToConfigIntent -> SaveCurrenciesToConfigAction(intent.configuredCurrencies)
-            is AddCurrencyIntent -> AddCurrencyAction(intent.configuredCurrencies)
+            is SaveCurrenciesToConfigIntent -> SaveCurrenciesToConfigAction(tempCurrenciesWhileEditing)
+            is AddCurrencyIntent -> AddCurrencyAction(tempCurrenciesWhileEditing)
         }
 
     companion object {
@@ -61,12 +61,16 @@ class EditViewModel @ViewModelInject constructor(
                 when (result) {
                     is LoadCurrenciesFromConfigResult -> when (result) {
                         is LoadCurrenciesFromConfigResult.Success -> {
+                            Timber.d("reducer LoadCurrenciesFromConfigResult.Success")
                             previousState.copy(
+                                changingPriorityPosition = true,
+                                addingCurrencies = false,
                                 currencies = result.currencies,
                                 error = null
                             )
                         }
                         is LoadCurrenciesFromConfigResult.Failure -> {
+                            Timber.d("reducer LoadCurrenciesFromConfigResult.Failure")
                             previousState.copy(
                                 error = result.error
                             )
@@ -74,12 +78,13 @@ class EditViewModel @ViewModelInject constructor(
                     }
                     is SaveCurrenciesToConfigResult -> when (result) {
                         is SaveCurrenciesToConfigResult.Success -> {
-                            Timber.d("ppp SaveCurrenciesToConfigResult.Success")
+                            Timber.d("reducer SaveCurrenciesToConfigResult.Success")
                             previousState.copy(
                                 error = null
                             )
                         }
                         is SaveCurrenciesToConfigResult.Failure -> {
+                            Timber.d("reducer SaveCurrenciesToConfigResult.Failure")
                             previousState.copy(
                                 error = result.error
                             )
@@ -87,12 +92,16 @@ class EditViewModel @ViewModelInject constructor(
                     }
                     is AddCurrencyResult -> when (result) {
                         is AddCurrencyResult.Success -> {
+                            Timber.d("reducer AddCurrencyResult.Success")
                             previousState.copy(
+                                changingPriorityPosition = false,
+                                addingCurrencies = true,
                                 currencies = result.currencies,
                                 error = null
                             )
                         }
                         is AddCurrencyResult.Failure -> {
+                            Timber.d("reducer AddCurrencyResult.Failure")
                             previousState.copy(
                                 error = result.error
                             )

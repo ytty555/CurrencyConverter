@@ -1,24 +1,23 @@
 package ru.okcode.currencyconverter.ui.editcurrencylist
 
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import ru.okcode.currencyconverter.R
-import ru.okcode.currencyconverter.data.model.ConfiguredCurrency
-import timber.log.Timber
 import javax.inject.Inject
 
 class EditNavigator @Inject constructor() {
     var activity: FragmentActivity? = null
 
-    fun showPriorityPositionFragment(currencies: List<ConfiguredCurrency>) {
+    fun showPriorityPositionFragment() {
         showFragment(PriorityPositionFragment())
     }
 
 
-    fun showAddCurrenciesFragment(currencies: List<ConfiguredCurrency>) {
-        TODO("Not implemented yet")
+    fun showAddCurrenciesFragment() {
+        showFragment(AddCurrenciesFragment())
     }
 
-    private fun showFragment(fragment: PriorityPositionFragment) {
+    private fun showFragment(fragment: Fragment) {
         activity?.let {
             val fragmentManager = it.supportFragmentManager
             fragmentManager.beginTransaction()

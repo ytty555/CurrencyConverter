@@ -2,6 +2,7 @@ package ru.okcode.currencyconverter.data.model
 
 import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
+import timber.log.Timber
 import java.util.*
 
 @Parcelize
@@ -44,6 +45,23 @@ fun List<ConfiguredCurrency>.changeVisibilityAndPositionBy(
         } else {
             it.isVisible = false
             it.positionInList = 1000
+        }
+    }
+}
+
+/**
+ * Function 1111111111111
+ * @param visibleCurrenciesList - currencies list by which changes will be done
+ */
+fun List<ConfiguredCurrency>.changeVisibilityAndPositionBy(
+    currencyCode: String,
+    isVisible: Boolean
+) {
+    this.forEach {
+        if (it.currencyCode == currencyCode) {
+            it.isVisible = isVisible
+            it.positionInList = 1000
+            return@forEach
         }
     }
 }

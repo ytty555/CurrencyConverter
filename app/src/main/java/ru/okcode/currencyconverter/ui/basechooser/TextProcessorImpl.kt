@@ -1,7 +1,10 @@
 package ru.okcode.currencyconverter.ui.basechooser
 
+import java.math.BigDecimal
+import java.math.RoundingMode
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.math.round
 
 /**
  * Текстовый процессор предназначен для генерации числа
