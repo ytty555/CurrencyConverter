@@ -6,7 +6,7 @@ import androidx.room.TypeConverters
 import ru.okcode.currencyconverter.data.db.Converters
 
 @Database(
-    entities = [ConfigEntity::class],
+    entities = [ConfigHeader::class, ConfigCurrency::class],
     version = 1,
     exportSchema = false
 )

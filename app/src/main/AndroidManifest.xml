@@ -16,8 +16,14 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity
+            android:name=".ui.editcurrencylist.EditActivity"
+            android:label="@string/title_activity_edit_currencies_list"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
 
-        <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/facebook_app_id"/>
+        <meta-data
+            android:name="com.facebook.sdk.ApplicationId"
+            android:value="@string/facebook_app_id" />
 
         <activity
             android:name=".ui.RatesListActivity"
@@ -31,7 +37,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.BaseChooserActivity"
+            android:name=".ui.basechooser.BaseChooserActivity"
             android:label="@string/base_currency_settings"
             android:parentActivityName=".ui.RatesListActivity"
             android:theme="@style/AppTheme.NoActionBar">
@@ -43,7 +49,6 @@
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-6056289010253706~3746246738" />
-
     </application>
 
 </manifest>
