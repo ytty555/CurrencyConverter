@@ -19,7 +19,7 @@
         <activity
             android:name=".ui.editcurrencylist.EditActivity"
             android:label="@string/title_activity_edit_currencies_list"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
 
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
