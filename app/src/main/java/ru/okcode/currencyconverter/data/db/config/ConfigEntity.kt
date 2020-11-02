@@ -52,11 +52,11 @@ data class ConfigHeaderWithCurrencies(
                         }
                     }
 
-            val localCurrencyCode =
+            var localCurrencyCode =
                 try {
                     Currency.getInstance(Locale.getDefault()).currencyCode
                 } catch (e: NullPointerException) {
-                    Currency.getInstance(USD_CODE)
+                    Currency.getInstance(USD_CODE).currencyCode
                 }
 
             var startInvisiblePosition = 9
