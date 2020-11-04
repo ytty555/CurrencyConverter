@@ -57,6 +57,8 @@ android {
 }
 
 dependencies {
+    implementation project(":lib-diagrams")
+
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     def lifecycle_version = "2.2.0"
     def room_version = "2.2.5"

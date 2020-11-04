@@ -14,6 +14,7 @@ import ru.okcode.currencyconverter.R
 import ru.okcode.currencyconverter.data.repository.ConfigRepository
 import ru.okcode.currencyconverter.ui.overview.OverviewFragment
 import ru.okcode.currencyconverter.ui.overview.OverviewNavigator
+import ru.okcode.lib_diagrams.LineChartIcon
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -30,6 +31,8 @@ class RatesListActivity : AppCompatActivity() {
     private val disposables = CompositeDisposable()
 
     private var adView : AdView? = null
+
+    private lateinit var chartIcon: LineChartIcon
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,6 +51,10 @@ class RatesListActivity : AppCompatActivity() {
         // Toolbar
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
+
+        chartIcon = findViewById(R.id.chart)
+        val data = listOf(3f, 5f, 2f, 1f, 2f)
+        chartIcon.setData(data)
 
         if (findViewById<FrameLayout>(R.id.base_chooser_container) != null) {
             twoPane = true
